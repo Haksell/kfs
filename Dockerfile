@@ -9,4 +9,4 @@ WORKDIR /workspace
 
 COPY . /workspace
 
-CMD ["make", "reiso"]
+CMD ["make", "iso"]
