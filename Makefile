@@ -5,6 +5,7 @@ LINKER_SCRIPT := src/arch/$(ARCH)/linker.ld
 GRUB_CFG := src/arch/$(ARCH)/grub.cfg
 ASM_SRCS := $(wildcard src/arch/$(ARCH)/*.asm)
 ASM_OBJS := $(patsubst src/arch/$(ARCH)/%.asm, build/arch/$(ARCH)/%.o, $(ASM_SRCS))
+QEMU := qemu-system-x86_64 # TODO: depends on ARCH
 
 all:
 	docker build -t osdev .
@@ -13,7 +14,7 @@ all:
 re: clean all
 
 run: all
-	@qemu-system-x86_64 -cdrom $(ISO)
+	@$(QEMU) -cdrom $(ISO)
 
 rerun: clean run
 
