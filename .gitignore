@@ -1,0 +1,3 @@
+*.o
+isofiles/boot/kernel.bin
+kfs.iso
