@@ -5,17 +5,23 @@ ASM_FILES := $(wildcard *.asm)
 OBJ_FILES := $(ASM_FILES:.asm=.o)
 RM := rm -f
 
+all:
+	docker build -t osdev .
+	docker run --rm -v .:/workspace osdev
+
+re: fclean all
+
+run: all
+	qemu-system-x86_64 -cdrom $(ISO)
+
+rerun: fclean run
+
 iso: $(ISO)
 
 $(ISO): $(KERNEL)
 	grub-mkrescue -o $(ISO) $(ISOFILES)
 
 reiso: fclean iso
-
-run: $(ISO)
-	qemu-system-x86_64 -cdrom $(ISO)
-
-rerun: fclean run
 
 kernel: $(KERNEL)
 
@@ -33,4 +39,4 @@ clean:
 fclean: clean
 	$(RM) $(KERNEL) $(ISO)
 
-.PHONY: iso reiso run rerun kernel rekernel clean fclean
+.PHONY: all re iso reiso run rerun kernel rekernel clean fclean
