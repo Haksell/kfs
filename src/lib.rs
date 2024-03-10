@@ -16,13 +16,13 @@ pub extern "C" fn rust_main() {
 }
 
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
     hlt_loop();
 }
 
 pub fn hlt_loop() -> ! {
     loop {
-        unsafe { asm!("hlt") };
+        unsafe { core::arch::asm!("hlt") };
     }
 }
