@@ -1,11 +1,12 @@
 ENTRY(start)
 
 SECTIONS {
-    . = 1m;
+    . = 1M;
 
     .boot :
     {
-        *(.multiboot_header)
+        /* ensure that the multiboot header is at the beginning */
+        KEEP(*(.multiboot_header))
     }
 
     .text :

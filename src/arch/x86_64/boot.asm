@@ -22,7 +22,8 @@ check_multiboot:
         mov al, "0"
         jmp error
 
-; https://os.phil-opp.com/entering-longmode/#cpuid-check
+; Check if CPUID is supported by attempting to flip the ID bit (bit 21)
+; in the FLAGS register. If we can flip it, CPUID is available.
 check_cpuid:
     pushfd
     pop eax
@@ -46,7 +47,7 @@ check_long_mode:
     cpuid
     cmp eax, 0x80000001
     jb .no_long_mode
-    mov eax, 0x80000001 
+    mov eax, 0x80000001
     cpuid
     test edx, 1 << 29
     jz .no_long_mode
@@ -65,7 +66,7 @@ set_up_page_tables:
     or eax, 0b11
     mov [p3_table], eax
     ; map each P2 entry to a huge 2MiB page
-    mov ecx, 0
+    mov ecx, 0 
     .map_p2_table:
         mov eax, 0x200000
         mul ecx
@@ -120,5 +121,5 @@ gdt64:
 .code: equ $ - gdt64
     dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code segment
 .pointer:
-    dw - gdt64 - 1
+    dw $ - gdt64 - 1
     dq gdt64
