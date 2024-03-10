@@ -1,9 +1,9 @@
-ARCH ?= x86_64
+ARCH ?= i386
 BUILD := build
 ISOFILES := $(BUILD)/isofiles
 KERNEL := $(BUILD)/kernel-$(ARCH).bin
 ISO := $(BUILD)/os-$(ARCH).iso
-TARGET ?= $(ARCH)-kfs
+TARGET := src/arch/$(ARCH)/kfs
 RUST_OS := target/$(TARGET)/debug/libkfs.a
 LINKER_SCRIPT := src/arch/linker.ld
 GRUB_CFG := src/arch/grub.cfg
