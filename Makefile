@@ -1,12 +1,15 @@
 ARCH ?= x86_64
-KERNEL := build/kernel-$(ARCH).bin
-ISO := build/os-$(ARCH).iso
+BUILD := build
+ISOFILES := $(BUILD)/isofiles
+KERNEL := $(BUILD)/kernel-$(ARCH).bin
+ISO := $(BUILD)/os-$(ARCH).iso
 TARGET ?= $(ARCH)-kfs
 RUST_OS := target/$(TARGET)/debug/libkfs.a
 LINKER_SCRIPT := src/arch/$(ARCH)/linker.ld
 GRUB_CFG := src/arch/$(ARCH)/grub.cfg
+RUST_SRCS := $(wildcard src/*.rs) # TODO: handle subfolders
 ASM_SRCS := $(wildcard src/arch/$(ARCH)/*.asm)
-ASM_OBJS := $(patsubst src/arch/$(ARCH)/%.asm, build/arch/$(ARCH)/%.o, $(ASM_SRCS))
+ASM_OBJS := $(patsubst src/arch/$(ARCH)/%.asm, $(BUILD)/arch/$(ARCH)/%.o, $(ASM_SRCS))
 QEMU := qemu-system-$(ARCH) # TODO: depends on ARCH
 ifeq ($(ARCH), i386)
 	LD_FLAGS := -m elf_i386
@@ -28,27 +31,28 @@ run: all
 rerun: re run
 
 clean:
-	rm -rf build
+	rm -rf $(BUILD)
 	cargo clean
 
 # Rules below should only be executed inside Docker
 
 iso: $(ISO)
 
-$(ISO): $(KERNEL) $(GRUB_CFG)
-	@mkdir -p build/isofiles/boot/grub
-	@cp $(KERNEL) build/isofiles/boot/kernel.bin
-	@cp $(GRUB_CFG) build/isofiles/boot/grub
-	@grub-mkrescue -o $(ISO) build/isofiles 2> /dev/null
-	@rm -r build/isofiles
+$(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json
+	@mkdir -p $(ISOFILES)/boot/grub
+	@cp $(KERNEL) $(ISOFILES)/boot/kernel.bin
+	@cp $(GRUB_CFG) $(ISOFILES)/boot/grub
+	@grub-mkrescue -o $(ISO) $(ISOFILES) 2> /dev/null
+	@rm -r $(ISOFILES)
 
-$(RUST_OS):
+# TODO: use cargo instead of xargo
+$(RUST_OS): $(RUST_SRCS)
 	@export RUST_TARGET_PATH=$(shell pwd) ; xargo build --target $(TARGET)
 
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 	@ld $(LD_FLAGS) -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(RUST_OS)
 
-build/arch/$(ARCH)/%.o: src/arch/$(ARCH)/%.asm
+$(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: src/arch/$(ARCH)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f $(ELF_FORMAT) $< -o $@
 
