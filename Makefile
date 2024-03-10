@@ -8,8 +8,8 @@ ASM_OBJS := $(patsubst src/arch/$(ARCH)/%.asm, build/arch/$(ARCH)/%.o, $(ASM_SRC
 QEMU := qemu-system-x86_64 # TODO: depends on ARCH
 
 all:
-	docker build -t osdev .
-	docker run --rm -v .:/workspace osdev
+	docker build -t kfs .
+	docker run --rm -v .:/workspace kfs
 
 re: clean all
 
