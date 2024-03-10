@@ -5,11 +5,11 @@ LINKER_SCRIPT := src/arch/$(ARCH)/linker.ld
 GRUB_CFG := src/arch/$(ARCH)/grub.cfg
 ASM_SRCS := $(wildcard src/arch/$(ARCH)/*.asm)
 ASM_OBJS := $(patsubst src/arch/$(ARCH)/%.asm, build/arch/$(ARCH)/%.o, $(ASM_SRCS))
-QEMU := qemu-system-x86_64 # TODO: depends on ARCH
+QEMU := qemu-system-$(ARCH) # TODO: depends on ARCH
 
 all:
 	docker build -t kfs .
-	docker run --rm -v .:/workspace kfs
+	docker run --rm -e ARCH=$(ARCH) -v .:/workspace kfs
 
 re: clean all
 
