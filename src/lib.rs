@@ -12,10 +12,17 @@ mod vga_buffer;
 pub extern "C" fn rust_main() {
     vga_buffer::clear_screen();
     println!("KFS {}", 6 * 7);
-    loop {}
+    hlt_loop()
 }
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
-    loop {}
+    println!("{}", info);
+    hlt_loop();
+}
+
+pub fn hlt_loop() -> ! {
+    loop {
+        unsafe { asm!("hlt") };
+    }
 }
