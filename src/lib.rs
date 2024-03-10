@@ -2,10 +2,6 @@
 
 use core::panic::PanicInfo;
 
-extern crate rlibc;
-extern crate volatile;
-extern crate spin;
-
 mod vga_buffer;
 
 #[no_mangle]
