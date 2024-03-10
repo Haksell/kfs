@@ -5,6 +5,7 @@ KERNEL := $(BUILD)/kernel-$(ARCH).bin
 ISO := $(BUILD)/os-$(ARCH).iso
 TARGET := src/arch/$(ARCH)/kfs
 RUST_OS := target/$(TARGET)/debug/libkfs.a
+# RUST_OS := target/$(TARGET)/release/libkfs.a
 LINKER_SCRIPT := src/arch/linker.ld
 GRUB_CFG := src/arch/grub.cfg
 RUST_SRCS := $(wildcard src/*.rs) # TODO: handle subfolders
