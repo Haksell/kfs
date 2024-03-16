@@ -11,7 +11,7 @@ GRUB_CFG := src/arch/grub.cfg
 RUST_SRCS := $(wildcard src/*.rs) # TODO: handle subfolders
 ASM_SRCS := $(wildcard src/arch/$(ARCH)/*.asm)
 ASM_OBJS := $(patsubst src/arch/$(ARCH)/%.asm, $(BUILD)/arch/$(ARCH)/%.o, $(ASM_SRCS))
-QEMU := qemu-system-$(ARCH) # TODO: depends on ARCH
+QEMU := qemu-system-$(ARCH)
 ifeq ($(ARCH), i386)
 	LD_FLAGS := -m elf_i386
 	ELF_FORMAT := elf32

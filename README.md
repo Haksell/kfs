@@ -22,8 +22,8 @@
 ### todo
 
 -   [ ] make everything work with `i386`
--   [ ] `exit_qemu` from https://github.com/Haksell/kfs without `x86_64` crate
--   [ ] bring back testing and more useful stuff from from https://github.com/Haksell/kfs
+-   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
+-   [ ] bring back testing and more useful stuff from from https://github.com/Haksell/os_blog_v2
 -   [ ] colorful tests (with color module based on `colored`)
 -   [ ] fix compiler warnings
 -   [ ] improve Makefile/Dockerfile for optimal compilation
