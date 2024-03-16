@@ -46,7 +46,6 @@
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
 -   [ ] use KVM on top of QEMU?
 -   [ ] specify exact nightly version
--   [ ] better separation of concerns between `shell` and `vga_buffer` modules
 
 ### resources
 

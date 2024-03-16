@@ -75,16 +75,6 @@ pub struct Writer {
 impl Writer {
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
-            0x08 => {
-                // TODO: NO. This belongs to shell backspace handling
-                if self.column_position >= 1 {
-                    self.buffer.chars[VGA_HEIGHT - 1][self.column_position - 1].write(ScreenChar {
-                        ascii_character: b' ',
-                        color_code: self.color_code,
-                    });
-                    self.column_position -= 1;
-                }
-            }
             b'\n' => self.new_line(),
             byte => {
                 if self.column_position >= VGA_WIDTH {
