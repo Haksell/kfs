@@ -128,8 +128,8 @@ pub fn send_key(key: DecodedKey) {
                 }
             }
             KeyCode::ArrowRight => {
-                let pos = COMMAND.lock().pos;
-                if pos < COMMAND.lock().len {
+                let len = COMMAND.lock().len;
+                if COMMAND.lock().pos < len {
                     WRITER.lock().move_right();
                     COMMAND.lock().pos += 1;
                 }
