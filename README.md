@@ -28,6 +28,7 @@
 -   [ ] fix compiler warnings
 -   [ ] improve Makefile/Dockerfile for optimal compilation
 -   [ ] stop using xargo
+-   [ ] set timeout=10 for correction
 
 ### todo for later
 

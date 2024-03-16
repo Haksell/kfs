@@ -7,7 +7,7 @@ mod vga_buffer;
 #[no_mangle]
 pub extern "C" fn rust_main() {
     vga_buffer::clear_screen();
-    println!("KFS {}", 6 * 7);
+    println!("K{}S {}", 'F', 6 * 7);
     hlt_loop()
 }
 
