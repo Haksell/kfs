@@ -102,6 +102,8 @@ impl Writer {
         update_cursor(BUFFER_HEIGHT - 1, self.column_position);
     }
 
+    // TODO: write_bytes that accepts a &[u8] and only moves the cursor once
+
     pub fn write_bytes(&mut self, byte: u8, repeat: usize) {
         for _ in 0..repeat {
             self.write_byte(byte);

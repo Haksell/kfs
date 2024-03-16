@@ -8,7 +8,7 @@ use spin::Mutex;
 
 // TODO: make all of that a struct?
 
-const PROMPT: &'static str = "> ";
+const PROMPT: &'static str = "> "; // TODO: &[u8]
 const MAX_COMMAND_LEN: usize = BUFFER_WIDTH - PROMPT.len() - 1;
 
 struct CommandBuffer {
@@ -75,10 +75,10 @@ pub fn init() {
 
 pub fn send_key(key: DecodedKey) {
     use pc_keyboard::KeyCode;
+    let mut command = COMMAND.lock();
     match key {
         DecodedKey::Unicode(character) => match character {
             '\x08' => {
-                let mut command = COMMAND.lock();
                 if command.len > 0 {
                     command.len -= 1;
                     command.pos -= 1;
@@ -88,50 +88,45 @@ pub fn send_key(key: DecodedKey) {
             }
             '\n' => {
                 println!();
-                let len = COMMAND.lock().len;
-                if len > 0 {
-                    for i in (0..len).rev() {
-                        print!("{}", COMMAND.lock().buffer[i]);
+                if command.len > 0 {
+                    for i in (0..command.len).rev() {
+                        print!("{}", command.buffer[i]);
                     }
                     println!();
                 }
-                COMMAND.lock().len = 0;
-                COMMAND.lock().pos = 0;
+                command.len = 0;
+                command.pos = 0;
                 print_prompt();
             }
             _ => {
-                let mut command = COMMAND.lock();
                 if command.len < MAX_COMMAND_LEN {
-                    let len = command.len;
-                    let pos = command.pos;
-                    for i in (pos..len).rev() {
+                    for i in (command.pos..command.len).rev() {
                         command.buffer[i + 1] = command.buffer[i];
                     }
+                    let pos = command.pos;
                     command.buffer[pos] = character;
                     command.pos += 1;
                     command.len += 1;
                     WRITER.lock().set_cursor(PROMPT.len());
-                    for i in 0..len + 1 {
+                    for i in 0..command.len {
                         print!("{}", command.buffer[i]);
                     }
-                    for _ in 0..len - pos {
-                        WRITER.lock().move_left();
-                    }
+                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
                 }
             }
         },
         DecodedKey::RawKey(key) => match key {
             KeyCode::ArrowLeft => {
-                if COMMAND.lock().pos > 0 {
+                if command.pos > 0 {
                     WRITER.lock().move_left();
-                    COMMAND.lock().pos -= 1;
+                    command.pos -= 1;
                 }
             }
             KeyCode::ArrowRight => {
-                let len = COMMAND.lock().len;
-                if COMMAND.lock().pos < len {
+                let len = command.len;
+                if command.pos < len {
                     WRITER.lock().move_right();
-                    COMMAND.lock().pos += 1;
+                    command.pos += 1;
                 }
             }
             _ => print!("{:?}", key),
