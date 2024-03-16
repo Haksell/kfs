@@ -1,6 +1,6 @@
 use crate::{
     print, println,
-    vga_buffer::{Color, WRITER},
+    vga_buffer::{Color, BUFFER_WIDTH, WRITER},
 };
 use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
@@ -9,7 +9,7 @@ use spin::Mutex;
 // TODO: make all of that a struct?
 
 const PROMPT: &'static str = "> ";
-const MAX_COMMAND_LEN: usize = crate::vga_buffer::BUFFER_WIDTH - PROMPT.len() - 1;
+const MAX_COMMAND_LEN: usize = BUFFER_WIDTH - PROMPT.len() - 1;
 
 struct CommandBuffer {
     buffer: [char; MAX_COMMAND_LEN],
@@ -34,40 +34,26 @@ fn print_prompt() {
 const MENU_MARGIN: usize = 10;
 
 fn print_welcome_line(left: u8, middle: u8, right: u8) {
-    for _ in 0..MENU_MARGIN {
-        WRITER.lock().write_byte(b' ');
-    }
+    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
     WRITER.lock().write_byte(left);
-    for _ in 0..crate::vga_buffer::BUFFER_WIDTH - 2 - 2 * (MENU_MARGIN) {
-        WRITER.lock().write_byte(middle);
-    }
+    WRITER
+        .lock()
+        .write_bytes(middle, BUFFER_WIDTH - 2 - 2 * (MENU_MARGIN));
     WRITER.lock().write_byte(right);
-    for _ in 0..MENU_MARGIN {
-        WRITER.lock().write_byte(b' ');
-    }
+    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
 }
 
 fn print_welcome_title(s: &str) {
-    let remaining_width = crate::vga_buffer::BUFFER_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
-    let left_padding = remaining_width >> 1;
-    let right_padding = (remaining_width + 1) >> 1;
-    for _ in 0..MENU_MARGIN {
-        WRITER.lock().write_byte(b' ');
-    }
+    let remaining_width = BUFFER_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
+    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
     WRITER.lock().write_byte(b'\xba');
-    for _ in 0..left_padding {
-        WRITER.lock().write_byte(b' ');
-    }
+    WRITER.lock().write_bytes(b' ', remaining_width >> 1);
     for b in s.bytes() {
         WRITER.lock().write_byte(b);
     }
-    for _ in 0..right_padding {
-        WRITER.lock().write_byte(b' ');
-    }
+    WRITER.lock().write_bytes(b' ', (remaining_width + 1) >> 1);
     WRITER.lock().write_byte(b'\xba');
-    for _ in 0..MENU_MARGIN {
-        WRITER.lock().write_byte(b' ');
-    }
+    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
 }
 
 fn print_welcome() {

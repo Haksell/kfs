@@ -102,6 +102,12 @@ impl Writer {
         update_cursor(BUFFER_HEIGHT - 1, self.column_position);
     }
 
+    pub fn write_bytes(&mut self, byte: u8, repeat: usize) {
+        for _ in 0..repeat {
+            self.write_byte(byte);
+        }
+    }
+
     pub fn set_foreground_color(&mut self, foreground_code: Color) {
         // TODO: keep old background color
         self.color_code = ColorCode::new(foreground_code, Color::Black);
