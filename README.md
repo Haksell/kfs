@@ -2,8 +2,7 @@
 
 ### shell todo
 
--   [ ] handle left/right
--   [ ] handle backspace/delete
+-   [ ] handle delete
 -   [ ] handle up/down
 
 ### subject

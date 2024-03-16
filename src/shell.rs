@@ -79,11 +79,18 @@ pub fn send_key(key: DecodedKey) {
     match key {
         DecodedKey::Unicode(character) => match character {
             '\x08' => {
-                if command.len > 0 {
+                if command.pos > 0 {
                     command.len -= 1;
                     command.pos -= 1;
-                    // TODO: move evrything left if len != pos
-                    print!("{}", character);
+                    for i in command.pos..command.len {
+                        command.buffer[i] = command.buffer[i + 1];
+                    }
+                    WRITER.lock().set_cursor(PROMPT.len());
+                    for i in 0..command.len {
+                        print!("{}", command.buffer[i]);
+                    }
+                    print!(" ");
+                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
                 }
             }
             '\n' => {
@@ -129,7 +136,7 @@ pub fn send_key(key: DecodedKey) {
                     command.pos += 1;
                 }
             }
-            _ => print!("{:?}", key),
+            _ => print!("{:?}", key), // TODO: remove
         },
     }
 }
