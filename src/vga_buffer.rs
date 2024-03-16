@@ -188,21 +188,21 @@ fn print_welcome_line(left: u8, middle: u8, right: u8) {
     }
 }
 
-fn print_welcome_title() {
+fn print_welcome_title(s: &str) {
+    let remaining_width = BUFFER_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
+    let left_padding = remaining_width >> 1;
+    let right_padding = (remaining_width + 1) >> 1;
     for _ in 0..MENU_MARGIN {
         WRITER.lock().write_byte(b' ');
     }
     WRITER.lock().write_byte(b'\xba');
-    for _ in 0..26 {
+    for _ in 0..left_padding {
         WRITER.lock().write_byte(b' ');
     }
-    WRITER.lock().write_byte(b'K');
-    WRITER.lock().write_byte(b'F');
-    WRITER.lock().write_byte(b'S');
-    WRITER.lock().write_byte(b' ');
-    WRITER.lock().write_byte(b'4');
-    WRITER.lock().write_byte(b'2');
-    for _ in 0..26 {
+    for b in s.bytes() {
+        WRITER.lock().write_byte(b);
+    }
+    for _ in 0..right_padding {
         WRITER.lock().write_byte(b' ');
     }
     WRITER.lock().write_byte(b'\xba');
@@ -211,13 +211,12 @@ fn print_welcome_title() {
     }
 }
 
-// TODO: macro that accepts format args
 pub fn print_welcome() {
     // TODO: write directly at correct position instead of using write_byte
     WRITER.lock().set_foreground_color(Color::LightCyan);
     print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
     print_welcome_line(b'\xba', b' ', b'\xba');
-    print_welcome_title();
+    print_welcome_title("KFS 42");
     print_welcome_line(b'\xba', b' ', b'\xba');
     print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
     WRITER.lock().set_foreground_color(Color::White);
