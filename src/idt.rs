@@ -1,9 +1,16 @@
-use core::ops::{Index, IndexMut};
-
-use x86_64::{
-    structures::idt::{Entry, HandlerFunc, HandlerFuncType},
-    VirtAddr,
+use core::{
+    arch::asm,
+    ops::{Index, IndexMut},
 };
+
+use x86_64::structures::idt::{Entry, HandlerFunc};
+
+#[derive(Debug, Clone, Copy)]
+#[repr(C, packed(2))]
+pub struct DescriptorTablePointer {
+    pub limit: u16,
+    pub base: usize,
+}
 
 #[repr(C)]
 #[repr(align(16))]
@@ -22,13 +29,13 @@ impl InterruptDescriptorTable {
 
     pub fn load(&'static self) {
         unsafe {
-            x86_64::instructions::tables::lidt(&self.pointer());
+            lidt(&self.pointer());
         }
     }
 
-    fn pointer(&self) -> x86_64::structures::DescriptorTablePointer {
-        x86_64::structures::DescriptorTablePointer {
-            base: VirtAddr::new(self as *const _ as u64),
+    fn pointer(&self) -> DescriptorTablePointer {
+        DescriptorTablePointer {
+            base: self as *const _ as usize,
             limit: (core::mem::size_of::<Self>() - 1) as u16,
         }
     }
@@ -51,5 +58,11 @@ impl IndexMut<usize> for InterruptDescriptorTable {
             i @ 0..=31 => &mut self.builtins[i],
             _ => &mut self.interrupts[i - 32],
         }
+    }
+}
+
+pub unsafe fn lidt(idt: &DescriptorTablePointer) {
+    unsafe {
+        asm!("lidt [{}]", in(reg) idt, options(readonly, nostack, preserves_flags));
     }
 }
