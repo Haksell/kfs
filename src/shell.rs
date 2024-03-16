@@ -64,11 +64,11 @@ fn print_welcome() {
     print_welcome_line(b'\xba', b' ', b'\xba');
     print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
     WRITER.lock().reset_foreground_color();
-    println!();
 }
 
 pub fn init() {
     print_welcome();
+    println!();
     print_prompt();
 }
 
