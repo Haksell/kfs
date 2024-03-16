@@ -2,6 +2,7 @@ use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
+use x86_64::instructions::port::Port;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -42,6 +43,22 @@ struct ScreenChar {
     color_code: ColorCode,
 }
 
+fn write_port(port: u16, value: u8) {
+    unsafe {
+        let mut port = Port::new(port);
+        port.write(value);
+    }
+}
+
+fn update_cursor(row: usize, col: usize) {
+    let pos = row * BUFFER_WIDTH + col;
+
+    write_port(0x3D4, 0x0E);
+    write_port(0x3D5, (pos >> 8) as u8);
+    write_port(0x3D4, 0x0F);
+    write_port(0x3D5, (pos & 0xFF) as u8);
+}
+
 const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
 
@@ -69,6 +86,7 @@ impl Writer {
                     color_code: self.color_code,
                 });
                 self.column_position += 1;
+                update_cursor(BUFFER_HEIGHT - 1, self.column_position);
             }
         }
     }
@@ -81,6 +99,7 @@ impl Writer {
         }
         self.clear_row(BUFFER_HEIGHT - 1);
         self.column_position = 0;
+        update_cursor(BUFFER_HEIGHT - 1, 0);
     }
 
     fn clear_row(&mut self, row: usize) {
@@ -109,7 +128,7 @@ impl fmt::Write for Writer {
 lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
-        color_code: ColorCode::new(Color::LightGreen, Color::Black),
+        color_code: ColorCode::new(Color::White, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     });
 }
