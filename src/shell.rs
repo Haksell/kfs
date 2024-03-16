@@ -6,14 +6,14 @@ use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
 use spin::{Mutex, MutexGuard};
 
+// TODO: test profusely, especially special characters
+
 // Maybe an enum or a transparent struct would be better?
 mod special_char {
     pub const BACKSPACE: char = '\x08';
     pub const NEWLINE: char = '\x0a';
     pub const DELETE: char = '\x7f';
 }
-
-// TODO: make all of that a struct?
 
 const PROMPT: &'static str = "> "; // TODO: &[u8]
 const MAX_COMMAND_LEN: usize = BUFFER_WIDTH - PROMPT.len() - 1;
@@ -24,7 +24,25 @@ struct CommandBuffer {
     pos: usize,
 }
 
-// TODO: functions that change pos and vga cursor at the same time
+impl CommandBuffer {
+    // breaks if pos > MAX_COMMAND_LEN
+    pub fn set_pos(&mut self, pos: usize) {
+        self.pos = pos;
+        WRITER.lock().set_cursor(PROMPT.len() + pos);
+    }
+
+    pub fn move_left(&mut self) {
+        if self.pos > 0 {
+            self.set_pos(self.pos - 1);
+        }
+    }
+
+    pub fn move_right(&mut self) {
+        if self.pos < self.len {
+            self.set_pos(self.pos + 1);
+        }
+    }
+}
 
 lazy_static! {
     static ref COMMAND: Mutex<CommandBuffer> = Mutex::new(CommandBuffer {
@@ -109,21 +127,23 @@ fn execute_command(command: &MutexGuard<CommandBuffer>) {
 pub fn send_key(key: DecodedKey) {
     use pc_keyboard::KeyCode;
     let mut command = COMMAND.lock();
+    let start_len = command.len;
+    let start_pos = command.pos;
     match key {
         DecodedKey::Unicode(character) => match character {
-            special_char::BACKSPACE => {
-                if command.pos > 0 {
-                    delete_char(&mut command, true);
-                }
-            }
             special_char::NEWLINE => {
                 println!();
                 if command.len > 0 {
                     execute_command(&command);
                 }
-                command.len = 0;
-                command.pos = 0;
                 print_prompt();
+                command.len = 0;
+                command.set_pos(0);
+            }
+            special_char::BACKSPACE => {
+                if command.pos > 0 {
+                    delete_char(&mut command, true);
+                }
             }
             special_char::DELETE => {
                 if command.pos < command.len {
@@ -135,8 +155,7 @@ pub fn send_key(key: DecodedKey) {
                     for i in (command.pos..command.len).rev() {
                         command.buffer[i + 1] = command.buffer[i];
                     }
-                    let pos = command.pos;
-                    command.buffer[pos] = character;
+                    command.buffer[start_pos] = character;
                     WRITER.lock().set_cursor(PROMPT.len() + command.pos);
                     command.len += 1;
                     for i in command.pos..command.len {
@@ -148,27 +167,10 @@ pub fn send_key(key: DecodedKey) {
             }
         },
         DecodedKey::RawKey(key) => match key {
-            KeyCode::ArrowLeft => {
-                if command.pos > 0 {
-                    WRITER.lock().move_left();
-                    command.pos -= 1;
-                }
-            }
-            KeyCode::ArrowRight => {
-                let len = command.len;
-                if command.pos < len {
-                    WRITER.lock().move_right();
-                    command.pos += 1;
-                }
-            }
-            KeyCode::Home => {
-                WRITER.lock().set_cursor(PROMPT.len());
-                command.pos = 0;
-            }
-            KeyCode::End => {
-                command.pos = command.len;
-                WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-            }
+            KeyCode::ArrowLeft => command.move_left(),
+            KeyCode::ArrowRight => command.move_right(),
+            KeyCode::Home => command.set_pos(0),
+            KeyCode::End => command.set_pos(start_len),
             _ => print!("{:?}", key), // TODO: remove
         },
     }

@@ -76,7 +76,7 @@ impl Writer {
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
             0x08 => {
-                // TODO: use self.move_left
+                // TODO: NO. This belongs to shell backspace handling
                 if self.column_position >= 1 {
                     self.buffer.chars[BUFFER_HEIGHT - 1][self.column_position - 1].write(
                         ScreenChar {
@@ -122,18 +122,6 @@ impl Writer {
     pub fn set_cursor(&mut self, col: usize) {
         self.column_position = col;
         update_cursor(BUFFER_HEIGHT - 1, self.column_position);
-    }
-
-    pub fn move_left(&mut self) {
-        if self.column_position >= 1 {
-            self.set_cursor(self.column_position - 1);
-        }
-    }
-
-    pub fn move_right(&mut self) {
-        if self.column_position <= BUFFER_WIDTH - 2 {
-            self.set_cursor(self.column_position + 1);
-        }
     }
 
     fn new_line(&mut self) {
