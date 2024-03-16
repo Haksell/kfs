@@ -5,6 +5,7 @@ use core::panic::PanicInfo;
 
 mod gdt;
 mod interrupts;
+mod pic;
 mod vga_buffer;
 
 #[no_mangle]
