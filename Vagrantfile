@@ -5,6 +5,8 @@ Vagrant.configure("2") do |config|
     vb.memory = 1024
     vb.cpus = 1
   end
+  
+  config.vm.post_up_message = ""
 
   config.vm.provision "shell", inline: <<-SHELL
     export DEBIAN_FRONTEND=noninteractive
