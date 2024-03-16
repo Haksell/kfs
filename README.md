@@ -2,7 +2,6 @@
 
 ### shell todo
 
--   [ ] prompt
 -   [ ] handle left
 -   [ ] handle right
 -   [ ] handle delete

@@ -106,6 +106,10 @@ impl Writer {
         self.color_code = ColorCode::new(foreground_code, Color::Black);
     }
 
+    pub fn reset_foreground_color(&mut self) {
+        self.set_foreground_color(Color::White);
+    }
+
     fn new_line(&mut self) {
         for y in 1..BUFFER_HEIGHT {
             for x in 0..BUFFER_WIDTH {
@@ -221,6 +225,6 @@ pub fn print_welcome() {
     print_welcome_title("KFS 42");
     print_welcome_line(b'\xba', b' ', b'\xba');
     print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
-    WRITER.lock().set_foreground_color(Color::White);
+    WRITER.lock().reset_foreground_color();
     println!();
 }

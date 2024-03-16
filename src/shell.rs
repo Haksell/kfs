@@ -25,9 +25,7 @@ fn print_prompt() {
         .lock()
         .set_foreground_color(Color::LightGreen);
     print!("{}", PROMPT);
-    crate::vga_buffer::WRITER
-        .lock()
-        .set_foreground_color(Color::White);
+    crate::vga_buffer::WRITER.lock().reset_foreground_color();
 }
 
 pub fn init() {
