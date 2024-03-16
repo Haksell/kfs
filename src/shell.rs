@@ -12,7 +12,7 @@ const PROMPT: &'static str = "> "; // TODO: &[u8]
 const MAX_COMMAND_LEN: usize = BUFFER_WIDTH - PROMPT.len() - 1;
 
 struct CommandBuffer {
-    buffer: [char; MAX_COMMAND_LEN],
+    buffer: [char; MAX_COMMAND_LEN], // TODO: [u8; MAX_COMMAND_LEN]
     len: usize,
     pos: usize,
 }
@@ -85,8 +85,8 @@ pub fn send_key(key: DecodedKey) {
                     for i in command.pos..command.len {
                         command.buffer[i] = command.buffer[i + 1];
                     }
-                    WRITER.lock().set_cursor(PROMPT.len());
-                    for i in 0..command.len {
+                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                    for i in command.pos..command.len {
                         print!("{}", command.buffer[i]);
                     }
                     print!(" ");
