@@ -12,13 +12,13 @@ RUST_SRCS := $(wildcard src/*.rs) # TODO: handle subfolders
 ASM_SRCS := $(wildcard src/arch/$(ARCH)/*.asm)
 ASM_OBJS := $(patsubst src/arch/$(ARCH)/%.asm, $(BUILD)/arch/$(ARCH)/%.o, $(ASM_SRCS))
 QEMU := qemu-system-$(ARCH)
+
 ifeq ($(ARCH), i386)
 	LD_FLAGS := -m elf_i386
 	ELF_FORMAT := elf32
 else
 	ELF_FORMAT := elf64
 endif
-
 
 all:
 	docker build -t kfs .
@@ -56,6 +56,5 @@ $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 $(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: src/arch/$(ARCH)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f $(ELF_FORMAT) $< -o $@
-
 
 .PHONY: all re run rerun iso clean
