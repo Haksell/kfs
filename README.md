@@ -33,7 +33,6 @@
 
 -   [ ] finish 1st edition
 -   [ ] finish 2nd edition
--   [ ] read https://os.phil-opp.com/red-zone/
 -   [ ] `qemu` in terminal like lsimanic
 -   [ ] find project name and rebrand
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
