@@ -20,9 +20,6 @@ else
 	ELF_FORMAT := elf64
 endif
 
-run_vm: $(ISO)
-	@$(QEMU) -cdrom $(ISO)
-
 all: $(ISO)
 
 re: clean all
@@ -33,8 +30,8 @@ run: all
 rerun: re run
 
 clean:
-	rm -rf $(BUILD)
-	cargo clean
+	rm -rf $(BUILD) || true
+	cargo clean || true
 
 $(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json
 	@mkdir -p $(ISOFILES)/boot/grub
@@ -48,12 +45,6 @@ $(RUST_OS): $(RUST_SRCS)
 
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 	@ld $(LD_FLAGS) -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(RUST_OS)
-
-rust_os: $(RUST_OS)
-
-kernel: $(KERNEL)
-
-asm: $(ASM_OBJS)
 
 $(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: src/arch/$(ARCH)/%.asm
 	@mkdir -p $(shell dirname $@)
