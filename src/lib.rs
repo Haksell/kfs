@@ -3,7 +3,6 @@
 
 use core::panic::PanicInfo;
 
-mod gdt;
 mod idt;
 mod interrupts;
 mod pic;
@@ -24,7 +23,6 @@ fn panic(info: &PanicInfo) -> ! {
 }
 
 fn init() {
-    gdt::init();
     interrupts::init();
     unsafe { interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();

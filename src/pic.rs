@@ -71,15 +71,6 @@ impl ChainedPics {
         }
     }
 
-    /// Create a new `ChainedPics` interface that will map the PIC controllers contiguously starting at the given interrupt offset.
-    ///
-    /// This is a convenience function that maps the PIC1 and PIC2 controllers to a
-    /// contiguous set of interrupts. This function is equivalent to
-    /// `Self::new(primary_offset, primary_offset + 8)`.
-    pub const unsafe fn new_contiguous(primary_offset: u8) -> ChainedPics {
-        Self::new(primary_offset, primary_offset + 8)
-    }
-
     /// Initialize both our PICs.  We initialize them together, at the same
     /// time, because it's traditional to do so, and because I/O operations
     /// might not be instantaneous on older processors.
@@ -137,11 +128,6 @@ impl ChainedPics {
     pub unsafe fn write_masks(&mut self, mask1: u8, mask2: u8) {
         self.pics[0].write_mask(mask1);
         self.pics[1].write_mask(mask2);
-    }
-
-    /// Disables both PICs by masking all interrupts.
-    pub unsafe fn disable(&mut self) {
-        self.write_masks(u8::MAX, u8::MAX)
     }
 
     /// Do we handle this interrupt?

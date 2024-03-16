@@ -1,6 +1,6 @@
 use crate::idt::InterruptDescriptorTable;
 use crate::pic::ChainedPics;
-use crate::{print, println};
+use crate::print;
 use lazy_static::lazy_static;
 use spin::Mutex;
 use x86_64::structures::idt::InterruptStackFrame;
@@ -38,20 +38,7 @@ lazy_static! {
 }
 
 pub fn init() {
-    // Do we really need a function?
-    // If yes, can't we call it init for consistency?
     IDT.load();
-}
-
-extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
-    println!("EXCEPTION: BREAKPOINT\n{:#?}", stack_frame);
-}
-
-extern "x86-interrupt" fn double_fault_handler(
-    stack_frame: InterruptStackFrame,
-    _error_code: u64,
-) -> ! {
-    panic!("EXCEPTION: DOUBLE FAULT\n{:#?}", stack_frame);
 }
 
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
