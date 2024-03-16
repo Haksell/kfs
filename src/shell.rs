@@ -1,4 +1,7 @@
-use crate::{print, println, vga_buffer::Color};
+use crate::{
+    print, println,
+    vga_buffer::{Color, WRITER},
+};
 use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
 use spin::Mutex;
@@ -28,7 +31,58 @@ fn print_prompt() {
     crate::vga_buffer::WRITER.lock().reset_foreground_color();
 }
 
+const MENU_MARGIN: usize = 10;
+
+fn print_welcome_line(left: u8, middle: u8, right: u8) {
+    for _ in 0..MENU_MARGIN {
+        WRITER.lock().write_byte(b' ');
+    }
+    WRITER.lock().write_byte(left);
+    for _ in 0..crate::vga_buffer::BUFFER_WIDTH - 2 - 2 * (MENU_MARGIN) {
+        WRITER.lock().write_byte(middle);
+    }
+    WRITER.lock().write_byte(right);
+    for _ in 0..MENU_MARGIN {
+        WRITER.lock().write_byte(b' ');
+    }
+}
+
+fn print_welcome_title(s: &str) {
+    let remaining_width = crate::vga_buffer::BUFFER_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
+    let left_padding = remaining_width >> 1;
+    let right_padding = (remaining_width + 1) >> 1;
+    for _ in 0..MENU_MARGIN {
+        WRITER.lock().write_byte(b' ');
+    }
+    WRITER.lock().write_byte(b'\xba');
+    for _ in 0..left_padding {
+        WRITER.lock().write_byte(b' ');
+    }
+    for b in s.bytes() {
+        WRITER.lock().write_byte(b);
+    }
+    for _ in 0..right_padding {
+        WRITER.lock().write_byte(b' ');
+    }
+    WRITER.lock().write_byte(b'\xba');
+    for _ in 0..MENU_MARGIN {
+        WRITER.lock().write_byte(b' ');
+    }
+}
+
+fn print_welcome() {
+    WRITER.lock().set_foreground_color(Color::LightGreen);
+    print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
+    print_welcome_line(b'\xba', b' ', b'\xba');
+    print_welcome_title("KFS 42");
+    print_welcome_line(b'\xba', b' ', b'\xba');
+    print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
+    WRITER.lock().reset_foreground_color();
+    println!();
+}
+
 pub fn init() {
+    print_welcome();
     print_prompt();
 }
 
