@@ -172,6 +172,8 @@ pub fn clear_screen() {
     }
 }
 
+// TODO: move to shell.rs
+
 pub const MENU_MARGIN: usize = 10;
 
 fn print_welcome_line(left: u8, middle: u8, right: u8) {
@@ -213,7 +215,7 @@ fn print_welcome_title(s: &str) {
 
 pub fn print_welcome() {
     // TODO: write directly at correct position instead of using write_byte
-    WRITER.lock().set_foreground_color(Color::LightCyan);
+    WRITER.lock().set_foreground_color(Color::LightGreen);
     print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
     print_welcome_line(b'\xba', b' ', b'\xba');
     print_welcome_title("KFS 42");

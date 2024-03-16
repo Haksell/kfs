@@ -1,4 +1,4 @@
-use crate::{print, println};
+use crate::{print, println, vga_buffer::Color};
 use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
 use spin::Mutex;
@@ -20,8 +20,18 @@ lazy_static! {
     });
 }
 
-pub fn init() {
+fn print_prompt() {
+    crate::vga_buffer::WRITER
+        .lock()
+        .set_foreground_color(Color::LightGreen);
     print!("{}", PROMPT);
+    crate::vga_buffer::WRITER
+        .lock()
+        .set_foreground_color(Color::White);
+}
+
+pub fn init() {
+    print_prompt();
 }
 
 pub fn send_key(key: DecodedKey) {
@@ -43,7 +53,8 @@ pub fn send_key(key: DecodedKey) {
                     print!("{}", COMMAND.lock().buffer[i]);
                 }
                 COMMAND.lock().length = 0;
-                print!("\n{}", PROMPT);
+                println!();
+                print_prompt();
             }
             _ => {
                 let mut command = COMMAND.lock();
