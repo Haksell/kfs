@@ -15,6 +15,7 @@ mod special_char {
     pub const DELETE: char = '\x7f';
 }
 
+const PRIMARY_COLOR: Color = Color::LightGreen;
 const PROMPT: &'static str = "> "; // TODO: &[u8]
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
 
@@ -53,7 +54,7 @@ lazy_static! {
 }
 
 fn print_prompt() {
-    WRITER.lock().set_foreground_color(Color::LightGreen);
+    WRITER.lock().set_foreground_color(PRIMARY_COLOR);
     print!("{}", PROMPT);
     WRITER.lock().reset_foreground_color();
 }
@@ -84,7 +85,7 @@ fn print_welcome_title(s: &str) {
 }
 
 fn print_welcome() {
-    WRITER.lock().set_foreground_color(Color::LightGreen);
+    WRITER.lock().set_foreground_color(PRIMARY_COLOR);
     print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
     print_welcome_line(b'\xba', b' ', b'\xba');
     print_welcome_title("KFS 42");
