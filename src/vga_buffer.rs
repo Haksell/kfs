@@ -64,12 +64,9 @@ impl Writer {
                 if self.column_position >= BUFFER_WIDTH {
                     self.new_line();
                 }
-                let row = BUFFER_HEIGHT - 1;
-                let col = self.column_position;
-                let color_code = self.color_code;
-                self.buffer.chars[row][col].write(ScreenChar {
+                self.buffer.chars[BUFFER_HEIGHT - 1][self.column_position].write(ScreenChar {
                     ascii_character: byte,
-                    color_code,
+                    color_code: self.color_code,
                 });
                 self.column_position += 1;
             }
@@ -138,6 +135,6 @@ pub fn _print(args: fmt::Arguments) {
 
 pub fn clear_screen() {
     for _ in 0..BUFFER_HEIGHT {
-        println!("");
+        println!("                                           ");
     }
 }

@@ -10,8 +10,7 @@ RUN apt-get update \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     && . $HOME/.cargo/env \
     && rustup override set nightly \
-    && rustup component add rust-src \
-    && cargo install xargo 
+    && rustup component add rust-src
 
 ENV PATH=/root/.cargo/bin:$PATH
 

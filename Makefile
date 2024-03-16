@@ -46,9 +46,8 @@ $(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json
 	@grub-mkrescue -o $(ISO) $(ISOFILES) 2> /dev/null
 	@rm -r $(ISOFILES)
 
-# TODO: use cargo instead of xargo
 $(RUST_OS): $(RUST_SRCS)
-	@export RUST_TARGET_PATH=$(shell pwd) ; xargo build --target $(TARGET)
+	@export RUST_TARGET_PATH=$(shell pwd) ; cargo build --target $(TARGET)
 
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 	@ld $(LD_FLAGS) -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(RUST_OS)
