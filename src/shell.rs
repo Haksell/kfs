@@ -26,8 +26,8 @@ struct CommandBuffer {
 }
 
 impl CommandBuffer {
-    // breaks if pos > MAX_COMMAND_LEN
     pub fn set_pos(&mut self, pos: usize) {
+        // Breaks if pos > MAX_COMMAND_LEN. Use assert!() ?
         self.pos = pos;
         WRITER.lock().set_cursor(PROMPT.len() + pos);
     }
