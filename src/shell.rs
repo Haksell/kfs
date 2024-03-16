@@ -24,6 +24,8 @@ struct CommandBuffer {
     pos: usize,
 }
 
+// TODO: functions that change pos and vga cursor at the same time
+
 lazy_static! {
     static ref COMMAND: Mutex<CommandBuffer> = Mutex::new(CommandBuffer {
         buffer: ['\0'; MAX_COMMAND_LEN],
@@ -158,6 +160,14 @@ pub fn send_key(key: DecodedKey) {
                     WRITER.lock().move_right();
                     command.pos += 1;
                 }
+            }
+            KeyCode::Home => {
+                WRITER.lock().set_cursor(PROMPT.len());
+                command.pos = 0;
+            }
+            KeyCode::End => {
+                command.pos = command.len;
+                WRITER.lock().set_cursor(PROMPT.len() + command.pos);
             }
             _ => print!("{:?}", key), // TODO: remove
         },
