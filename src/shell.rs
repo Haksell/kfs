@@ -4,7 +4,7 @@ use crate::{
 };
 use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
-use spin::Mutex;
+use spin::{Mutex, MutexGuard};
 
 // Maybe an enum or a transparent struct would be better?
 mod special_char {
@@ -80,6 +80,30 @@ pub fn init() {
     print_prompt();
 }
 
+fn delete_char(command: &mut MutexGuard<CommandBuffer>, decrement_pos: bool) {
+    command.len -= 1;
+    if decrement_pos {
+        command.pos -= 1;
+    }
+    for i in command.pos..command.len {
+        command.buffer[i] = command.buffer[i + 1];
+    }
+    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+    for i in command.pos..command.len {
+        print!("{}", command.buffer[i]);
+    }
+    print!(" ");
+    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+}
+
+fn execute_command(command: &MutexGuard<CommandBuffer>) {
+    // TODO: basic commands to change color of prompt, get basic info...
+    for i in (0..command.len).rev() {
+        print!("{}", command.buffer[i]);
+    }
+    println!();
+}
+
 pub fn send_key(key: DecodedKey) {
     use pc_keyboard::KeyCode;
     let mut command = COMMAND.lock();
@@ -87,26 +111,13 @@ pub fn send_key(key: DecodedKey) {
         DecodedKey::Unicode(character) => match character {
             special_char::BACKSPACE => {
                 if command.pos > 0 {
-                    command.len -= 1;
-                    command.pos -= 1;
-                    for i in command.pos..command.len {
-                        command.buffer[i] = command.buffer[i + 1];
-                    }
-                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-                    for i in command.pos..command.len {
-                        print!("{}", command.buffer[i]);
-                    }
-                    print!(" ");
-                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                    delete_char(&mut command, true);
                 }
             }
             special_char::NEWLINE => {
                 println!();
                 if command.len > 0 {
-                    for i in (0..command.len).rev() {
-                        print!("{}", command.buffer[i]);
-                    }
-                    println!();
+                    execute_command(&command);
                 }
                 command.len = 0;
                 command.pos = 0;
@@ -114,16 +125,7 @@ pub fn send_key(key: DecodedKey) {
             }
             special_char::DELETE => {
                 if command.pos < command.len {
-                    command.len -= 1;
-                    for i in command.pos..command.len {
-                        command.buffer[i] = command.buffer[i + 1];
-                    }
-                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-                    for i in command.pos..command.len {
-                        print!("{}", command.buffer[i]);
-                    }
-                    print!(" ");
-                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                    delete_char(&mut command, false);
                 }
             }
             _ => {
@@ -133,8 +135,8 @@ pub fn send_key(key: DecodedKey) {
                     }
                     let pos = command.pos;
                     command.buffer[pos] = character;
-                    command.len += 1;
                     WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                    command.len += 1;
                     for i in command.pos..command.len {
                         print!("{}", command.buffer[i]);
                     }
