@@ -66,7 +66,7 @@ set_up_page_tables:
     or eax, 0b11
     mov [p3_table], eax
     ; map each P2 entry to a huge 2MiB page
-    mov ecx, 0 
+    mov ecx, 0
     .map_p2_table:
         mov eax, 0x200000
         mul ecx
@@ -112,7 +112,7 @@ p3_table:
 p2_table:
     resb 4096
 stack_bottom:
-    resb 64
+    resb 4096 * 4
 stack_top:
 
 section .rodata
