@@ -13,14 +13,14 @@ const MAX_COMMAND_LEN: usize = BUFFER_WIDTH - PROMPT.len() - 1;
 
 struct CommandBuffer {
     buffer: [char; MAX_COMMAND_LEN],
-    length: usize,
+    len: usize,
     pos: usize,
 }
 
 lazy_static! {
     static ref COMMAND: Mutex<CommandBuffer> = Mutex::new(CommandBuffer {
         buffer: ['\0'; MAX_COMMAND_LEN],
-        length: 0,
+        len: 0,
         pos: 0,
     });
 }
@@ -38,7 +38,7 @@ fn print_welcome_line(left: u8, middle: u8, right: u8) {
     WRITER.lock().write_byte(left);
     WRITER
         .lock()
-        .write_bytes(middle, BUFFER_WIDTH - 2 - 2 * (MENU_MARGIN));
+        .write_bytes(middle, BUFFER_WIDTH - 2 - 2 * MENU_MARGIN);
     WRITER.lock().write_byte(right);
     WRITER.lock().write_bytes(b' ', MENU_MARGIN);
 }
@@ -78,40 +78,59 @@ pub fn send_key(key: DecodedKey) {
         DecodedKey::Unicode(character) => match character {
             '\x08' => {
                 let mut command = COMMAND.lock();
-                if command.length > 0 {
-                    command.length -= 1;
-                    let len = command.length;
-                    command.buffer[len] = '\0';
+                if command.len > 0 {
+                    command.len -= 1;
+                    command.pos -= 1;
+                    // TODO: move evrything left if len != pos
                     print!("{}", character);
                 }
             }
             '\n' => {
                 println!();
-                let len = COMMAND.lock().length;
+                let len = COMMAND.lock().len;
                 if len > 0 {
                     for i in (0..len).rev() {
                         print!("{}", COMMAND.lock().buffer[i]);
                     }
                     println!();
                 }
-                COMMAND.lock().length = 0;
+                COMMAND.lock().len = 0;
+                COMMAND.lock().pos = 0;
                 print_prompt();
             }
             _ => {
+                // ABC.DE
                 let mut command = COMMAND.lock();
-                if command.length < MAX_COMMAND_LEN {
-                    let len = command.length;
-                    command.buffer[len] = character;
-                    command.length += 1;
-                    print!("{}", character);
+                if command.len < MAX_COMMAND_LEN {
+                    let len = command.len;
+                    let pos = command.pos;
+                    for i in (pos..len).rev() {
+                        command.buffer[i + 1] = command.buffer[i];
+                    }
+                    command.buffer[pos] = character;
+                    command.pos += 1;
+                    command.len += 1;
+                    WRITER.lock().set_cursor(PROMPT.len());
+                    for i in 0..len + 1 {
+                        print!("{}", command.buffer[i]);
+                    }
+                    for _ in 0..len - pos {
+                        WRITER.lock().move_left();
+                    }
                 }
             }
         },
         DecodedKey::RawKey(key) => match key {
             KeyCode::ArrowLeft => {
-                // TODO
-                if COMMAND.lock().length > 0 {
-                    WRITER.lock().move_left()
+                if COMMAND.lock().pos > 0 {
+                    WRITER.lock().move_left();
+                    COMMAND.lock().pos -= 1;
+                }
+            }
+            KeyCode::ArrowRight => {
+                if COMMAND.lock().pos < COMMAND.lock().len {
+                    WRITER.lock().move_left();
+                    COMMAND.lock().pos -= 1;
                 }
             }
             _ => print!("{:?}", key),

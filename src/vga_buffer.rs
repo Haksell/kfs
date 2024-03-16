@@ -124,6 +124,11 @@ impl Writer {
         }
     }
 
+    pub fn set_cursor(&mut self, col: usize) {
+        self.column_position = col;
+        update_cursor(BUFFER_HEIGHT - 1, self.column_position);
+    }
+
     fn new_line(&mut self) {
         for y in 1..BUFFER_HEIGHT {
             for x in 0..BUFFER_WIDTH {

@@ -2,12 +2,9 @@
 
 ### shell todo
 
--   [ ] handle left
--   [ ] handle right
--   [ ] handle delete
--   [ ] answer the prompt
--   [ ] handle up
--   [ ] handle down
+-   [ ] handle left/right
+-   [ ] handle backspace/delete
+-   [ ] handle up/down
 
 ### subject
 
@@ -34,6 +31,7 @@
 -   [ ] implement `pc-keyboard`
 -   [ ] make everything work with `i386`
 -   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
+-   [ ] call `exit_qemu` on `Ctrl+D` or `exit` commands
 -   [ ] bring back testing and more useful stuff from from https://github.com/Haksell/os_blog_v2
 -   [ ] colorful tests (with color module based on `colored`)
 -   [ ] fix compiler warnings
@@ -49,6 +47,7 @@
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
 -   [ ] use KVM on top of QEMU?
 -   [ ] specify exact nightly version
+-   [ ] better separation of concerns between `shell` and `vga_buffer` modules
 
 ### resources
 
