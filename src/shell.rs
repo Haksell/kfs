@@ -69,6 +69,7 @@ fn print_welcome() {
 pub fn init() {
     print_welcome();
     println!();
+    println!();
     print_prompt();
 }
 
@@ -99,7 +100,6 @@ pub fn send_key(key: DecodedKey) {
                 print_prompt();
             }
             _ => {
-                // ABC.DE
                 let mut command = COMMAND.lock();
                 if command.len < MAX_COMMAND_LEN {
                     let len = command.len;
@@ -128,9 +128,10 @@ pub fn send_key(key: DecodedKey) {
                 }
             }
             KeyCode::ArrowRight => {
-                if COMMAND.lock().pos < COMMAND.lock().len {
-                    WRITER.lock().move_left();
-                    COMMAND.lock().pos -= 1;
+                let pos = COMMAND.lock().pos;
+                if pos < COMMAND.lock().len {
+                    WRITER.lock().move_right();
+                    COMMAND.lock().pos += 1;
                 }
             }
             _ => print!("{:?}", key),

@@ -117,16 +117,21 @@ impl Writer {
         self.set_foreground_color(Color::White);
     }
 
-    pub fn move_left(&mut self) {
-        if self.column_position >= 1 {
-            self.column_position -= 1;
-            update_cursor(BUFFER_HEIGHT - 1, self.column_position);
-        }
-    }
-
     pub fn set_cursor(&mut self, col: usize) {
         self.column_position = col;
         update_cursor(BUFFER_HEIGHT - 1, self.column_position);
+    }
+
+    pub fn move_left(&mut self) {
+        if self.column_position >= 1 {
+            self.set_cursor(self.column_position - 1);
+        }
+    }
+
+    pub fn move_right(&mut self) {
+        if self.column_position <= BUFFER_WIDTH - 2 {
+            self.set_cursor(self.column_position + 1);
+        }
     }
 
     fn new_line(&mut self) {
