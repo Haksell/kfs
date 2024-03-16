@@ -6,6 +6,13 @@ use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
 use spin::Mutex;
 
+// Maybe an enum or a transparent struct would be better?
+mod special_char {
+    pub const BACKSPACE: char = '\x08';
+    pub const NEWLINE: char = '\x0a';
+    pub const DELETE: char = '\x7f';
+}
+
 // TODO: make all of that a struct?
 
 const PROMPT: &'static str = "> "; // TODO: &[u8]
@@ -78,7 +85,7 @@ pub fn send_key(key: DecodedKey) {
     let mut command = COMMAND.lock();
     match key {
         DecodedKey::Unicode(character) => match character {
-            '\x08' => {
+            special_char::BACKSPACE => {
                 if command.pos > 0 {
                     command.len -= 1;
                     command.pos -= 1;
@@ -93,7 +100,7 @@ pub fn send_key(key: DecodedKey) {
                     WRITER.lock().set_cursor(PROMPT.len() + command.pos);
                 }
             }
-            '\n' => {
+            special_char::NEWLINE => {
                 println!();
                 if command.len > 0 {
                     for i in (0..command.len).rev() {
