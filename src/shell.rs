@@ -105,12 +105,12 @@ pub fn send_key(key: DecodedKey) {
                     }
                     let pos = command.pos;
                     command.buffer[pos] = character;
-                    command.pos += 1;
                     command.len += 1;
-                    WRITER.lock().set_cursor(PROMPT.len());
-                    for i in 0..command.len {
+                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                    for i in command.pos..command.len {
                         print!("{}", command.buffer[i]);
                     }
+                    command.pos += 1;
                     WRITER.lock().set_cursor(PROMPT.len() + command.pos);
                 }
             }
