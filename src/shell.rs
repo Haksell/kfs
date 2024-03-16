@@ -112,6 +112,20 @@ pub fn send_key(key: DecodedKey) {
                 command.pos = 0;
                 print_prompt();
             }
+            special_char::DELETE => {
+                if command.pos < command.len {
+                    command.len -= 1;
+                    for i in command.pos..command.len {
+                        command.buffer[i] = command.buffer[i + 1];
+                    }
+                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                    for i in command.pos..command.len {
+                        print!("{}", command.buffer[i]);
+                    }
+                    print!(" ");
+                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                }
+            }
             _ => {
                 if command.len < MAX_COMMAND_LEN {
                     for i in (command.pos..command.len).rev() {

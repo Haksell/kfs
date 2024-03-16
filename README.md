@@ -2,6 +2,7 @@
 
 ### shell todo
 
+-   [ ] shell clean write when pos != len
 -   [ ] handle delete
 -   [ ] handle up/down
 
