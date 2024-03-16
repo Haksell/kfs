@@ -1,6 +1,6 @@
 use crate::idt::InterruptDescriptorTable;
 use crate::pic::ChainedPics;
-use crate::print;
+use crate::shell;
 use lazy_static::lazy_static;
 use spin::Mutex;
 use x86_64::structures::idt::InterruptStackFrame;
@@ -50,7 +50,7 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
 }
 
 extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
+    use pc_keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
 
     lazy_static! {
         // TODO: handle different keyboards
@@ -66,10 +66,7 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
 
     if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
         if let Some(key) = keyboard.process_keyevent(key_event) {
-            match key {
-                DecodedKey::Unicode(character) => print!("{}", character),
-                DecodedKey::RawKey(key) => print!("{:?}", key),
-            }
+            shell::send_key(key);
         }
     }
 

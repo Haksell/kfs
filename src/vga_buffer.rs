@@ -58,8 +58,8 @@ fn update_cursor(row: usize, col: usize) {
     write_port(0x3D5, (pos & 0xFF) as u8);
 }
 
-const BUFFER_HEIGHT: usize = 25;
-const BUFFER_WIDTH: usize = 80;
+pub const BUFFER_HEIGHT: usize = 25;
+pub const BUFFER_WIDTH: usize = 80;
 
 #[repr(transparent)]
 struct Buffer {
@@ -75,6 +75,17 @@ pub struct Writer {
 impl Writer {
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
+            0x08 => {
+                if self.column_position >= 1 {
+                    self.buffer.chars[BUFFER_HEIGHT - 1][self.column_position - 1].write(
+                        ScreenChar {
+                            ascii_character: b' ',
+                            color_code: self.color_code,
+                        },
+                    );
+                    self.column_position -= 1;
+                }
+            }
             b'\n' => self.new_line(),
             byte => {
                 if self.column_position >= BUFFER_WIDTH {
@@ -85,9 +96,9 @@ impl Writer {
                     color_code: self.color_code,
                 });
                 self.column_position += 1;
-                update_cursor(BUFFER_HEIGHT - 1, self.column_position);
             }
         }
+        update_cursor(BUFFER_HEIGHT - 1, self.column_position);
     }
 
     fn new_line(&mut self) {
@@ -98,7 +109,6 @@ impl Writer {
         }
         self.clear_row(BUFFER_HEIGHT - 1);
         self.column_position = 0;
-        update_cursor(BUFFER_HEIGHT - 1, 0);
     }
 
     fn clear_row(&mut self, row: usize) {
@@ -116,7 +126,7 @@ impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         for byte in s.bytes() {
             match byte {
-                0x20..=0x7e | b'\n' => self.write_byte(byte),
+                0x20..=0x7e | 0x08 | b'\n' => self.write_byte(byte),
                 _ => self.write_byte(0xfe),
             }
         }
