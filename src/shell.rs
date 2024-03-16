@@ -1,6 +1,6 @@
 use crate::{
     print, println,
-    vga_buffer::{Color, BUFFER_WIDTH, WRITER},
+    vga_buffer::{Color, VGA_WIDTH, WRITER},
 };
 use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
@@ -16,7 +16,7 @@ mod special_char {
 }
 
 const PROMPT: &'static str = "> "; // TODO: &[u8]
-const MAX_COMMAND_LEN: usize = BUFFER_WIDTH - PROMPT.len() - 1;
+const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
 
 struct CommandBuffer {
     buffer: [char; MAX_COMMAND_LEN], // TODO: [u8; MAX_COMMAND_LEN]
@@ -65,13 +65,13 @@ fn print_welcome_line(left: u8, middle: u8, right: u8) {
     WRITER.lock().write_byte(left);
     WRITER
         .lock()
-        .write_bytes(middle, BUFFER_WIDTH - 2 - 2 * MENU_MARGIN);
+        .write_bytes(middle, VGA_WIDTH - 2 - 2 * MENU_MARGIN);
     WRITER.lock().write_byte(right);
     WRITER.lock().write_bytes(b' ', MENU_MARGIN);
 }
 
 fn print_welcome_title(s: &str) {
-    let remaining_width = BUFFER_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
+    let remaining_width = VGA_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
     WRITER.lock().write_bytes(b' ', MENU_MARGIN);
     WRITER.lock().write_byte(b'\xba');
     WRITER.lock().write_bytes(b' ', remaining_width >> 1);

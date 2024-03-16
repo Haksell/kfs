@@ -51,19 +51,19 @@ fn write_port(port: u16, value: u8) {
 }
 
 fn update_cursor(row: usize, col: usize) {
-    let pos = row * BUFFER_WIDTH + col;
+    let pos = row * VGA_WIDTH + col;
     write_port(0x3D4, 0x0E);
     write_port(0x3D5, (pos >> 8) as u8);
     write_port(0x3D4, 0x0F);
     write_port(0x3D5, (pos & 0xFF) as u8);
 }
 
-pub const BUFFER_HEIGHT: usize = 25;
-pub const BUFFER_WIDTH: usize = 80;
+pub const VGA_HEIGHT: usize = 25;
+pub const VGA_WIDTH: usize = 80;
 
 #[repr(transparent)]
 struct Buffer {
-    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
+    chars: [[Volatile<ScreenChar>; VGA_WIDTH]; VGA_HEIGHT],
 }
 
 pub struct Writer {
@@ -78,28 +78,26 @@ impl Writer {
             0x08 => {
                 // TODO: NO. This belongs to shell backspace handling
                 if self.column_position >= 1 {
-                    self.buffer.chars[BUFFER_HEIGHT - 1][self.column_position - 1].write(
-                        ScreenChar {
-                            ascii_character: b' ',
-                            color_code: self.color_code,
-                        },
-                    );
+                    self.buffer.chars[VGA_HEIGHT - 1][self.column_position - 1].write(ScreenChar {
+                        ascii_character: b' ',
+                        color_code: self.color_code,
+                    });
                     self.column_position -= 1;
                 }
             }
             b'\n' => self.new_line(),
             byte => {
-                if self.column_position >= BUFFER_WIDTH {
+                if self.column_position >= VGA_WIDTH {
                     self.new_line();
                 }
-                self.buffer.chars[BUFFER_HEIGHT - 1][self.column_position].write(ScreenChar {
+                self.buffer.chars[VGA_HEIGHT - 1][self.column_position].write(ScreenChar {
                     ascii_character: byte,
                     color_code: self.color_code,
                 });
                 self.column_position += 1;
             }
         }
-        update_cursor(BUFFER_HEIGHT - 1, self.column_position);
+        update_cursor(VGA_HEIGHT - 1, self.column_position);
     }
 
     // TODO: write_bytes that accepts a &[u8] and only moves the cursor once
@@ -121,16 +119,16 @@ impl Writer {
 
     pub fn set_cursor(&mut self, col: usize) {
         self.column_position = col;
-        update_cursor(BUFFER_HEIGHT - 1, self.column_position);
+        update_cursor(VGA_HEIGHT - 1, self.column_position);
     }
 
     fn new_line(&mut self) {
-        for y in 1..BUFFER_HEIGHT {
-            for x in 0..BUFFER_WIDTH {
+        for y in 1..VGA_HEIGHT {
+            for x in 0..VGA_WIDTH {
                 self.buffer.chars[y - 1][x].write(self.buffer.chars[y][x].read());
             }
         }
-        self.clear_row(BUFFER_HEIGHT - 1);
+        self.clear_row(VGA_HEIGHT - 1);
         self.column_position = 0;
     }
 
@@ -139,7 +137,7 @@ impl Writer {
             ascii_character: b' ',
             color_code: self.color_code,
         };
-        for col in 0..BUFFER_WIDTH {
+        for col in 0..VGA_WIDTH {
             self.buffer.chars[row][col].write(blank);
         }
     }
@@ -185,7 +183,7 @@ pub fn _print(args: fmt::Arguments) {
 }
 
 pub fn clear_screen() {
-    for _ in 0..BUFFER_HEIGHT {
+    for _ in 0..VGA_HEIGHT {
         println!("");
     }
 }
