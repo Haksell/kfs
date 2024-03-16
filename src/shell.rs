@@ -14,21 +14,21 @@ const MAX_COMMAND_LEN: usize = crate::vga_buffer::BUFFER_WIDTH - PROMPT.len() - 
 struct CommandBuffer {
     buffer: [char; MAX_COMMAND_LEN],
     length: usize,
+    pos: usize,
 }
 
 lazy_static! {
     static ref COMMAND: Mutex<CommandBuffer> = Mutex::new(CommandBuffer {
         buffer: ['\0'; MAX_COMMAND_LEN],
         length: 0,
+        pos: 0,
     });
 }
 
 fn print_prompt() {
-    crate::vga_buffer::WRITER
-        .lock()
-        .set_foreground_color(Color::LightGreen);
+    WRITER.lock().set_foreground_color(Color::LightGreen);
     print!("{}", PROMPT);
-    crate::vga_buffer::WRITER.lock().reset_foreground_color();
+    WRITER.lock().reset_foreground_color();
 }
 
 const MENU_MARGIN: usize = 10;
@@ -87,6 +87,7 @@ pub fn init() {
 }
 
 pub fn send_key(key: DecodedKey) {
+    use pc_keyboard::KeyCode;
     match key {
         DecodedKey::Unicode(character) => match character {
             '\x08' => {
@@ -120,6 +121,14 @@ pub fn send_key(key: DecodedKey) {
                 }
             }
         },
-        DecodedKey::RawKey(key) => print!("{:?}", key),
+        DecodedKey::RawKey(key) => match key {
+            KeyCode::ArrowLeft => {
+                // TODO
+                if COMMAND.lock().length > 0 {
+                    WRITER.lock().move_left()
+                }
+            }
+            _ => print!("{:?}", key),
+        },
     }
 }
