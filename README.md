@@ -1,5 +1,10 @@
 # KFS
 
+### shell todo
+
+-   [ ] prompt
+-   [ ] answer the prompt
+
 ### subject
 
 -   [x] Install GRUB on a virtual image

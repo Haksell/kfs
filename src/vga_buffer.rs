@@ -213,12 +213,14 @@ fn print_welcome_title() {
 
 // TODO: macro that accepts format args
 pub fn print_welcome() {
+    // TODO: write directly at correct position instead of using write_byte
     WRITER.lock().set_foreground_color(Color::LightRed);
     print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
     print_welcome_line(b'\xba', b' ', b'\xba');
     print_welcome_title();
     print_welcome_line(b'\xba', b' ', b'\xba');
     print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
-    println!();
     WRITER.lock().set_foreground_color(Color::White);
+    println!();
+    println!();
 }
