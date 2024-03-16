@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
 use spin::Mutex;
 
-const PROMPT_LEN: usize = 2; // Adjust if your prompt length differs
+const PROMPT_LEN: usize = 2;
 const MAX_COMMAND_LEN: usize = crate::vga_buffer::BUFFER_WIDTH - PROMPT_LEN - 1;
 
 struct CommandBuffer {
