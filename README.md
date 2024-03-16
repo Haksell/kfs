@@ -27,15 +27,12 @@
 -   [ ] colorful tests (with color module based on `colored`)
 -   [ ] fix compiler warnings
 -   [ ] improve Makefile/Dockerfile for optimal compilation
--   [ ] stop using xargo
 -   [ ] set timeout=10 for correction
 
 ### todo for later
 
 -   [ ] finish 1st edition
 -   [ ] finish 2nd edition
--   [ ] read https://os.phil-opp.com/disable-simd/
--   [ ] read https://os.phil-opp.com/red-zone/
 -   [ ] `qemu` in terminal like lsimanic
 -   [ ] find project name and rebrand
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
