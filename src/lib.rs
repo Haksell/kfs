@@ -16,6 +16,7 @@ pub extern "C" fn rust_main() {
     x86_64::instructions::interrupts::enable();
     vga_buffer::clear_screen();
     vga_buffer::print_welcome();
+    shell::new_line();
     hlt_loop()
 }
 

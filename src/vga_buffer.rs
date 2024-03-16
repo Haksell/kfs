@@ -221,5 +221,4 @@ pub fn print_welcome() {
     print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
     WRITER.lock().set_foreground_color(Color::White);
     println!();
-    println!();
 }

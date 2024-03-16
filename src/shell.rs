@@ -3,8 +3,10 @@ use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
 use spin::Mutex;
 
-const PROMPT_LEN: usize = 2;
-const MAX_COMMAND_LEN: usize = crate::vga_buffer::BUFFER_WIDTH - PROMPT_LEN - 1;
+// TODO: make all of that a struct?
+
+const PROMPT: &'static str = "> ";
+const MAX_COMMAND_LEN: usize = crate::vga_buffer::BUFFER_WIDTH - PROMPT.len() - 1;
 
 struct CommandBuffer {
     buffer: [char; MAX_COMMAND_LEN],
@@ -18,12 +20,17 @@ lazy_static! {
     });
 }
 
-pub fn send_key(key: DecodedKey) {
-    let mut command = COMMAND.lock();
+pub fn new_line() {
+    COMMAND.lock().length = 0;
+    println!();
+    print!("{}", PROMPT);
+}
 
+pub fn send_key(key: DecodedKey) {
     match key {
         DecodedKey::Unicode(character) => match character {
             '\x08' => {
+                let mut command = COMMAND.lock();
                 if command.length > 0 {
                     command.length -= 1;
                     let len = command.length;
@@ -31,11 +38,9 @@ pub fn send_key(key: DecodedKey) {
                     print!("{}", character);
                 }
             }
-            '\n' => {
-                command.length = 0;
-                println!();
-            }
+            '\n' => new_line(),
             _ => {
+                let mut command = COMMAND.lock();
                 if command.length < MAX_COMMAND_LEN {
                     let len = command.length;
                     command.buffer[len] = character;
