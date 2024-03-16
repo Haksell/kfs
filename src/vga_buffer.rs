@@ -218,7 +218,6 @@ fn print_welcome_title(s: &str) {
 }
 
 pub fn print_welcome() {
-    // TODO: write directly at correct position instead of using write_byte
     WRITER.lock().set_foreground_color(Color::LightGreen);
     print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
     print_welcome_line(b'\xba', b' ', b'\xba');
