@@ -3,4 +3,4 @@ build-std = ["core", "compiler_builtins"]
 build-std-features = ["compiler-builtins-mem"]
 
 [build]
-target = "src/arch/i386/kfs.json"
+target = "src/arch/x86_64/kfs.json"

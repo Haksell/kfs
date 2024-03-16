@@ -1,11 +1,15 @@
 #![no_std]
+#![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
 
+mod gdt;
+mod interrupts;
 mod vga_buffer;
 
 #[no_mangle]
 pub extern "C" fn rust_main() {
+    init();
     vga_buffer::clear_screen();
     println!("K{}S {}", 'F', 6 * 7);
     hlt_loop()
@@ -17,8 +21,15 @@ fn panic(info: &PanicInfo) -> ! {
     hlt_loop();
 }
 
+fn init() {
+    gdt::init();
+    interrupts::init_idt();
+    unsafe { interrupts::PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
+}
+
 pub fn hlt_loop() -> ! {
     loop {
-        unsafe { core::arch::asm!("hlt") };
+        x86_64::instructions::hlt();
     }
 }
