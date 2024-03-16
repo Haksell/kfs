@@ -10,9 +10,9 @@ Vagrant.configure("2") do |config|
     export DEBIAN_FRONTEND=noninteractive
 
     apt-get update
-    apt-get install -y binutils build-essential clang curl git make python3 wget zsh
+    apt-get install -y binutils build-essential clang curl git make python3 wget zsh nasm grub-pc-bin qemu xorriso
 
-    su -l vagrant -s "/bin/sh" -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && . $HOME/.cargo/env && rustup override set nightly && rustup component add rust-src"
+    su -l vagrant -s "/bin/sh" -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && . /home/vagrant/.cargo/env && rustup override set nightly && rustup component add rust-src"
 
     su -l vagrant -s "/bin/sh" -c "curl -fsSO https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh; chmod 755 install.sh; ./install.sh --unattended"
     sed -i 's/ZSH_THEME=".*"/ZSH_THEME="jonathan"/g' /home/vagrant/.zshrc

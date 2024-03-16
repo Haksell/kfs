@@ -20,9 +20,10 @@ else
 	ELF_FORMAT := elf64
 endif
 
-all:
-	docker build -t kfs .
-	docker run --rm -e ARCH=$(ARCH) -v $(shell pwd):/workspace kfs
+run_vm: $(ISO)
+	@$(QEMU) -cdrom $(ISO)
+
+all: $(ISO)
 
 re: clean all
 
@@ -35,15 +36,11 @@ clean:
 	rm -rf $(BUILD)
 	cargo clean
 
-# Rules below should only be executed inside Docker
-
-iso: $(ISO)
-
 $(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json
 	@mkdir -p $(ISOFILES)/boot/grub
 	@cp $(KERNEL) $(ISOFILES)/boot/kernel.bin
 	@cp $(GRUB_CFG) $(ISOFILES)/boot/grub
-	@grub-mkrescue -o $(ISO) $(ISOFILES) 2> /dev/null
+	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(ISOFILES)"
 	@rm -r $(ISOFILES)
 
 $(RUST_OS): $(RUST_SRCS)
@@ -51,6 +48,12 @@ $(RUST_OS): $(RUST_SRCS)
 
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 	@ld $(LD_FLAGS) -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(RUST_OS)
+
+rust_os: $(RUST_OS)
+
+kernel: $(KERNEL)
+
+asm: $(ASM_OBJS)
 
 $(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: src/arch/$(ARCH)/%.asm
 	@mkdir -p $(shell dirname $@)
