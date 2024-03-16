@@ -101,6 +101,11 @@ impl Writer {
         update_cursor(BUFFER_HEIGHT - 1, self.column_position);
     }
 
+    pub fn set_foreground_color(&mut self, foreground_code: Color) {
+        // TODO: keep old background color
+        self.color_code = ColorCode::new(foreground_code, Color::Black);
+    }
+
     fn new_line(&mut self) {
         for y in 1..BUFFER_HEIGHT {
             for x in 0..BUFFER_WIDTH {
@@ -165,4 +170,55 @@ pub fn clear_screen() {
     for _ in 0..BUFFER_HEIGHT {
         println!("");
     }
+}
+
+pub const MENU_MARGIN: usize = 10;
+
+fn print_welcome_line(left: u8, middle: u8, right: u8) {
+    for _ in 0..MENU_MARGIN {
+        WRITER.lock().write_byte(b' ');
+    }
+    WRITER.lock().write_byte(left);
+    for _ in 0..BUFFER_WIDTH - 2 - 2 * (MENU_MARGIN) {
+        WRITER.lock().write_byte(middle);
+    }
+    WRITER.lock().write_byte(right);
+    for _ in 0..MENU_MARGIN {
+        WRITER.lock().write_byte(b' ');
+    }
+}
+
+fn print_welcome_title() {
+    for _ in 0..MENU_MARGIN {
+        WRITER.lock().write_byte(b' ');
+    }
+    WRITER.lock().write_byte(b'\xba');
+    for _ in 0..26 {
+        WRITER.lock().write_byte(b' ');
+    }
+    WRITER.lock().write_byte(b'K');
+    WRITER.lock().write_byte(b'F');
+    WRITER.lock().write_byte(b'S');
+    WRITER.lock().write_byte(b' ');
+    WRITER.lock().write_byte(b'4');
+    WRITER.lock().write_byte(b'2');
+    for _ in 0..26 {
+        WRITER.lock().write_byte(b' ');
+    }
+    WRITER.lock().write_byte(b'\xba');
+    for _ in 0..MENU_MARGIN {
+        WRITER.lock().write_byte(b' ');
+    }
+}
+
+// TODO: macro that accepts format args
+pub fn print_welcome() {
+    WRITER.lock().set_foreground_color(Color::LightRed);
+    print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
+    print_welcome_line(b'\xba', b' ', b'\xba');
+    print_welcome_title();
+    print_welcome_line(b'\xba', b' ', b'\xba');
+    print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
+    println!();
+    WRITER.lock().set_foreground_color(Color::White);
 }

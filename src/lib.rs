@@ -15,7 +15,7 @@ pub extern "C" fn rust_main() {
     unsafe { interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
     vga_buffer::clear_screen();
-    println!("K{}S {}", 'F', 6 * 7);
+    vga_buffer::print_welcome();
     hlt_loop()
 }
 

@@ -1,4 +1,4 @@
-use crate::print;
+use crate::{print, println};
 use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
 use spin::Mutex;
@@ -24,21 +24,23 @@ pub fn send_key(key: DecodedKey) {
     match key {
         DecodedKey::Unicode(character) => match character {
             '\x08' => {
-                // Handle backspace
                 if command.length > 0 {
                     command.length -= 1;
                     let len = command.length;
-                    command.buffer[len] = '\0'; // Clear the character
-                    print!("{}", character); // Move back, print space (to clear), move back again
+                    command.buffer[len] = '\0';
+                    print!("{}", character);
                 }
             }
+            '\n' => {
+                command.length = 0;
+                println!();
+            }
             _ => {
-                // Handle regular character
                 if command.length < MAX_COMMAND_LEN {
                     let len = command.length;
                     command.buffer[len] = character;
                     command.length += 1;
-                    print!("{}", character); // Display the character
+                    print!("{}", character);
                 }
             }
         },
