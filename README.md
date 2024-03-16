@@ -3,7 +3,12 @@
 ### shell todo
 
 -   [ ] prompt
+-   [ ] handle left
+-   [ ] handle right
+-   [ ] handle delete
 -   [ ] answer the prompt
+-   [ ] handle up
+-   [ ] handle down
 
 ### subject
 
@@ -19,13 +24,15 @@
 -   [x] Your Makefile must compile all your source files with the right flags and the right compiler.
 -   [x] After compilation, all the objects must be linked together in order to create the final Kernel binary.
 -   [ ] Add scroll[, history] and cursor support to your I/O interface.
--   [ ] Handle keyboard entries and print them.
--   [ ] Add colors support to your I/O interface.
+-   [x] Handle keyboard entries and print them.
+-   [x] Add colors support to your I/O interface.
 -   [x] Add helpers like printf / printk in order to print information / debug easily.
 -   [ ] Handle different screens, and keyboard shortcuts to switch easily between then.
 
 ### todo
 
+-   [ ] implement `x86_64`
+-   [ ] implement `pc-keyboard`
 -   [ ] make everything work with `i386`
 -   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
 -   [ ] bring back testing and more useful stuff from from https://github.com/Haksell/os_blog_v2
@@ -43,9 +50,6 @@
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
 -   [ ] use KVM on top of QEMU?
 -   [ ] specify exact nightly version
--   [ ] handle exceptions without `x86_64` crate (https://os.phil-opp.com/edition-1/extra/naked-exceptions/)
--   [ ] write own `pic8259` or `apic` module?
--   [ ] write own `pc-keyboard` module?
 
 ### resources
 
