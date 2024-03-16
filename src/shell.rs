@@ -101,11 +101,13 @@ pub fn send_key(key: DecodedKey) {
             '\n' => {
                 println!();
                 let len = COMMAND.lock().length;
-                for i in (0..len).rev() {
-                    print!("{}", COMMAND.lock().buffer[i]);
+                if len > 0 {
+                    for i in (0..len).rev() {
+                        print!("{}", COMMAND.lock().buffer[i]);
+                    }
+                    println!();
                 }
                 COMMAND.lock().length = 0;
-                println!();
                 print_prompt();
             }
             _ => {
