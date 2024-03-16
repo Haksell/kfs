@@ -52,7 +52,6 @@ fn write_port(port: u16, value: u8) {
 
 fn update_cursor(row: usize, col: usize) {
     let pos = row * BUFFER_WIDTH + col;
-
     write_port(0x3D4, 0x0E);
     write_port(0x3D5, (pos >> 8) as u8);
     write_port(0x3D4, 0x0F);
