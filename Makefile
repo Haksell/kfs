@@ -32,11 +32,15 @@ rerun: re run
 clean:
 	rm -rf $(BUILD) || true
 	cargo clean || true
+	vagrant destroy -f || true
+	rm -rf .vagrant || true
+	rm -rf *VBox*.log || true
 
 $(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json
 	@mkdir -p $(ISOFILES)/boot/grub
 	@cp $(KERNEL) $(ISOFILES)/boot/kernel.bin
 	@cp $(GRUB_CFG) $(ISOFILES)/boot/grub
+	@vagrant up
 	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(ISOFILES)"
 	@rm -r $(ISOFILES)
 
