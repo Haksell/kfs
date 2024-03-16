@@ -20,9 +20,7 @@ lazy_static! {
     });
 }
 
-pub fn new_line() {
-    COMMAND.lock().length = 0;
-    println!();
+pub fn init() {
     print!("{}", PROMPT);
 }
 
@@ -38,7 +36,15 @@ pub fn send_key(key: DecodedKey) {
                     print!("{}", character);
                 }
             }
-            '\n' => new_line(),
+            '\n' => {
+                println!();
+                let len = COMMAND.lock().length;
+                for i in (0..len).rev() {
+                    print!("{}", COMMAND.lock().buffer[i]);
+                }
+                COMMAND.lock().length = 0;
+                print!("\n{}", PROMPT);
+            }
             _ => {
                 let mut command = COMMAND.lock();
                 if command.length < MAX_COMMAND_LEN {
