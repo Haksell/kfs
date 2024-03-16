@@ -4,6 +4,7 @@
 use core::panic::PanicInfo;
 
 mod gdt;
+mod idt;
 mod interrupts;
 mod pic;
 mod vga_buffer;
@@ -24,7 +25,7 @@ fn panic(info: &PanicInfo) -> ! {
 
 fn init() {
     gdt::init();
-    interrupts::init_idt();
+    interrupts::init();
     unsafe { interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
 }
