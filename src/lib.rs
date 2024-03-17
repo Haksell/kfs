@@ -23,6 +23,7 @@ pub extern "C" fn rust_main() {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
+    // TODO: Yellow on Black
     println!("{}", info);
     hlt_loop()
 }

@@ -31,5 +31,5 @@ error:
 section .bss
 align 4096
 stack_bottom:
-    resb 4096 * 64
+    resb 4096 * 128
 stack_top:

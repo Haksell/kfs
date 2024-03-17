@@ -129,6 +129,8 @@ impl Shell {
             DecodedKey::RawKey(key) => match key {
                 KeyCode::ArrowLeft => self.commands[screen_idx].move_left(),
                 KeyCode::ArrowRight => self.commands[screen_idx].move_right(),
+                // KeyCode::ArrowUp => WRITER.lock().move_up(),
+                // KeyCode::ArrowDown => WRITER.lock().move_down(),
                 KeyCode::Home => self.commands[screen_idx].set_pos(0),
                 KeyCode::End => self.commands[screen_idx].set_pos(start_len),
                 // TODO: use range F1..F{VGA_SCREENS} once we implement the keyboard crate
