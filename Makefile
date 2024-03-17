@@ -8,7 +8,6 @@ RUST_OS := target/$(TARGET)/debug/libkfs.a
 # RUST_OS := target/$(TARGET)/release/libkfs.a
 LINKER_SCRIPT := src/arch/linker.ld
 GRUB_CFG := src/arch/grub.cfg
-RUST_SRCS := $(wildcard src/*.rs) # TODO: handle subfolders
 ASM_SRCS := $(wildcard src/arch/$(ARCH)/*.asm)
 ASM_OBJS := $(patsubst src/arch/$(ARCH)/%.asm, $(BUILD)/arch/$(ARCH)/%.o, $(ASM_SRCS))
 QEMU := qemu-system-$(ARCH)
@@ -44,7 +43,7 @@ $(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json
 	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(ISOFILES)"
 	@rm -r $(ISOFILES)
 
-$(RUST_OS): $(RUST_SRCS)
+$(RUST_OS):
 	@export RUST_TARGET_PATH=$(shell pwd) ; cargo build --target $(TARGET)
 
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
@@ -54,4 +53,4 @@ $(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: src/arch/$(ARCH)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f $(ELF_FORMAT) $< -o $@
 
-.PHONY: all re run rerun clean
+.PHONY: all re run rerun clean $(RUST_OS)
