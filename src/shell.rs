@@ -70,7 +70,7 @@ lazy_static! {
 
 impl Shell {
     pub fn switch_screen(&mut self, screen_idx: usize) {
-        if screen_idx != self.screen_idx {
+        if screen_idx != self.screen_idx && screen_idx < VGA_SCREENS {
             self.screen_idx = screen_idx;
             let mut writer = WRITER.lock();
             writer.switch_screen(screen_idx);
@@ -212,20 +212,14 @@ pub fn send_key(key: DecodedKey) {
             KeyCode::ArrowRight => shell.commands[screen_idx].move_right(),
             KeyCode::Home => shell.commands[screen_idx].set_pos(0),
             KeyCode::End => shell.commands[screen_idx].set_pos(start_len),
-            // TODO: use range F1..F12 once we implement the keyboard crate
+            // TODO: use range F1..F{VGA_SCREENS} once we implement the keyboard crate
             KeyCode::F1 => shell.switch_screen(0),
             KeyCode::F2 => shell.switch_screen(1),
             KeyCode::F3 => shell.switch_screen(2),
             KeyCode::F4 => shell.switch_screen(3),
-            KeyCode::F5 => shell.switch_screen(4),
-            KeyCode::F6 => shell.switch_screen(5),
-            KeyCode::F7 => shell.switch_screen(6),
-            KeyCode::F8 => shell.switch_screen(7),
-            KeyCode::F9 => shell.switch_screen(8),
-            KeyCode::F10 => shell.switch_screen(9),
-            KeyCode::F11 => shell.switch_screen(10),
-            KeyCode::F12 => shell.switch_screen(11),
-            _ => print!("{:?}", key), // TODO: remove
+            _ => {
+                // print!("{:?}", key)
+            }
         },
     }
 }
