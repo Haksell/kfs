@@ -31,7 +31,7 @@
 -   [ ] bring back testing and more useful stuff from from https://github.com/Haksell/os_blog_v2
 -   [ ] colorful tests (with color module based on `colored`)
 -   [ ] fix compiler warnings
--   [ ] improve Makefile/Dockerfile for optimal compilation
+-   [ ] install `grub-mkrescue` and all its dependencies locally
 -   [ ] set timeout=10 for correction
 
 ### shell
