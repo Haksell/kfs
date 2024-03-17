@@ -9,7 +9,6 @@
 -   [x] Write basic kernel code of the choosen language.
 -   [x] Compile it with correct flags, and link it to make it bootable.
 -   [ ] Once all of those steps above are done, you can write some helpers like kernel types or basic functions (strlen, strcmp, ...)
--   [ ] Your work must not exceed 10 MB.
 -   [x] Code the interface between your kernel and the screen.
 -   [x] Display "42" on the screen.
 -   [x] For the link part, you must create a linker file with the GNU linker (ld).
@@ -22,6 +21,21 @@
 -   [ ] Handle different screens, and keyboard shortcuts to switch easily between then.
 
 ### kfs2
+
+-   [ ] You must create a Global Descriptor Table.
+-   [ ] Your GDT must contain:
+-   [ ] Your GDT must contain: Kernel Code
+-   [ ] Your GDT must contain: Kernel Data
+-   [ ] Your GDT must contain: Kernel stack
+-   [ ] Your GDT must contain: User code
+-   [ ] Your GDT must contain: User data
+-   [ ] Your GDT must contain: User stack
+-   [ ] You must declare your GDT to the BIOS.
+-   [ ] The GDT must be set at address 0x00000800.
+-   [ ] SHell: `pks` (print the kernel stack, in a human-friendly way)
+-   [ ] Shell: `reboot` command
+-   [ ] Shell: `halt` command
+-   [ ] Shell: other commands for debugging purposes
 
 ## todo
 
@@ -37,6 +51,7 @@
 -   [ ] fix compiler warnings
 -   [ ] install `grub-mkrescue` and all its dependencies locally
 -   [ ] set timeout=10 for correction
+-   [ ] check your work should not exceed 10 MB before push
 
 ### shell
 
@@ -50,7 +65,7 @@
 
 -   [ ] finish 1st edition
 -   [ ] finish 2nd edition
--   [ ] `qemu` in terminal like lsimanic
+-   [ ] `qemu` in terminal like lsimanic (`-display curses` with a black screen)
 -   [ ] find project name and rebrand
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
 -   [ ] use KVM on top of QEMU?
