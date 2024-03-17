@@ -55,10 +55,7 @@
 
 ### shell
 
--   [ ] screens with F1-F12
--   [ ] each screen has a different color
--   [ ] handle up/down
--   [ ] implement shell history
+-   [ ] handle up/down (scroll history)
 -   [ ] basic shell commands
 
 ### later
