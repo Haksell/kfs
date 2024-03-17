@@ -122,6 +122,7 @@ fn execute_command(command: &MutexGuard<CommandBuffer>) {
     // - change screen
     // - get basic info
     // - exit
+    // - print shell number
     for i in (0..command.len).rev() {
         print!("{}", command.buffer[i]);
     }
