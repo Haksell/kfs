@@ -7,6 +7,7 @@ mod entry;
 mod idt;
 mod interrupts;
 mod pic;
+mod port;
 mod shell;
 mod vga_buffer;
 
@@ -14,7 +15,7 @@ mod vga_buffer;
 pub extern "C" fn rust_main() {
     interrupts::init();
     unsafe { interrupts::PICS.lock().initialize() };
-    x86_64::instructions::interrupts::enable();
+    interrupts::enable();
     vga_buffer::clear_screen();
     shell::init();
     hlt_loop()

@@ -1,3 +1,5 @@
+use core::arch::asm;
+
 use crate::idt::InterruptDescriptorTable;
 use crate::pic::ChainedPics;
 use crate::shell;
@@ -38,6 +40,15 @@ lazy_static! {
 
 pub fn init() {
     IDT.load();
+}
+
+#[inline]
+pub fn enable() {
+    // Omit `nomem` to imitate a lock release. Otherwise, the compiler
+    // is free to move reads and writes through this asm block.
+    unsafe {
+        asm!("sti", options(preserves_flags, nostack));
+    }
 }
 
 extern "x86-interrupt" fn timer_interrupt_handler() {
