@@ -18,6 +18,7 @@ checksum = "ed570934406eb16438a4e976b1b4500774099c13b8cb96eec99f620f05090ddf"
 name = "kfs"
 version = "0.1.0"
 dependencies = [
+ "bit_field",
  "lazy_static",
  "pc-keyboard",
  "pic8259",

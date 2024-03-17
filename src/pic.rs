@@ -1,4 +1,4 @@
-use x86_64::instructions::port::Port;
+use crate::port::Port;
 
 /// Command sent to begin PIC initialization.
 const CMD_INIT: u8 = 0x11;
