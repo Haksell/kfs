@@ -1,10 +1,10 @@
 use crate::{
     print, println,
-    vga_buffer::{Color, VGA_WIDTH, WRITER},
+    vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER},
 };
 use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
-use spin::{Mutex, MutexGuard};
+use spin::Mutex;
 
 // TODO: test profusely, especially special characters
 // There are too many locks, I'm scared of deadlocks in case of interrupts
@@ -46,11 +46,19 @@ impl CommandBuffer {
     }
 }
 
+struct Shell {
+    screen_idx: usize,
+    commands: [CommandBuffer; VGA_SCREENS],
+}
+
 lazy_static! {
-    static ref COMMAND: Mutex<CommandBuffer> = Mutex::new(CommandBuffer {
-        buffer: ['\0'; MAX_COMMAND_LEN],
-        len: 0,
-        pos: 0,
+    static ref SHELL: Mutex<Shell> = Mutex::new(Shell {
+        screen_idx: 0,
+        commands: core::array::from_fn(|_| CommandBuffer {
+            buffer: ['\0'; MAX_COMMAND_LEN],
+            len: 0,
+            pos: 0,
+        }),
     });
 }
 
@@ -102,7 +110,7 @@ pub fn init() {
     print_prompt();
 }
 
-fn delete_char(command: &mut MutexGuard<CommandBuffer>, decrement_pos: bool) {
+fn delete_char(command: &mut CommandBuffer, decrement_pos: bool) {
     command.len -= 1;
     if decrement_pos {
         command.pos -= 1;
@@ -118,7 +126,7 @@ fn delete_char(command: &mut MutexGuard<CommandBuffer>, decrement_pos: bool) {
     WRITER.lock().set_cursor(PROMPT.len() + command.pos);
 }
 
-fn execute_command(command: &MutexGuard<CommandBuffer>) {
+fn execute_command(command: &CommandBuffer) {
     // TODO: basic commands:
     // - clear screen
     // - get basic info
@@ -132,7 +140,7 @@ fn execute_command(command: &MutexGuard<CommandBuffer>) {
 
 pub fn send_key(key: DecodedKey) {
     use pc_keyboard::KeyCode;
-    let mut command = COMMAND.lock();
+    let mut command = &mut SHELL.lock().commands[0];
     let start_len = command.len;
     let start_pos = command.pos;
     match key {
