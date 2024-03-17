@@ -2,7 +2,7 @@ use bit_field::BitField;
 use core::marker::PhantomData;
 use x86_64::{
     registers::segmentation::{Segment, CS},
-    structures::idt::HandlerFuncType,
+    structures::idt::InterruptStackFrame,
     VirtAddr,
 };
 
@@ -45,6 +45,18 @@ impl<F> Entry<F> {
         self.options.set_present(true);
 
         &mut self.options
+    }
+}
+
+pub type HandlerFunc = extern "x86-interrupt" fn(InterruptStackFrame);
+
+pub trait HandlerFuncType {
+    fn to_virt_addr(self) -> VirtAddr;
+}
+
+impl HandlerFuncType for HandlerFunc {
+    fn to_virt_addr(self) -> VirtAddr {
+        VirtAddr::new(self as u64)
     }
 }
 
