@@ -23,7 +23,6 @@
 ### kfs2
 
 -   [ ] You must create a Global Descriptor Table.
--   [ ] Your GDT must contain:
 -   [ ] Your GDT must contain: Kernel Code
 -   [ ] Your GDT must contain: Kernel Data
 -   [ ] Your GDT must contain: Kernel stack
