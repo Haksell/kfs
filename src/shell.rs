@@ -17,10 +17,10 @@ mod special_char {
 }
 
 const SCREEN_COLORS: [Color; VGA_SCREENS] = [
-    Color::LightGreen,
+    Color::Pink,
     Color::LightCyan,
     Color::LightRed,
-    Color::Pink,
+    Color::LightGreen,
 ];
 const PROMPT: &'static str = "> "; // TODO: [ScreenChar; PROMPT_LEN]
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
