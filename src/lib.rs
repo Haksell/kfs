@@ -1,7 +1,7 @@
 #![no_std]
 #![feature(abi_x86_interrupt)]
 
-use core::panic::PanicInfo;
+use core::{arch::asm, panic::PanicInfo};
 
 mod entry;
 mod idt;
@@ -29,6 +29,13 @@ fn panic(info: &PanicInfo) -> ! {
 
 pub fn hlt_loop() -> ! {
     loop {
-        x86_64::instructions::hlt();
+        hlt();
+    }
+}
+
+#[inline]
+pub fn hlt() {
+    unsafe {
+        asm!("hlt", options(nomem, nostack, preserves_flags));
     }
 }
