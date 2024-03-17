@@ -109,7 +109,7 @@ impl Shell {
         WRITER.lock().write_bytes(b' ', MENU_MARGIN);
     }
 
-    pub fn print_welcome(&self) {
+    fn print_welcome(&self) {
         WRITER
             .lock()
             .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
@@ -123,9 +123,9 @@ impl Shell {
 
     pub fn init(&mut self) {
         for i in (0..VGA_SCREENS).rev() {
+            // TODO: don't write to vga_buffer for screens 1..VGA_SCREENS
             self.switch_screen(i);
             self.print_welcome();
-            println!();
             println!();
             self.print_prompt();
         }
