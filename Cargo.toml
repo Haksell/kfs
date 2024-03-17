@@ -13,7 +13,6 @@ pic8259 = "0.10.1"
 rlibc = "1.0"
 spin = "0.5.2"
 volatile = "0.2.6"
-x86_64 = "0.14.2"
 
 [dependencies.lazy_static]
 version = "1.0"
