@@ -21,17 +21,10 @@ const SCREEN_COLORS: [Color; VGA_SCREENS] = [
     Color::LightCyan,
     Color::LightRed,
     Color::Pink,
-    Color::Yellow,
-    Color::Blue,
-    Color::Green,
-    Color::Cyan,
-    Color::Red,
-    Color::Magenta,
-    Color::Brown,
-    Color::LightBlue,
 ];
 const PROMPT: &'static str = "> "; // TODO: [ScreenChar; PROMPT_LEN]
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
+const MENU_MARGIN: usize = 10;
 
 struct CommandBuffer {
     buffer: [char; MAX_COMMAND_LEN], // TODO: [u8; MAX_COMMAND_LEN]
@@ -76,6 +69,15 @@ lazy_static! {
 }
 
 impl Shell {
+    pub fn switch_screen(&mut self, screen_idx: usize) {
+        if screen_idx != self.screen_idx {
+            self.screen_idx = screen_idx;
+            let mut writer = WRITER.lock();
+            writer.switch_screen(screen_idx);
+            writer.set_cursor(PROMPT.len() + self.commands[screen_idx].pos);
+        }
+    }
+
     fn print_prompt(&self) {
         WRITER
             .lock()
@@ -119,24 +121,15 @@ impl Shell {
         WRITER.lock().reset_foreground_color();
     }
 
-    pub fn switch_screen(&mut self, screen_idx: usize) {
-        if screen_idx != self.screen_idx {
-            self.screen_idx = screen_idx;
-            let mut writer = WRITER.lock();
-            writer.switch_screen(screen_idx);
-            writer.set_cursor(PROMPT.len() + self.commands[screen_idx].pos);
+    pub fn init(&mut self) {
+        for i in (0..VGA_SCREENS).rev() {
+            self.switch_screen(i);
+            self.print_welcome();
+            println!();
+            println!();
+            self.print_prompt();
         }
     }
-}
-
-const MENU_MARGIN: usize = 10;
-
-pub fn init() {
-    // TODO: for all screens
-    SHELL.lock().print_welcome();
-    println!();
-    println!();
-    SHELL.lock().print_prompt();
 }
 
 fn delete_char(command: &mut CommandBuffer, decrement_pos: bool) {
@@ -167,6 +160,7 @@ fn execute_command(command: &CommandBuffer) {
     println!();
 }
 
+// TODO: method of SHELL?
 pub fn send_key(key: DecodedKey) {
     use pc_keyboard::KeyCode;
     let mut shell = SHELL.lock();
@@ -234,4 +228,8 @@ pub fn send_key(key: DecodedKey) {
             _ => print!("{:?}", key), // TODO: remove
         },
     }
+}
+
+pub fn init() {
+    SHELL.lock().init();
 }

@@ -70,7 +70,7 @@ fn update_cursor(row: usize, col: usize) {
 
 pub const VGA_HEIGHT: usize = 25;
 pub const VGA_WIDTH: usize = 80;
-pub const VGA_SCREENS: usize = 12;
+pub const VGA_SCREENS: usize = 4;
 
 #[repr(transparent)]
 struct Buffer {

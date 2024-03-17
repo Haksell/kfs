@@ -14,11 +14,12 @@
 -   [x] For the link part, you must create a linker file with the GNU linker (ld).
 -   [x] Your Makefile must compile all your source files with the right flags and the right compiler.
 -   [x] After compilation, all the objects must be linked together in order to create the final Kernel binary.
--   [x] Add scroll and cursor support to your I/O interface.
+-   [ ] Add scroll support to your I/O interface.
+-   [x] Add cursor support to your I/O interface.
 -   [x] Add colors support to your I/O interface.
 -   [x] Add helpers like printf / printk in order to print information / debug easily.
 -   [x] Handle keyboard entries and print them.
--   [ ] Handle different screens, and keyboard shortcuts to switch easily between then.
+-   [x] Handle different screens, and keyboard shortcuts to switch easily between then.
 
 ### kfs2
 
