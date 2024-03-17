@@ -58,15 +58,15 @@
 
 ## resources
 
--   https://os.phil-opp.com/
 -   https://os.phil-opp.com/edition-1/
+-   https://os.phil-opp.com/edition-2/
 -   https://osdev.org/Main_Page
--   http://www.brokenthorn.com/Resources/OSDevIndex.html
 -   https://github.com/rust-osdev
+-   https://pages.cs.wisc.edu/~remzi/OSTEP
 -   https://singlelogin.re/book/25182527/e03396/modern-operating-systems.html
+-   http://www.brokenthorn.com/Resources/OSDevIndex.html
 -   https://www.gnu.org/software/grub/manual/multiboot2/multiboot.pdf
 -   `#os-dev`: https://discord.com/channels/273534239310479360/375706574133526529
--   improvement ideas: https://chat.openai.com/share/8aff468f-4ab9-4f35-80ca-a0425d1e8d83
 
 ## artistic direction
 
