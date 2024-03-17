@@ -14,11 +14,12 @@
 -   [x] For the link part, you must create a linker file with the GNU linker (ld).
 -   [x] Your Makefile must compile all your source files with the right flags and the right compiler.
 -   [x] After compilation, all the objects must be linked together in order to create the final Kernel binary.
--   [x] Add scroll and cursor support to your I/O interface.
+-   [ ] Add scroll support to your I/O interface.
+-   [x] Add cursor support to your I/O interface.
 -   [x] Add colors support to your I/O interface.
 -   [x] Add helpers like printf / printk in order to print information / debug easily.
 -   [x] Handle keyboard entries and print them.
--   [ ] Handle different screens, and keyboard shortcuts to switch easily between then.
+-   [x] Handle different screens, and keyboard shortcuts to switch easily between then.
 
 ### kfs2
 
@@ -35,6 +36,31 @@
 -   [ ] Shell: `reboot` command
 -   [ ] Shell: `halt` command
 -   [ ] Shell: other commands for debugging purposes
+
+### kfs3
+
+-   [ ] You must implement a complete, stable and functionnal memory system in your kernel.
+-   [ ] You must enable memory paging in your kernel
+-   [ ] You must code a memory structure that handle paging and memory rights
+-   [ ] You must define kernel and user space
+-   [ ] You must implement a function to create / get memory pages
+-   [ ] You must implement kmalloc, kfree, ksize, kbrk for physical memory
+-   [ ] You must implement vmalloc, vfree, vsize, vbrk for virtual memory
+-   [ ] You must handle "kernel panics" (print, stop the kernel)
+
+### kfs4
+
+-   [ ] Create an Interrupts Descriptor Table, fill it and register it
+-   [ ] Hardware Interrupts
+-   [ ] Software Interrupts
+-   [ ] A signal-callback system on your Kernel API
+-   [ ] An interface to schedule signals
+-   [ ] Global Panic Fault handling
+-   [ ] An interface to clean registers before a panic / halt
+-   [ ] An interface to save the stack before a panic
+-   [ ] When you’re done with all of that, you’ll have to implement a IDT keyboard handling system.
+-   [ ] It has not been said, but syscalls are also handled by the IDT. You can’t implement them now (No processus / Execution), but a good start could be coding the base functions for it, it could save you some work.
+-   [ ] Also, you can add some features to the keyboard handler, for example multi layouts (qwerty, azerty), base functions like get_line (just like read: waits for characters and return them when \n is pressed).
 
 ## todo
 
@@ -54,11 +80,9 @@
 
 ### shell
 
--   [ ] screens with F1-F12
--   [ ] each screen has a different color
--   [ ] handle up/down
--   [ ] implement shell history
+-   [ ] handle up/down (scroll history)
 -   [ ] basic shell commands
+-   [ ] fix num lock off bug
 
 ### later
 
@@ -79,6 +103,7 @@
 -   https://pages.cs.wisc.edu/~remzi/OSTEP
 -   https://singlelogin.re/book/25182527/e03396/modern-operating-systems.html
 -   http://www.brokenthorn.com/Resources/OSDevIndex.html
+-   https://samypesse.gitbook.io/how-to-create-an-operating-system
 -   https://www.gnu.org/software/grub/manual/multiboot2/multiboot.pdf
 -   `#os-dev`: https://discord.com/channels/273534239310479360/375706574133526529
 
