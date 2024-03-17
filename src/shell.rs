@@ -69,7 +69,79 @@ lazy_static! {
 }
 
 impl Shell {
-    pub fn switch_screen(&mut self, screen_idx: usize) {
+    pub fn init(&mut self) {
+        for i in (0..VGA_SCREENS).rev() {
+            // TODO: don't write to vga_buffer for screens 1..VGA_SCREENS
+            self.switch_screen(i);
+            self.print_welcome();
+            println!();
+            self.print_prompt();
+        }
+    }
+
+    pub fn send_key(&mut self, key: DecodedKey) {
+        use pc_keyboard::KeyCode;
+        let screen_idx = self.screen_idx;
+        // TODO: find a way to do let command = self.commands[screen_idx])
+        let start_len = self.commands[screen_idx].len;
+        let start_pos = self.commands[screen_idx].pos;
+        match key {
+            DecodedKey::Unicode(character) => match character {
+                special_char::NEWLINE => {
+                    println!();
+                    if self.commands[screen_idx].len > 0 {
+                        self.execute_command(screen_idx);
+                    }
+                    self.print_prompt();
+                    self.commands[screen_idx].len = 0;
+                    self.commands[screen_idx].set_pos(0);
+                }
+                special_char::BACKSPACE => {
+                    if self.commands[screen_idx].pos > 0 {
+                        self.delete_char(screen_idx, true);
+                    }
+                }
+                special_char::DELETE => {
+                    if start_pos < start_len {
+                        self.delete_char(screen_idx, false);
+                    }
+                }
+                '\x20'..='\x7e' => {
+                    if start_len < MAX_COMMAND_LEN {
+                        let command = &mut self.commands[screen_idx];
+                        for i in (start_pos..start_len).rev() {
+                            command.buffer[i + 1] = command.buffer[i];
+                        }
+                        command.buffer[start_pos] = character;
+                        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                        command.len += 1;
+                        for i in command.pos..command.len {
+                            print!("{}", command.buffer[i]);
+                        }
+                        command.pos += 1;
+                        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                    }
+                }
+                _ => {}
+            },
+            DecodedKey::RawKey(key) => match key {
+                KeyCode::ArrowLeft => self.commands[screen_idx].move_left(),
+                KeyCode::ArrowRight => self.commands[screen_idx].move_right(),
+                KeyCode::Home => self.commands[screen_idx].set_pos(0),
+                KeyCode::End => self.commands[screen_idx].set_pos(start_len),
+                // TODO: use range F1..F{VGA_SCREENS} once we implement the keyboard crate
+                KeyCode::F1 => self.switch_screen(0),
+                KeyCode::F2 => self.switch_screen(1),
+                KeyCode::F3 => self.switch_screen(2),
+                KeyCode::F4 => self.switch_screen(3),
+                _ => {
+                    // print!("{:?}", key)
+                }
+            },
+        }
+    }
+
+    fn switch_screen(&mut self, screen_idx: usize) {
         if screen_idx != self.screen_idx && screen_idx < VGA_SCREENS {
             self.screen_idx = screen_idx;
             let mut writer = WRITER.lock();
@@ -121,105 +193,33 @@ impl Shell {
         WRITER.lock().reset_foreground_color();
     }
 
-    pub fn init(&mut self) {
-        for i in (0..VGA_SCREENS).rev() {
-            // TODO: don't write to vga_buffer for screens 1..VGA_SCREENS
-            self.switch_screen(i);
-            self.print_welcome();
-            println!();
-            self.print_prompt();
+    fn delete_char(&mut self, screen_idx: usize, decrement_pos: bool) {
+        let command = &mut self.commands[screen_idx];
+        command.len -= 1;
+        if decrement_pos {
+            command.pos -= 1;
         }
+        for i in command.pos..command.len {
+            command.buffer[i] = command.buffer[i + 1];
+        }
+        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+        for i in command.pos..command.len {
+            print!("{}", command.buffer[i]);
+        }
+        print!(" ");
+        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
     }
-}
 
-fn delete_char(command: &mut CommandBuffer, decrement_pos: bool) {
-    command.len -= 1;
-    if decrement_pos {
-        command.pos -= 1;
-    }
-    for i in command.pos..command.len {
-        command.buffer[i] = command.buffer[i + 1];
-    }
-    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-    for i in command.pos..command.len {
-        print!("{}", command.buffer[i]);
-    }
-    print!(" ");
-    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-}
-
-fn execute_command(command: &CommandBuffer) {
-    // TODO: basic commands:
-    // - clear screen
-    // - get basic info
-    // - exit
-    // - print shell number
-    for i in (0..command.len).rev() {
-        print!("{}", command.buffer[i]);
-    }
-    println!();
-}
-
-// TODO: method of SHELL?
-pub fn send_key(key: DecodedKey) {
-    use pc_keyboard::KeyCode;
-    let mut shell = SHELL.lock();
-    let screen_idx = shell.screen_idx;
-    // TODO: find a way to do let command = shell.commands[screen_idx])
-    let start_len = shell.commands[screen_idx].len;
-    let start_pos = shell.commands[screen_idx].pos;
-    match key {
-        DecodedKey::Unicode(character) => match character {
-            special_char::NEWLINE => {
-                println!();
-                if shell.commands[screen_idx].len > 0 {
-                    execute_command(&shell.commands[screen_idx]);
-                }
-                shell.print_prompt();
-                shell.commands[screen_idx].len = 0;
-                shell.commands[screen_idx].set_pos(0);
-            }
-            special_char::BACKSPACE => {
-                if shell.commands[screen_idx].pos > 0 {
-                    delete_char(&mut shell.commands[screen_idx], true);
-                }
-            }
-            special_char::DELETE => {
-                if start_pos < start_len {
-                    delete_char(&mut shell.commands[screen_idx], false);
-                }
-            }
-            '\x20'..='\x7e' => {
-                if start_len < MAX_COMMAND_LEN {
-                    let command = &mut shell.commands[screen_idx];
-                    for i in (start_pos..start_len).rev() {
-                        command.buffer[i + 1] = command.buffer[i];
-                    }
-                    command.buffer[start_pos] = character;
-                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-                    command.len += 1;
-                    for i in command.pos..command.len {
-                        print!("{}", command.buffer[i]);
-                    }
-                    command.pos += 1;
-                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-                }
-            }
-            _ => {}
-        },
-        DecodedKey::RawKey(key) => match key {
-            KeyCode::ArrowLeft => shell.commands[screen_idx].move_left(),
-            KeyCode::ArrowRight => shell.commands[screen_idx].move_right(),
-            KeyCode::Home => shell.commands[screen_idx].set_pos(0),
-            KeyCode::End => shell.commands[screen_idx].set_pos(start_len),
-            // TODO: use range F1..F{VGA_SCREENS} once we implement the keyboard crate
-            KeyCode::F1 => shell.switch_screen(0),
-            KeyCode::F2 => shell.switch_screen(1),
-            KeyCode::F3 => shell.switch_screen(2),
-            KeyCode::F4 => shell.switch_screen(3),
-            _ => {
-                // print!("{:?}", key)
-            }
-        },
+    fn execute_command(&mut self, screen_idx: usize) {
+        // TODO: basic commands:
+        // - clear screen
+        // - get basic info
+        // - exit
+        // - print shell number
+        let command = &mut self.commands[screen_idx];
+        for i in (0..command.len).rev() {
+            print!("{}", command.buffer[i]);
+        }
+        println!();
     }
 }
