@@ -48,6 +48,20 @@
 -   [ ] You must implement vmalloc, vfree, vsize, vbrk for virtual memory
 -   [ ] You must handle "kernel panics" (print, stop the kernel)
 
+### kfs4
+
+-   [ ] Create an Interrupts Descriptor Table, fill it and register it
+-   [ ] Hardware Interrupts
+-   [ ] Software Interrupts
+-   [ ] A signal-callback system on your Kernel API
+-   [ ] An interface to schedule signals
+-   [ ] Global Panic Fault handling
+-   [ ] An interface to clean registers before a panic / halt
+-   [ ] An interface to save the stack before a panic
+-   [ ] When you’re done with all of that, you’ll have to implement a IDT keyboard handling system.
+-   [ ] It has not been said, but syscalls are also handled by the IDT. You can’t implement them now (No processus / Execution), but a good start could be coding the base functions for it, it could save you some work.
+-   [ ] Also, you can add some features to the keyboard handler, for example multi layouts (qwerty, azerty), base functions like get_line (just like read: waits for characters and return them when \n is pressed).
+
 ## todo
 
 ### misc
