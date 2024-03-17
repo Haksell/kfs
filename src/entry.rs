@@ -3,7 +3,6 @@ use core::marker::PhantomData;
 use x86_64::{
     registers::segmentation::{Segment, CS},
     structures::idt::InterruptStackFrame,
-    VirtAddr,
 };
 
 #[derive(Clone, Copy)]
@@ -33,9 +32,7 @@ impl<F> Entry<F> {
     }
 
     #[inline]
-    pub unsafe fn set_handler_addr(&mut self, addr: VirtAddr) -> &mut EntryOptions {
-        let addr = addr.as_u64();
-
+    pub unsafe fn set_handler_addr(&mut self, addr: u64) -> &mut EntryOptions {
         self.pointer_low = addr as u16;
         self.pointer_middle = (addr >> 16) as u16;
         self.pointer_high = (addr >> 32) as u32;
@@ -51,12 +48,12 @@ impl<F> Entry<F> {
 pub type HandlerFunc = extern "x86-interrupt" fn(InterruptStackFrame);
 
 pub trait HandlerFuncType {
-    fn to_virt_addr(self) -> VirtAddr;
+    fn to_virt_addr(self) -> u64;
 }
 
 impl HandlerFuncType for HandlerFunc {
-    fn to_virt_addr(self) -> VirtAddr {
-        VirtAddr::new(self as u64)
+    fn to_virt_addr(self) -> u64 {
+        self as u64
     }
 }
 
