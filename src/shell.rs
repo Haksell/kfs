@@ -120,7 +120,7 @@ fn delete_char(command: &mut MutexGuard<CommandBuffer>, decrement_pos: bool) {
 
 fn execute_command(command: &MutexGuard<CommandBuffer>) {
     // TODO: basic commands:
-    // - change screen
+    // - clear screen
     // - get basic info
     // - exit
     // - print shell number
