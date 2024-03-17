@@ -43,6 +43,7 @@ struct ScreenChar {
     color_code: ColorCode,
 }
 
+// TODO: put in some utility module
 fn write_port(port: u16, value: u8) {
     unsafe {
         let mut port = Port::new(port);
