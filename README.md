@@ -31,7 +31,7 @@
 -   [ ] bring back testing and more useful stuff from from https://github.com/Haksell/os_blog_v2
 -   [ ] colorful tests (with color module based on `colored`)
 -   [ ] fix compiler warnings
--   [ ] improve Makefile/Dockerfile for optimal compilation
+-   [ ] install `grub-mkrescue` and all its dependencies locally
 -   [ ] set timeout=10 for correction
 
 ### shell
@@ -63,6 +63,6 @@
 -   `#os-dev`: https://discord.com/channels/273534239310479360/375706574133526529
 -   improvement ideas: https://chat.openai.com/share/8aff468f-4ab9-4f35-80ca-a0425d1e8d83
 
-## garbage
+## artistic direction
 
 ![artistic direction](https://upload.wikimedia.org/wikipedia/commons/a/a0/VirtualBox_TempleOS_x64_27_02_2021_20_43_48.png)

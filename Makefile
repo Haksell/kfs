@@ -54,4 +54,4 @@ $(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: src/arch/$(ARCH)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f $(ELF_FORMAT) $< -o $@
 
-.PHONY: all re run rerun iso clean
+.PHONY: all re run rerun clean

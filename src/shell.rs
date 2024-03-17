@@ -118,7 +118,10 @@ fn delete_char(command: &mut MutexGuard<CommandBuffer>, decrement_pos: bool) {
 }
 
 fn execute_command(command: &MutexGuard<CommandBuffer>) {
-    // TODO: basic commands to change color of prompt, get basic info...
+    // TODO: basic commands:
+    // - change screen
+    // - get basic info
+    // - exit
     for i in (0..command.len).rev() {
         print!("{}", command.buffer[i]);
     }
