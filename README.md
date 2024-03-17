@@ -44,6 +44,7 @@
 -   [ ] each screen has a different color
 -   [ ] handle up/down
 -   [ ] implement shell history
+-   [ ] basic shell commands
 
 ### later
 
