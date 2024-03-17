@@ -1,6 +1,6 @@
 use bit_field::BitField;
 use core::{arch::asm, marker::PhantomData};
-use x86_64::structures::{gdt::SegmentSelector, idt::InterruptStackFrame};
+use x86_64::structures::idt::InterruptStackFrame;
 
 #[derive(Clone, Copy)]
 #[repr(C)]
@@ -78,6 +78,10 @@ impl EntryOptions {
         self
     }
 }
+
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(transparent)]
+pub struct SegmentSelector(pub u16);
 
 pub trait Segment {
     fn get_reg() -> SegmentSelector;
