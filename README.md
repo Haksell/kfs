@@ -37,6 +37,17 @@
 -   [ ] Shell: `halt` command
 -   [ ] Shell: other commands for debugging purposes
 
+### kfs3
+
+-   [ ] You must implement a complete, stable and functionnal memory system in your kernel.
+-   [ ] You must enable memory paging in your kernel
+-   [ ] You must code a memory structure that handle paging and memory rights
+-   [ ] You must define kernel and user space
+-   [ ] You must implement a function to create / get memory pages
+-   [ ] You must implement kmalloc, kfree, ksize, kbrk for physical memory
+-   [ ] You must implement vmalloc, vfree, vsize, vbrk for virtual memory
+-   [ ] You must handle "kernel panics" (print, stop the kernel)
+
 ## todo
 
 ### misc
