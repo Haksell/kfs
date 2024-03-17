@@ -2,6 +2,8 @@
 
 ## subject
 
+### kfs1
+
 -   [x] Install GRUB on a virtual image
 -   [x] Write an ASM boot code that handles multiboot header, and use GRUB to init and call main function of the kernel itself.
 -   [x] Write basic kernel code of the choosen language.
@@ -14,10 +16,12 @@
 -   [x] Your Makefile must compile all your source files with the right flags and the right compiler.
 -   [x] After compilation, all the objects must be linked together in order to create the final Kernel binary.
 -   [x] Add scroll and cursor support to your I/O interface.
--   [x] Handle keyboard entries and print them.
 -   [x] Add colors support to your I/O interface.
 -   [x] Add helpers like printf / printk in order to print information / debug easily.
+-   [x] Handle keyboard entries and print them.
 -   [ ] Handle different screens, and keyboard shortcuts to switch easily between then.
+
+### kfs2
 
 ## todo
 

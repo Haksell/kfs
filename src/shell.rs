@@ -154,7 +154,7 @@ pub fn send_key(key: DecodedKey) {
                     delete_char(&mut command, false);
                 }
             }
-            _ => {
+            '\x20'..='\x7e' => {
                 if command.len < MAX_COMMAND_LEN {
                     for i in (command.pos..command.len).rev() {
                         command.buffer[i + 1] = command.buffer[i];
@@ -169,6 +169,7 @@ pub fn send_key(key: DecodedKey) {
                     WRITER.lock().set_cursor(PROMPT.len() + command.pos);
                 }
             }
+            _ => {}
         },
         DecodedKey::RawKey(key) => match key {
             KeyCode::ArrowLeft => command.move_left(),
