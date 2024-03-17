@@ -2,6 +2,7 @@ use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
+use x86_64::instructions::port::Port;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -42,12 +43,27 @@ struct ScreenChar {
     color_code: ColorCode,
 }
 
-const BUFFER_HEIGHT: usize = 25;
-const BUFFER_WIDTH: usize = 80;
+fn write_port(port: u16, value: u8) {
+    unsafe {
+        let mut port = Port::new(port);
+        port.write(value);
+    }
+}
+
+fn update_cursor(row: usize, col: usize) {
+    let pos = row * VGA_WIDTH + col;
+    write_port(0x3D4, 0x0E);
+    write_port(0x3D5, (pos >> 8) as u8);
+    write_port(0x3D4, 0x0F);
+    write_port(0x3D5, (pos & 0xFF) as u8);
+}
+
+pub const VGA_HEIGHT: usize = 25;
+pub const VGA_WIDTH: usize = 80;
 
 #[repr(transparent)]
 struct Buffer {
-    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
+    chars: [[Volatile<ScreenChar>; VGA_WIDTH]; VGA_HEIGHT],
 }
 
 pub struct Writer {
@@ -61,25 +77,48 @@ impl Writer {
         match byte {
             b'\n' => self.new_line(),
             byte => {
-                if self.column_position >= BUFFER_WIDTH {
+                if self.column_position >= VGA_WIDTH {
                     self.new_line();
                 }
-                self.buffer.chars[BUFFER_HEIGHT - 1][self.column_position].write(ScreenChar {
+                self.buffer.chars[VGA_HEIGHT - 1][self.column_position].write(ScreenChar {
                     ascii_character: byte,
                     color_code: self.color_code,
                 });
                 self.column_position += 1;
             }
         }
+        update_cursor(VGA_HEIGHT - 1, self.column_position);
+    }
+
+    // TODO: write_bytes that accepts a &[u8] and only moves the cursor once
+
+    pub fn write_bytes(&mut self, byte: u8, repeat: usize) {
+        for _ in 0..repeat {
+            self.write_byte(byte);
+        }
+    }
+
+    pub fn set_foreground_color(&mut self, foreground_code: Color) {
+        // TODO: keep old background color
+        self.color_code = ColorCode::new(foreground_code, Color::Black);
+    }
+
+    pub fn reset_foreground_color(&mut self) {
+        self.set_foreground_color(Color::White);
+    }
+
+    pub fn set_cursor(&mut self, col: usize) {
+        self.column_position = col;
+        update_cursor(VGA_HEIGHT - 1, self.column_position);
     }
 
     fn new_line(&mut self) {
-        for y in 1..BUFFER_HEIGHT {
-            for x in 0..BUFFER_WIDTH {
+        for y in 1..VGA_HEIGHT {
+            for x in 0..VGA_WIDTH {
                 self.buffer.chars[y - 1][x].write(self.buffer.chars[y][x].read());
             }
         }
-        self.clear_row(BUFFER_HEIGHT - 1);
+        self.clear_row(VGA_HEIGHT - 1);
         self.column_position = 0;
     }
 
@@ -88,7 +127,7 @@ impl Writer {
             ascii_character: b' ',
             color_code: self.color_code,
         };
-        for col in 0..BUFFER_WIDTH {
+        for col in 0..VGA_WIDTH {
             self.buffer.chars[row][col].write(blank);
         }
     }
@@ -98,7 +137,7 @@ impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         for byte in s.bytes() {
             match byte {
-                0x20..=0x7e | b'\n' => self.write_byte(byte),
+                0x20..=0x7e | 0x08 | b'\n' => self.write_byte(byte),
                 _ => self.write_byte(0xfe),
             }
         }
@@ -109,7 +148,7 @@ impl fmt::Write for Writer {
 lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
-        color_code: ColorCode::new(Color::LightGreen, Color::Black),
+        color_code: ColorCode::new(Color::White, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     });
 }
@@ -134,7 +173,7 @@ pub fn _print(args: fmt::Arguments) {
 }
 
 pub fn clear_screen() {
-    for _ in 0..BUFFER_HEIGHT {
+    for _ in 0..VGA_HEIGHT {
         println!("");
     }
 }

@@ -6,13 +6,16 @@ use core::panic::PanicInfo;
 mod idt;
 mod interrupts;
 mod pic;
+mod shell;
 mod vga_buffer;
 
 #[no_mangle]
 pub extern "C" fn rust_main() {
-    init();
+    interrupts::init();
+    unsafe { interrupts::PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
     vga_buffer::clear_screen();
-    println!("K{}S {}", 'F', 6 * 7);
+    shell::init();
     hlt_loop()
 }
 
@@ -20,12 +23,6 @@ pub extern "C" fn rust_main() {
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
     hlt_loop();
-}
-
-fn init() {
-    interrupts::init();
-    unsafe { interrupts::PICS.lock().initialize() };
-    x86_64::instructions::interrupts::enable();
 }
 
 pub fn hlt_loop() -> ! {
