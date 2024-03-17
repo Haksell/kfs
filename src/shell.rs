@@ -7,6 +7,7 @@ use pc_keyboard::DecodedKey;
 use spin::{Mutex, MutexGuard};
 
 // TODO: test profusely, especially special characters
+// There are too many locks, I'm scared of deadlocks in case of interrupts
 
 // Maybe an enum or a transparent struct would be better?
 mod special_char {
@@ -177,6 +178,19 @@ pub fn send_key(key: DecodedKey) {
             KeyCode::ArrowRight => command.move_right(),
             KeyCode::Home => command.set_pos(0),
             KeyCode::End => command.set_pos(start_len),
+            // TODO: use range F1..F12
+            KeyCode::F1 => WRITER.lock().switch_screen(0),
+            KeyCode::F2 => WRITER.lock().switch_screen(1),
+            KeyCode::F3 => WRITER.lock().switch_screen(2),
+            KeyCode::F4 => WRITER.lock().switch_screen(3),
+            KeyCode::F5 => WRITER.lock().switch_screen(4),
+            KeyCode::F6 => WRITER.lock().switch_screen(5),
+            KeyCode::F7 => WRITER.lock().switch_screen(6),
+            KeyCode::F8 => WRITER.lock().switch_screen(7),
+            KeyCode::F9 => WRITER.lock().switch_screen(8),
+            KeyCode::F10 => WRITER.lock().switch_screen(9),
+            KeyCode::F11 => WRITER.lock().switch_screen(10),
+            KeyCode::F12 => WRITER.lock().switch_screen(11),
             _ => print!("{:?}", key), // TODO: remove
         },
     }

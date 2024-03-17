@@ -31,8 +31,8 @@ pub enum Color {
 struct ColorCode(u8);
 
 impl ColorCode {
-    fn new(foreground: Color, background: Color) -> ColorCode {
-        ColorCode((background as u8) << 4 | (foreground as u8))
+    fn new(foreground: Color, background: Color) -> Self {
+        Self((background as u8) << 4 | (foreground as u8))
     }
 }
 
@@ -41,6 +41,15 @@ impl ColorCode {
 struct ScreenChar {
     ascii_character: u8,
     color_code: ColorCode,
+}
+
+impl ScreenChar {
+    fn empty() -> Self {
+        Self {
+            ascii_character: b' ',
+            color_code: ColorCode::new(Color::Black, Color::Black),
+        }
+    }
 }
 
 // TODO: put in some utility module
@@ -61,6 +70,7 @@ fn update_cursor(row: usize, col: usize) {
 
 pub const VGA_HEIGHT: usize = 25;
 pub const VGA_WIDTH: usize = 80;
+pub const VGA_SCREENS: usize = 12;
 
 #[repr(transparent)]
 struct Buffer {
@@ -71,6 +81,8 @@ pub struct Writer {
     column_position: usize,
     color_code: ColorCode,
     buffer: &'static mut Buffer,
+    screen_idx: usize,
+    screens: [[[ScreenChar; VGA_WIDTH]; VGA_HEIGHT]; VGA_SCREENS],
 }
 
 impl Writer {
@@ -81,10 +93,12 @@ impl Writer {
                 if self.column_position >= VGA_WIDTH {
                     self.new_line();
                 }
-                self.buffer.chars[VGA_HEIGHT - 1][self.column_position].write(ScreenChar {
+                let screen_char = ScreenChar {
                     ascii_character: byte,
                     color_code: self.color_code,
-                });
+                };
+                self.buffer.chars[VGA_HEIGHT - 1][self.column_position].write(screen_char);
+                self.screens[self.screen_idx][VGA_HEIGHT - 1][self.column_position] = screen_char;
                 self.column_position += 1;
             }
         }
@@ -113,23 +127,37 @@ impl Writer {
         update_cursor(VGA_HEIGHT - 1, self.column_position);
     }
 
+    pub fn switch_screen(&mut self, screen_idx: usize) {
+        // Breaks if screen_idx > VGA_SCREENS. Use assert!() ?
+        if screen_idx != self.screen_idx {
+            self.screen_idx = screen_idx;
+            for y in 0..VGA_HEIGHT {
+                for x in 0..VGA_WIDTH {
+                    self.buffer.chars[y][x].write(self.screens[screen_idx][y][x]);
+                }
+            }
+        }
+    }
+
     fn new_line(&mut self) {
         for y in 1..VGA_HEIGHT {
             for x in 0..VGA_WIDTH {
-                self.buffer.chars[y - 1][x].write(self.buffer.chars[y][x].read());
+                self.buffer.chars[y - 1][x].write(self.screens[self.screen_idx][y][x]);
+                self.screens[self.screen_idx][y - 1][x] = self.screens[self.screen_idx][y][x];
             }
         }
         self.clear_row(VGA_HEIGHT - 1);
         self.column_position = 0;
     }
 
-    fn clear_row(&mut self, row: usize) {
+    fn clear_row(&mut self, y: usize) {
         let blank = ScreenChar {
             ascii_character: b' ',
             color_code: self.color_code,
         };
-        for col in 0..VGA_WIDTH {
-            self.buffer.chars[row][col].write(blank);
+        for x in 0..VGA_WIDTH {
+            self.buffer.chars[y][x].write(blank);
+            self.screens[self.screen_idx][y][x] = blank;
         }
     }
 }
@@ -151,6 +179,8 @@ lazy_static! {
         column_position: 0,
         color_code: ColorCode::new(Color::White, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+        screen_idx: 0,
+        screens: [[[ScreenChar::empty(); VGA_WIDTH]; VGA_HEIGHT]; VGA_SCREENS],
     });
 }
 
@@ -173,6 +203,7 @@ pub fn _print(args: fmt::Arguments) {
     });
 }
 
+// TODO: make private, and implement clear_screens function
 pub fn clear_screen() {
     for _ in 0..VGA_HEIGHT {
         println!("");
