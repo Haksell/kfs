@@ -45,7 +45,7 @@
 -   [ ] implement `pc-keyboard`
 -   [ ] make everything work with `i386`
 -   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
--   [ ] call `exit_qemu` on `Ctrl+D` or `exit` commands
+-   [ ] call `exit_qemu` on `Esc`, `Ctrl+D` or `exit` command
 -   [ ] bring back testing and more useful stuff from from https://github.com/Haksell/os_blog_v2
 -   [ ] colorful tests (with color module based on `colored`)
 -   [ ] fix compiler warnings
