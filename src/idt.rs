@@ -3,7 +3,8 @@ use core::{
     ops::{Index, IndexMut},
 };
 
-use x86_64::structures::idt::{Entry, HandlerFunc};
+use crate::entry::Entry;
+use x86_64::structures::idt::HandlerFunc;
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C, packed(2))]

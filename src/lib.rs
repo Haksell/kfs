@@ -3,6 +3,7 @@
 
 use core::panic::PanicInfo;
 
+mod entry;
 mod idt;
 mod interrupts;
 mod pic;
