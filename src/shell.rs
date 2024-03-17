@@ -52,13 +52,13 @@ impl CommandBuffer {
     }
 }
 
-struct Shell {
+pub struct Shell {
     screen_idx: usize,
     commands: [CommandBuffer; VGA_SCREENS],
 }
 
 lazy_static! {
-    static ref SHELL: Mutex<Shell> = Mutex::new(Shell {
+    pub static ref SHELL: Mutex<Shell> = Mutex::new(Shell {
         screen_idx: 0,
         commands: core::array::from_fn(|_| CommandBuffer {
             buffer: ['\0'; MAX_COMMAND_LEN],
@@ -222,8 +222,4 @@ pub fn send_key(key: DecodedKey) {
             }
         },
     }
-}
-
-pub fn init() {
-    SHELL.lock().init();
 }
