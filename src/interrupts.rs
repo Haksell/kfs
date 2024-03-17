@@ -2,7 +2,7 @@ use core::arch::asm;
 
 use crate::idt::InterruptDescriptorTable;
 use crate::pic::ChainedPics;
-use crate::shell;
+use crate::shell::SHELL;
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -76,7 +76,7 @@ extern "x86-interrupt" fn keyboard_interrupt_handler() {
 
     if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
         if let Some(key) = keyboard.process_keyevent(key_event) {
-            shell::send_key(key);
+            SHELL.lock().send_key(key);
         }
     }
 

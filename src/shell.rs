@@ -1,12 +1,13 @@
 use crate::{
     print, println,
-    vga_buffer::{Color, VGA_WIDTH, WRITER},
+    vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER},
 };
 use lazy_static::lazy_static;
 use pc_keyboard::DecodedKey;
-use spin::{Mutex, MutexGuard};
+use spin::Mutex;
 
 // TODO: test profusely, especially special characters
+// There are too many locks, I'm scared of deadlocks in case of interrupts
 
 // Maybe an enum or a transparent struct would be better?
 mod special_char {
@@ -15,9 +16,15 @@ mod special_char {
     pub const DELETE: char = '\x7f';
 }
 
-const PRIMARY_COLOR: Color = Color::LightGreen;
-const PROMPT: &'static str = "> "; // TODO: &[u8]
+const SCREEN_COLORS: [Color; VGA_SCREENS] = [
+    Color::LightGreen,
+    Color::LightCyan,
+    Color::LightRed,
+    Color::Pink,
+];
+const PROMPT: &'static str = "> "; // TODO: [ScreenChar; PROMPT_LEN]
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
+const MENU_MARGIN: usize = 10;
 
 struct CommandBuffer {
     buffer: [char; MAX_COMMAND_LEN], // TODO: [u8; MAX_COMMAND_LEN]
@@ -45,138 +52,174 @@ impl CommandBuffer {
     }
 }
 
+pub struct Shell {
+    screen_idx: usize,
+    commands: [CommandBuffer; VGA_SCREENS],
+}
+
 lazy_static! {
-    static ref COMMAND: Mutex<CommandBuffer> = Mutex::new(CommandBuffer {
-        buffer: ['\0'; MAX_COMMAND_LEN],
-        len: 0,
-        pos: 0,
+    pub static ref SHELL: Mutex<Shell> = Mutex::new(Shell {
+        screen_idx: 0,
+        commands: core::array::from_fn(|_| CommandBuffer {
+            buffer: ['\0'; MAX_COMMAND_LEN],
+            len: 0,
+            pos: 0,
+        }),
     });
 }
 
-fn print_prompt() {
-    WRITER.lock().set_foreground_color(PRIMARY_COLOR);
-    print!("{}", PROMPT);
-    WRITER.lock().reset_foreground_color();
-}
-
-const MENU_MARGIN: usize = 10;
-
-fn print_welcome_line(left: u8, middle: u8, right: u8) {
-    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
-    WRITER.lock().write_byte(left);
-    WRITER
-        .lock()
-        .write_bytes(middle, VGA_WIDTH - 2 - 2 * MENU_MARGIN);
-    WRITER.lock().write_byte(right);
-    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
-}
-
-fn print_welcome_title(s: &str) {
-    let remaining_width = VGA_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
-    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
-    WRITER.lock().write_byte(b'\xba');
-    WRITER.lock().write_bytes(b' ', remaining_width >> 1);
-    for b in s.bytes() {
-        WRITER.lock().write_byte(b);
+impl Shell {
+    pub fn init(&mut self) {
+        for i in (0..VGA_SCREENS).rev() {
+            // TODO: don't write to vga_buffer for screens 1..VGA_SCREENS
+            self.switch_screen(i);
+            self.print_welcome();
+            println!();
+            self.print_prompt();
+        }
     }
-    WRITER.lock().write_bytes(b' ', (remaining_width + 1) >> 1);
-    WRITER.lock().write_byte(b'\xba');
-    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
-}
 
-fn print_welcome() {
-    WRITER.lock().set_foreground_color(PRIMARY_COLOR);
-    print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
-    print_welcome_line(b'\xba', b' ', b'\xba');
-    print_welcome_title("KFS 42");
-    print_welcome_line(b'\xba', b' ', b'\xba');
-    print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
-    WRITER.lock().reset_foreground_color();
-}
-
-pub fn init() {
-    print_welcome();
-    println!();
-    println!();
-    print_prompt();
-}
-
-fn delete_char(command: &mut MutexGuard<CommandBuffer>, decrement_pos: bool) {
-    command.len -= 1;
-    if decrement_pos {
-        command.pos -= 1;
-    }
-    for i in command.pos..command.len {
-        command.buffer[i] = command.buffer[i + 1];
-    }
-    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-    for i in command.pos..command.len {
-        print!("{}", command.buffer[i]);
-    }
-    print!(" ");
-    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-}
-
-fn execute_command(command: &MutexGuard<CommandBuffer>) {
-    // TODO: basic commands:
-    // - change screen
-    // - get basic info
-    // - exit
-    for i in (0..command.len).rev() {
-        print!("{}", command.buffer[i]);
-    }
-    println!();
-}
-
-pub fn send_key(key: DecodedKey) {
-    use pc_keyboard::KeyCode;
-    let mut command = COMMAND.lock();
-    let start_len = command.len;
-    let start_pos = command.pos;
-    match key {
-        DecodedKey::Unicode(character) => match character {
-            special_char::NEWLINE => {
-                println!();
-                if command.len > 0 {
-                    execute_command(&command);
-                }
-                print_prompt();
-                command.len = 0;
-                command.set_pos(0);
-            }
-            special_char::BACKSPACE => {
-                if command.pos > 0 {
-                    delete_char(&mut command, true);
-                }
-            }
-            special_char::DELETE => {
-                if command.pos < command.len {
-                    delete_char(&mut command, false);
-                }
-            }
-            '\x20'..='\x7e' => {
-                if command.len < MAX_COMMAND_LEN {
-                    for i in (command.pos..command.len).rev() {
-                        command.buffer[i + 1] = command.buffer[i];
+    pub fn send_key(&mut self, key: DecodedKey) {
+        use pc_keyboard::KeyCode;
+        let screen_idx = self.screen_idx;
+        // TODO: find a way to do let command = self.commands[screen_idx])
+        let start_len = self.commands[screen_idx].len;
+        let start_pos = self.commands[screen_idx].pos;
+        match key {
+            DecodedKey::Unicode(character) => match character {
+                special_char::NEWLINE => {
+                    println!();
+                    if self.commands[screen_idx].len > 0 {
+                        self.execute_command(screen_idx);
                     }
-                    command.buffer[start_pos] = character;
-                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
-                    command.len += 1;
-                    for i in command.pos..command.len {
-                        print!("{}", command.buffer[i]);
-                    }
-                    command.pos += 1;
-                    WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                    self.print_prompt();
+                    self.commands[screen_idx].len = 0;
+                    self.commands[screen_idx].set_pos(0);
                 }
-            }
-            _ => {}
-        },
-        DecodedKey::RawKey(key) => match key {
-            KeyCode::ArrowLeft => command.move_left(),
-            KeyCode::ArrowRight => command.move_right(),
-            KeyCode::Home => command.set_pos(0),
-            KeyCode::End => command.set_pos(start_len),
-            _ => print!("{:?}", key), // TODO: remove
-        },
+                special_char::BACKSPACE => {
+                    if self.commands[screen_idx].pos > 0 {
+                        self.delete_char(screen_idx, true);
+                    }
+                }
+                special_char::DELETE => {
+                    if start_pos < start_len {
+                        self.delete_char(screen_idx, false);
+                    }
+                }
+                '\x20'..='\x7e' => {
+                    if start_len < MAX_COMMAND_LEN {
+                        let command = &mut self.commands[screen_idx];
+                        for i in (start_pos..start_len).rev() {
+                            command.buffer[i + 1] = command.buffer[i];
+                        }
+                        command.buffer[start_pos] = character;
+                        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                        command.len += 1;
+                        for i in command.pos..command.len {
+                            print!("{}", command.buffer[i]);
+                        }
+                        command.pos += 1;
+                        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                    }
+                }
+                _ => {}
+            },
+            DecodedKey::RawKey(key) => match key {
+                KeyCode::ArrowLeft => self.commands[screen_idx].move_left(),
+                KeyCode::ArrowRight => self.commands[screen_idx].move_right(),
+                KeyCode::Home => self.commands[screen_idx].set_pos(0),
+                KeyCode::End => self.commands[screen_idx].set_pos(start_len),
+                // TODO: use range F1..F{VGA_SCREENS} once we implement the keyboard crate
+                KeyCode::F1 => self.switch_screen(0),
+                KeyCode::F2 => self.switch_screen(1),
+                KeyCode::F3 => self.switch_screen(2),
+                KeyCode::F4 => self.switch_screen(3),
+                _ => {
+                    // print!("{:?}", key)
+                }
+            },
+        }
+    }
+
+    fn switch_screen(&mut self, screen_idx: usize) {
+        if screen_idx != self.screen_idx && screen_idx < VGA_SCREENS {
+            self.screen_idx = screen_idx;
+            let mut writer = WRITER.lock();
+            writer.switch_screen(screen_idx);
+            writer.set_cursor(PROMPT.len() + self.commands[screen_idx].pos);
+        }
+    }
+
+    fn print_prompt(&self) {
+        WRITER
+            .lock()
+            .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
+        print!("{}", PROMPT);
+        WRITER.lock().reset_foreground_color();
+    }
+
+    fn print_welcome_line(&self, left: u8, middle: u8, right: u8) {
+        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+        WRITER.lock().write_byte(left);
+        WRITER
+            .lock()
+            .write_bytes(middle, VGA_WIDTH - 2 - 2 * MENU_MARGIN);
+        WRITER.lock().write_byte(right);
+        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+    }
+
+    fn print_welcome_title(&self, s: &str) {
+        let remaining_width = VGA_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
+        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+        WRITER.lock().write_byte(b'\xba');
+        WRITER.lock().write_bytes(b' ', remaining_width >> 1);
+        for b in s.bytes() {
+            WRITER.lock().write_byte(b);
+        }
+        WRITER.lock().write_bytes(b' ', (remaining_width + 1) >> 1);
+        WRITER.lock().write_byte(b'\xba');
+        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+    }
+
+    fn print_welcome(&self) {
+        WRITER
+            .lock()
+            .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
+        self.print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
+        self.print_welcome_line(b'\xba', b' ', b'\xba');
+        self.print_welcome_title("KFS 42"); // TODO: print screen_idx instead of 42
+        self.print_welcome_line(b'\xba', b' ', b'\xba');
+        self.print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
+        WRITER.lock().reset_foreground_color();
+    }
+
+    fn delete_char(&mut self, screen_idx: usize, decrement_pos: bool) {
+        let command = &mut self.commands[screen_idx];
+        command.len -= 1;
+        if decrement_pos {
+            command.pos -= 1;
+        }
+        for i in command.pos..command.len {
+            command.buffer[i] = command.buffer[i + 1];
+        }
+        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+        for i in command.pos..command.len {
+            print!("{}", command.buffer[i]);
+        }
+        print!(" ");
+        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+    }
+
+    fn execute_command(&mut self, screen_idx: usize) {
+        // TODO: basic commands:
+        // - clear screen
+        // - get basic info
+        // - exit
+        // - print shell number
+        let command = &mut self.commands[screen_idx];
+        for i in (0..command.len).rev() {
+            print!("{}", command.buffer[i]);
+        }
+        println!();
     }
 }

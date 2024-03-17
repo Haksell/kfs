@@ -14,17 +14,17 @@ mod vga_buffer;
 #[no_mangle]
 pub extern "C" fn rust_main() {
     interrupts::init();
-    unsafe { interrupts::PICS.lock().initialize() };
+    unsafe { interrupts::PICS.lock().initialize() }; // TODO: init instead of initialize
     interrupts::enable();
-    vga_buffer::clear_screen();
-    shell::init();
+    vga_buffer::clear_vga_buffer();
+    shell::SHELL.lock().init();
     hlt_loop()
 }
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    hlt_loop();
+    hlt_loop()
 }
 
 pub fn hlt_loop() -> ! {
