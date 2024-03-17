@@ -27,7 +27,7 @@ error:
     mov byte [0xb800a], al
     hlt
 
-
+; TODO: 3-level memory paging explained in kfs-3
 section .bss
 align 4096
 stack_bottom:

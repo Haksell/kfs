@@ -24,7 +24,7 @@ const SCREEN_COLORS: [Color; VGA_SCREENS] = [
 ];
 const PROMPT: &'static str = "> "; // TODO: [ScreenChar; PROMPT_LEN]
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
-const MENU_MARGIN: usize = 10;
+const WELCOME_MARGIN: usize = 10;
 
 struct CommandBuffer {
     buffer: [char; MAX_COMMAND_LEN], // TODO: [u8; MAX_COMMAND_LEN]
@@ -72,8 +72,10 @@ impl Shell {
     pub fn init(&mut self) {
         for i in (0..VGA_SCREENS).rev() {
             // TODO: don't write to vga_buffer for screens 1..VGA_SCREENS
-            self.switch_screen(i);
+            self.screen_idx = i;
+            WRITER.lock().switch_screen(i, 0);
             self.print_welcome();
+            println!();
             println!();
             self.print_prompt();
         }
@@ -144,8 +146,9 @@ impl Shell {
     fn switch_screen(&mut self, screen_idx: usize) {
         if screen_idx != self.screen_idx && screen_idx < VGA_SCREENS {
             self.screen_idx = screen_idx;
-            let mut writer = WRITER.lock();
-            writer.switch_screen(screen_idx, self.commands[screen_idx].pos + PROMPT.len());
+            WRITER
+                .lock()
+                .switch_screen(screen_idx, self.commands[screen_idx].pos + PROMPT.len());
         }
     }
 
@@ -157,19 +160,19 @@ impl Shell {
         WRITER.lock().reset_foreground_color();
     }
 
-    fn print_welcome_line(&self, left: u8, middle: u8, right: u8) {
-        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+    fn print_welcome_line(left: u8, middle: u8, right: u8) {
+        WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
         WRITER.lock().write_byte(left);
         WRITER
             .lock()
-            .write_bytes(middle, VGA_WIDTH - 2 - 2 * MENU_MARGIN);
+            .write_bytes(middle, VGA_WIDTH - 2 - 2 * WELCOME_MARGIN);
         WRITER.lock().write_byte(right);
-        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+        WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
     }
 
-    fn print_welcome_title(&self, s: &str) {
-        let remaining_width = VGA_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
-        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+    fn print_welcome_title(s: &str) {
+        let remaining_width = VGA_WIDTH - 2 - 2 * WELCOME_MARGIN - s.len();
+        WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
         WRITER.lock().write_byte(b'\xba');
         WRITER.lock().write_bytes(b' ', remaining_width >> 1);
         for b in s.bytes() {
@@ -177,18 +180,18 @@ impl Shell {
         }
         WRITER.lock().write_bytes(b' ', (remaining_width + 1) >> 1);
         WRITER.lock().write_byte(b'\xba');
-        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+        WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
     }
 
     fn print_welcome(&self) {
         WRITER
             .lock()
             .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
-        self.print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
-        self.print_welcome_line(b'\xba', b' ', b'\xba');
-        self.print_welcome_title("KFS 42"); // TODO: print screen_idx instead of 42
-        self.print_welcome_line(b'\xba', b' ', b'\xba');
-        self.print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
+        Self::print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
+        Self::print_welcome_line(b'\xba', b' ', b'\xba');
+        Self::print_welcome_title("KFS 42"); // TODO: print screen_idx instead of 42
+        Self::print_welcome_line(b'\xba', b' ', b'\xba');
+        Self::print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
         WRITER.lock().reset_foreground_color();
     }
 

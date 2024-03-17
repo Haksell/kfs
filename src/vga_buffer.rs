@@ -71,6 +71,7 @@ fn update_cursor(row: usize, col: usize) {
 
 pub const VGA_HEIGHT: usize = 25;
 pub const VGA_WIDTH: usize = 80;
+pub const VGA_HISTORY: usize = 100; // has to be ≥ VGA_HEIGHT
 pub const VGA_SCREENS: usize = 4;
 
 #[repr(transparent)]
@@ -140,6 +141,15 @@ impl Writer {
         }
     }
 
+    pub fn clear_vga_buffer(&mut self) {
+        let blank = ScreenChar::empty();
+        for y in 0..VGA_HEIGHT {
+            for x in 0..VGA_WIDTH {
+                self.buffer.chars[y][x].write(blank);
+            }
+        }
+    }
+
     fn new_line(&mut self) {
         for y in 1..VGA_HEIGHT {
             for x in 0..VGA_WIDTH {
@@ -149,18 +159,6 @@ impl Writer {
         }
         self.clear_row(VGA_HEIGHT - 1);
         self.column_position = 0;
-    }
-
-    fn clear_vga_buffer(&mut self) {
-        let blank = ScreenChar {
-            ascii_character: b' ',
-            color_code: self.color_code,
-        };
-        for y in 0..VGA_HEIGHT {
-            for x in 0..VGA_WIDTH {
-                self.buffer.chars[y][x].write(blank);
-            }
-        }
     }
 
     fn clear_row(&mut self, y: usize) {
@@ -214,8 +212,4 @@ pub fn _print(args: fmt::Arguments) {
     x86_64::instructions::interrupts::without_interrupts(|| {
         WRITER.lock().write_fmt(args).unwrap();
     });
-}
-
-pub fn clear_vga_buffer() {
-    WRITER.lock().clear_vga_buffer();
 }

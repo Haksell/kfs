@@ -16,7 +16,7 @@ pub extern "C" fn rust_main() {
     interrupts::init();
     unsafe { interrupts::PICS.lock().initialize() }; // TODO: init instead of initialize
     interrupts::enable();
-    vga_buffer::clear_vga_buffer();
+    vga_buffer::WRITER.lock().clear_vga_buffer();
     shell::SHELL.lock().init();
     hlt_loop()
 }
