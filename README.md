@@ -32,7 +32,7 @@
 -   [ ] Your GDT must contain: User stack
 -   [ ] You must declare your GDT to the BIOS.
 -   [ ] The GDT must be set at address 0x00000800.
--   [ ] SHell: `pks` (print the kernel stack, in a human-friendly way)
+-   [ ] Shell: `pks` (print the kernel stack, in a human-friendly way)
 -   [ ] Shell: `reboot` command
 -   [ ] Shell: `halt` command
 -   [ ] Shell: other commands for debugging purposes
