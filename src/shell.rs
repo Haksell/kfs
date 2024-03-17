@@ -30,7 +30,7 @@ const SCREEN_COLORS: [Color; VGA_SCREENS] = [
     Color::Brown,
     Color::LightBlue,
 ];
-const PROMPT: &'static str = "> "; // TODO: &[u8]
+const PROMPT: &'static str = "> "; // TODO: [ScreenChar; PROMPT_LEN]
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
 
 struct CommandBuffer {
@@ -118,6 +118,15 @@ impl Shell {
         self.print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
         WRITER.lock().reset_foreground_color();
     }
+
+    pub fn switch_screen(&mut self, screen_idx: usize) {
+        if screen_idx != self.screen_idx {
+            self.screen_idx = screen_idx;
+            let mut writer = WRITER.lock();
+            writer.switch_screen(screen_idx);
+            writer.set_cursor(PROMPT.len() + self.commands[screen_idx].pos);
+        }
+    }
 }
 
 const MENU_MARGIN: usize = 10;
@@ -161,32 +170,34 @@ fn execute_command(command: &CommandBuffer) {
 pub fn send_key(key: DecodedKey) {
     use pc_keyboard::KeyCode;
     let mut shell = SHELL.lock();
-    let start_len = shell.commands[0].len;
-    let start_pos = shell.commands[0].pos;
+    let screen_idx = shell.screen_idx;
+    // TODO: find a way to do let command = shell.commands[screen_idx])
+    let start_len = shell.commands[screen_idx].len;
+    let start_pos = shell.commands[screen_idx].pos;
     match key {
         DecodedKey::Unicode(character) => match character {
             special_char::NEWLINE => {
                 println!();
-                if shell.commands[0].len > 0 {
-                    execute_command(&shell.commands[0]);
+                if shell.commands[screen_idx].len > 0 {
+                    execute_command(&shell.commands[screen_idx]);
                 }
                 shell.print_prompt();
-                shell.commands[0].len = 0;
-                shell.commands[0].set_pos(0);
+                shell.commands[screen_idx].len = 0;
+                shell.commands[screen_idx].set_pos(0);
             }
             special_char::BACKSPACE => {
-                if shell.commands[0].pos > 0 {
-                    delete_char(&mut shell.commands[0], true);
+                if shell.commands[screen_idx].pos > 0 {
+                    delete_char(&mut shell.commands[screen_idx], true);
                 }
             }
             special_char::DELETE => {
                 if start_pos < start_len {
-                    delete_char(&mut shell.commands[0], false);
+                    delete_char(&mut shell.commands[screen_idx], false);
                 }
             }
             '\x20'..='\x7e' => {
                 if start_len < MAX_COMMAND_LEN {
-                    let command = &mut shell.commands[0];
+                    let command = &mut shell.commands[screen_idx];
                     for i in (start_pos..start_len).rev() {
                         command.buffer[i + 1] = command.buffer[i];
                     }
@@ -203,23 +214,23 @@ pub fn send_key(key: DecodedKey) {
             _ => {}
         },
         DecodedKey::RawKey(key) => match key {
-            KeyCode::ArrowLeft => shell.commands[0].move_left(),
-            KeyCode::ArrowRight => shell.commands[0].move_right(),
-            KeyCode::Home => shell.commands[0].set_pos(0),
-            KeyCode::End => shell.commands[0].set_pos(start_len),
+            KeyCode::ArrowLeft => shell.commands[screen_idx].move_left(),
+            KeyCode::ArrowRight => shell.commands[screen_idx].move_right(),
+            KeyCode::Home => shell.commands[screen_idx].set_pos(0),
+            KeyCode::End => shell.commands[screen_idx].set_pos(start_len),
             // TODO: use range F1..F12 once we implement the keyboard crate
-            KeyCode::F1 => WRITER.lock().switch_screen(0),
-            KeyCode::F2 => WRITER.lock().switch_screen(1),
-            KeyCode::F3 => WRITER.lock().switch_screen(2),
-            KeyCode::F4 => WRITER.lock().switch_screen(3),
-            KeyCode::F5 => WRITER.lock().switch_screen(4),
-            KeyCode::F6 => WRITER.lock().switch_screen(5),
-            KeyCode::F7 => WRITER.lock().switch_screen(6),
-            KeyCode::F8 => WRITER.lock().switch_screen(7),
-            KeyCode::F9 => WRITER.lock().switch_screen(8),
-            KeyCode::F10 => WRITER.lock().switch_screen(9),
-            KeyCode::F11 => WRITER.lock().switch_screen(10),
-            KeyCode::F12 => WRITER.lock().switch_screen(11),
+            KeyCode::F1 => shell.switch_screen(0),
+            KeyCode::F2 => shell.switch_screen(1),
+            KeyCode::F3 => shell.switch_screen(2),
+            KeyCode::F4 => shell.switch_screen(3),
+            KeyCode::F5 => shell.switch_screen(4),
+            KeyCode::F6 => shell.switch_screen(5),
+            KeyCode::F7 => shell.switch_screen(6),
+            KeyCode::F8 => shell.switch_screen(7),
+            KeyCode::F9 => shell.switch_screen(8),
+            KeyCode::F10 => shell.switch_screen(9),
+            KeyCode::F11 => shell.switch_screen(10),
+            KeyCode::F12 => shell.switch_screen(11),
             _ => print!("{:?}", key), // TODO: remove
         },
     }
