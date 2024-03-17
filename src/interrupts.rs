@@ -3,7 +3,6 @@ use crate::pic::ChainedPics;
 use crate::shell;
 use lazy_static::lazy_static;
 use spin::Mutex;
-use x86_64::structures::idt::InterruptStackFrame;
 
 pub const PIC_1_OFFSET: u8 = 32;
 pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
@@ -41,7 +40,7 @@ pub fn init() {
     IDT.load();
 }
 
-extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
+extern "x86-interrupt" fn timer_interrupt_handler() {
     // print!(".");
     unsafe {
         PICS.lock()
@@ -49,7 +48,7 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
     }
 }
 
-extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
+extern "x86-interrupt" fn keyboard_interrupt_handler() {
     use pc_keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
 
     lazy_static! {

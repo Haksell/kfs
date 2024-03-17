@@ -1,6 +1,5 @@
 use bit_field::BitField;
 use core::{arch::asm, marker::PhantomData};
-use x86_64::structures::idt::InterruptStackFrame;
 
 #[derive(Clone, Copy)]
 #[repr(C)]
@@ -42,7 +41,7 @@ impl<F> Entry<F> {
     }
 }
 
-pub type HandlerFunc = extern "x86-interrupt" fn(InterruptStackFrame);
+pub type HandlerFunc = extern "x86-interrupt" fn();
 
 pub trait HandlerFuncType {
     fn to_virt_addr(self) -> u64;
