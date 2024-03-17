@@ -16,7 +16,20 @@ mod special_char {
     pub const DELETE: char = '\x7f';
 }
 
-const PRIMARY_COLOR: Color = Color::LightGreen;
+const SCREEN_COLORS: [Color; VGA_SCREENS] = [
+    Color::LightGreen,
+    Color::LightCyan,
+    Color::LightRed,
+    Color::Pink,
+    Color::Yellow,
+    Color::Blue,
+    Color::Green,
+    Color::Cyan,
+    Color::Red,
+    Color::Magenta,
+    Color::Brown,
+    Color::LightBlue,
+];
 const PROMPT: &'static str = "> "; // TODO: &[u8]
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
 
@@ -62,52 +75,59 @@ lazy_static! {
     });
 }
 
-fn print_prompt() {
-    WRITER.lock().set_foreground_color(PRIMARY_COLOR);
-    print!("{}", PROMPT);
-    WRITER.lock().reset_foreground_color();
+impl Shell {
+    fn print_prompt(&self) {
+        WRITER
+            .lock()
+            .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
+        print!("{}", PROMPT);
+        WRITER.lock().reset_foreground_color();
+    }
+
+    fn print_welcome_line(&self, left: u8, middle: u8, right: u8) {
+        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+        WRITER.lock().write_byte(left);
+        WRITER
+            .lock()
+            .write_bytes(middle, VGA_WIDTH - 2 - 2 * MENU_MARGIN);
+        WRITER.lock().write_byte(right);
+        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+    }
+
+    fn print_welcome_title(&self, s: &str) {
+        let remaining_width = VGA_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
+        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+        WRITER.lock().write_byte(b'\xba');
+        WRITER.lock().write_bytes(b' ', remaining_width >> 1);
+        for b in s.bytes() {
+            WRITER.lock().write_byte(b);
+        }
+        WRITER.lock().write_bytes(b' ', (remaining_width + 1) >> 1);
+        WRITER.lock().write_byte(b'\xba');
+        WRITER.lock().write_bytes(b' ', MENU_MARGIN);
+    }
+
+    pub fn print_welcome(&self) {
+        WRITER
+            .lock()
+            .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
+        self.print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
+        self.print_welcome_line(b'\xba', b' ', b'\xba');
+        self.print_welcome_title("KFS 42"); // TODO: print screen_idx instead of 42
+        self.print_welcome_line(b'\xba', b' ', b'\xba');
+        self.print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
+        WRITER.lock().reset_foreground_color();
+    }
 }
 
 const MENU_MARGIN: usize = 10;
 
-fn print_welcome_line(left: u8, middle: u8, right: u8) {
-    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
-    WRITER.lock().write_byte(left);
-    WRITER
-        .lock()
-        .write_bytes(middle, VGA_WIDTH - 2 - 2 * MENU_MARGIN);
-    WRITER.lock().write_byte(right);
-    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
-}
-
-fn print_welcome_title(s: &str) {
-    let remaining_width = VGA_WIDTH - 2 - 2 * MENU_MARGIN - s.len();
-    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
-    WRITER.lock().write_byte(b'\xba');
-    WRITER.lock().write_bytes(b' ', remaining_width >> 1);
-    for b in s.bytes() {
-        WRITER.lock().write_byte(b);
-    }
-    WRITER.lock().write_bytes(b' ', (remaining_width + 1) >> 1);
-    WRITER.lock().write_byte(b'\xba');
-    WRITER.lock().write_bytes(b' ', MENU_MARGIN);
-}
-
-fn print_welcome() {
-    WRITER.lock().set_foreground_color(PRIMARY_COLOR);
-    print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
-    print_welcome_line(b'\xba', b' ', b'\xba');
-    print_welcome_title("KFS 42");
-    print_welcome_line(b'\xba', b' ', b'\xba');
-    print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
-    WRITER.lock().reset_foreground_color();
-}
-
 pub fn init() {
-    print_welcome();
+    // TODO: for all screens
+    SHELL.lock().print_welcome();
     println!();
     println!();
-    print_prompt();
+    SHELL.lock().print_prompt();
 }
 
 fn delete_char(command: &mut CommandBuffer, decrement_pos: bool) {
@@ -140,33 +160,34 @@ fn execute_command(command: &CommandBuffer) {
 
 pub fn send_key(key: DecodedKey) {
     use pc_keyboard::KeyCode;
-    let mut command = &mut SHELL.lock().commands[0];
-    let start_len = command.len;
-    let start_pos = command.pos;
+    let mut shell = SHELL.lock();
+    let start_len = shell.commands[0].len;
+    let start_pos = shell.commands[0].pos;
     match key {
         DecodedKey::Unicode(character) => match character {
             special_char::NEWLINE => {
                 println!();
-                if command.len > 0 {
-                    execute_command(&command);
+                if shell.commands[0].len > 0 {
+                    execute_command(&shell.commands[0]);
                 }
-                print_prompt();
-                command.len = 0;
-                command.set_pos(0);
+                shell.print_prompt();
+                shell.commands[0].len = 0;
+                shell.commands[0].set_pos(0);
             }
             special_char::BACKSPACE => {
-                if command.pos > 0 {
-                    delete_char(&mut command, true);
+                if shell.commands[0].pos > 0 {
+                    delete_char(&mut shell.commands[0], true);
                 }
             }
             special_char::DELETE => {
-                if command.pos < command.len {
-                    delete_char(&mut command, false);
+                if start_pos < start_len {
+                    delete_char(&mut shell.commands[0], false);
                 }
             }
             '\x20'..='\x7e' => {
-                if command.len < MAX_COMMAND_LEN {
-                    for i in (command.pos..command.len).rev() {
+                if start_len < MAX_COMMAND_LEN {
+                    let command = &mut shell.commands[0];
+                    for i in (start_pos..start_len).rev() {
                         command.buffer[i + 1] = command.buffer[i];
                     }
                     command.buffer[start_pos] = character;
@@ -182,10 +203,10 @@ pub fn send_key(key: DecodedKey) {
             _ => {}
         },
         DecodedKey::RawKey(key) => match key {
-            KeyCode::ArrowLeft => command.move_left(),
-            KeyCode::ArrowRight => command.move_right(),
-            KeyCode::Home => command.set_pos(0),
-            KeyCode::End => command.set_pos(start_len),
+            KeyCode::ArrowLeft => shell.commands[0].move_left(),
+            KeyCode::ArrowRight => shell.commands[0].move_right(),
+            KeyCode::Home => shell.commands[0].set_pos(0),
+            KeyCode::End => shell.commands[0].set_pos(start_len),
             // TODO: use range F1..F12 once we implement the keyboard crate
             KeyCode::F1 => WRITER.lock().switch_screen(0),
             KeyCode::F2 => WRITER.lock().switch_screen(1),
