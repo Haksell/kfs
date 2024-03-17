@@ -2,6 +2,7 @@ use core::arch::asm;
 
 use crate::idt::InterruptDescriptorTable;
 use crate::pic::ChainedPics;
+use crate::port::Port;
 use crate::shell::SHELL;
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -42,6 +43,19 @@ pub fn init() {
     IDT.load();
 }
 
+const INTERRUPT_FLAG: usize = 1 << 9;
+
+#[inline]
+pub fn are_enabled() -> bool {
+    let r: usize;
+
+    unsafe {
+        asm!("pushfq; pop {}", out(reg) r, options(nomem, preserves_flags));
+    }
+
+    r & INTERRUPT_FLAG != 0
+}
+
 #[inline]
 pub fn enable() {
     // Omit `nomem` to imitate a lock release. Otherwise, the compiler
@@ -49,6 +63,35 @@ pub fn enable() {
     unsafe {
         asm!("sti", options(preserves_flags, nostack));
     }
+}
+
+#[inline]
+pub fn disable() {
+    // Omit `nomem` to imitate a lock acquire. Otherwise, the compiler
+    // is free to move reads and writes through this asm block.
+    unsafe {
+        asm!("cli", options(preserves_flags, nostack));
+    }
+}
+
+#[inline]
+pub fn without_interrupts<F, R>(f: F) -> R
+where
+    F: FnOnce() -> R,
+{
+    let saved_intpt_flag = are_enabled();
+
+    if saved_intpt_flag {
+        disable();
+    }
+
+    let ret = f();
+
+    if saved_intpt_flag {
+        enable();
+    }
+
+    ret
 }
 
 extern "x86-interrupt" fn timer_interrupt_handler() {
@@ -71,7 +114,7 @@ extern "x86-interrupt" fn keyboard_interrupt_handler() {
     }
 
     let mut keyboard = KEYBOARD.lock();
-    let mut port = x86_64::instructions::port::Port::new(0x60);
+    let mut port = Port::new(0x60);
     let scancode: u8 = unsafe { port.read() };
 
     if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
