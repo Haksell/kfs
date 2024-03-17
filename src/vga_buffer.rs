@@ -128,15 +128,15 @@ impl Writer {
         update_cursor(VGA_HEIGHT - 1, self.column_position);
     }
 
-    pub fn switch_screen(&mut self, screen_idx: usize) {
-        // Breaks if screen_idx > VGA_SCREENS. Use assert!() ?
-        if screen_idx != self.screen_idx {
+    pub fn switch_screen(&mut self, screen_idx: usize, cursor: usize) {
+        if screen_idx != self.screen_idx && screen_idx < VGA_SCREENS && cursor < VGA_WIDTH {
             self.screen_idx = screen_idx;
             for y in 0..VGA_HEIGHT {
                 for x in 0..VGA_WIDTH {
                     self.buffer.chars[y][x].write(self.screens[screen_idx][y][x]);
                 }
             }
+            self.set_cursor(cursor)
         }
     }
 

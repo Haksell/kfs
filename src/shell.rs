@@ -145,8 +145,7 @@ impl Shell {
         if screen_idx != self.screen_idx && screen_idx < VGA_SCREENS {
             self.screen_idx = screen_idx;
             let mut writer = WRITER.lock();
-            writer.switch_screen(screen_idx);
-            writer.set_cursor(PROMPT.len() + self.commands[screen_idx].pos);
+            writer.switch_screen(screen_idx, self.commands[screen_idx].pos + PROMPT.len());
         }
     }
 
