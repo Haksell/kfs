@@ -57,6 +57,7 @@
 
 -   [ ] handle up/down (scroll history)
 -   [ ] basic shell commands
+-   [ ] fix num lock off bug
 
 ### later
 
@@ -77,6 +78,7 @@
 -   https://pages.cs.wisc.edu/~remzi/OSTEP
 -   https://singlelogin.re/book/25182527/e03396/modern-operating-systems.html
 -   http://www.brokenthorn.com/Resources/OSDevIndex.html
+-   https://samypesse.gitbook.io/how-to-create-an-operating-system
 -   https://www.gnu.org/software/grub/manual/multiboot2/multiboot.pdf
 -   `#os-dev`: https://discord.com/channels/273534239310479360/375706574133526529
 
