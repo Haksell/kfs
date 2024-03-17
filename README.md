@@ -1,10 +1,6 @@
 # KFS
 
-### shell todo
-
--   [ ] handle up/down
-
-### subject
+## subject
 
 -   [x] Install GRUB on a virtual image
 -   [x] Write an ASM boot code that handles multiboot header, and use GRUB to init and call main function of the kernel itself.
@@ -23,7 +19,9 @@
 -   [x] Add helpers like printf / printk in order to print information / debug easily.
 -   [ ] Handle different screens, and keyboard shortcuts to switch easily between then.
 
-### todo
+## todo
+
+### misc
 
 -   [ ] implement `x86_64`
 -   [ ] implement `pc-keyboard`
@@ -35,9 +33,15 @@
 -   [ ] fix compiler warnings
 -   [ ] improve Makefile/Dockerfile for optimal compilation
 -   [ ] set timeout=10 for correction
+
+### shell
+
+-   [ ] screens wth F1-F12
+-   [ ] each screen has a different color
+-   [ ] handle up/down
 -   [ ] implement shell history
 
-### todo for later
+### later
 
 -   [ ] finish 1st edition
 -   [ ] finish 2nd edition
@@ -47,7 +51,7 @@
 -   [ ] use KVM on top of QEMU?
 -   [ ] specify exact nightly version
 
-### resources
+## resources
 
 -   https://os.phil-opp.com/
 -   https://os.phil-opp.com/edition-1/
@@ -59,6 +63,6 @@
 -   `#os-dev`: https://discord.com/channels/273534239310479360/375706574133526529
 -   improvement ideas: https://chat.openai.com/share/8aff468f-4ab9-4f35-80ca-a0425d1e8d83
 
-### garbage
+## garbage
 
 ![artistic direction](https://upload.wikimedia.org/wikipedia/commons/a/a0/VirtualBox_TempleOS_x64_27_02_2021_20_43_48.png)
