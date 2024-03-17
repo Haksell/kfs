@@ -178,7 +178,7 @@ pub fn send_key(key: DecodedKey) {
             KeyCode::ArrowRight => command.move_right(),
             KeyCode::Home => command.set_pos(0),
             KeyCode::End => command.set_pos(start_len),
-            // TODO: use range F1..F12
+            // TODO: use range F1..F12 once we implement the keyboard crate
             KeyCode::F1 => WRITER.lock().switch_screen(0),
             KeyCode::F2 => WRITER.lock().switch_screen(1),
             KeyCode::F3 => WRITER.lock().switch_screen(2),

@@ -150,6 +150,18 @@ impl Writer {
         self.column_position = 0;
     }
 
+    fn clear_vga_buffer(&mut self) {
+        let blank = ScreenChar {
+            ascii_character: b' ',
+            color_code: self.color_code,
+        };
+        for y in 0..VGA_HEIGHT {
+            for x in 0..VGA_WIDTH {
+                self.buffer.chars[y][x].write(blank);
+            }
+        }
+    }
+
     fn clear_row(&mut self, y: usize) {
         let blank = ScreenChar {
             ascii_character: b' ',
@@ -203,9 +215,6 @@ pub fn _print(args: fmt::Arguments) {
     });
 }
 
-// TODO: make private, and implement clear_screens function
-pub fn clear_screen() {
-    for _ in 0..VGA_HEIGHT {
-        println!("");
-    }
+pub fn clear_vga_buffer() {
+    WRITER.lock().clear_vga_buffer();
 }
