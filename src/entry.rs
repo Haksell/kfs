@@ -1,9 +1,6 @@
 use bit_field::BitField;
-use core::marker::PhantomData;
-use x86_64::{
-    registers::segmentation::{Segment, CS},
-    structures::idt::InterruptStackFrame,
-};
+use core::{arch::asm, marker::PhantomData};
+use x86_64::structures::{gdt::SegmentSelector, idt::InterruptStackFrame};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
@@ -79,5 +76,22 @@ impl EntryOptions {
     pub fn set_present(&mut self, present: bool) -> &mut Self {
         self.0.set_bit(15, present);
         self
+    }
+}
+
+pub trait Segment {
+    fn get_reg() -> SegmentSelector;
+}
+
+pub struct CS;
+
+impl Segment for CS {
+    #[inline]
+    fn get_reg() -> SegmentSelector {
+        let segment: u16;
+        unsafe {
+            asm!(concat!("mov {0:x}, cs"), out(reg) segment, options(nomem, nostack, preserves_flags));
+        }
+        SegmentSelector(segment)
     }
 }
