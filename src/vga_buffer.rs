@@ -72,7 +72,7 @@ fn update_cursor(row: usize, col: usize) {
 
 pub const VGA_HEIGHT: usize = 25;
 pub const VGA_WIDTH: usize = 80;
-pub const VGA_HISTORY: usize = 100; // has to be ≥ VGA_HEIGHT
+// pub const VGA_HISTORY: usize = 100; // has to be ≥ VGA_HEIGHT
 pub const VGA_SCREENS: usize = 4;
 
 #[repr(transparent)]
@@ -85,9 +85,7 @@ pub struct Writer {
     color_code: ColorCode,
     buffer: &'static mut Buffer,
     screen_idx: usize,
-    scroll_up: usize,
-    newlines: usize,
-    screens: [[[ScreenChar; VGA_WIDTH]; VGA_HISTORY]; VGA_SCREENS],
+    screens: [[[ScreenChar; VGA_WIDTH]; VGA_HEIGHT]; VGA_SCREENS],
 }
 
 impl Writer {
@@ -153,29 +151,9 @@ impl Writer {
         }
     }
 
-    pub fn move_up(&mut self) {
-        // TODO: proper condition
-        if self.scroll_up < 10 {
-            self.scroll_up += 1;
-            self.redraw();
-        }
-    }
+    pub fn move_up(&mut self) {}
 
-    pub fn move_down(&mut self) {
-        if self.scroll_up > 0 {
-            self.scroll_up -= 1;
-            self.redraw();
-        }
-    }
-
-    fn redraw(&mut self) {
-        // TODO: hide cursor if self.scroll_up > 0
-        for y in 0..VGA_HEIGHT {
-            for x in 0..VGA_WIDTH {
-                self.buffer.chars[y][x].write(self.screens[self.screen_idx][y - 1][x]);
-            }
-        }
-    }
+    pub fn move_down(&mut self) {}
 
     fn new_line(&mut self) {
         // TODO: call redraw
@@ -187,7 +165,6 @@ impl Writer {
         }
         self.clear_row(VGA_HEIGHT - 1);
         self.column_position = 0;
-        self.newlines += 1;
     }
 
     fn clear_row(&mut self, y: usize) {
@@ -220,9 +197,7 @@ lazy_static! {
         color_code: ColorCode::new(Color::White, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
         screen_idx: 0,
-        scroll_up: 0,
-        newlines: 0,
-        screens: [[[ScreenChar::empty(); VGA_WIDTH]; VGA_HISTORY]; VGA_SCREENS],
+        screens: [[[ScreenChar::empty(); VGA_WIDTH]; VGA_HEIGHT]; VGA_SCREENS],
     });
 }
 
