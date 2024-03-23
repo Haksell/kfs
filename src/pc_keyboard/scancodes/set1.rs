@@ -1,26 +1,19 @@
-//! Scan Code Set 1 support
-
 use super::super::{
     DecodeState, Error, KeyCode, KeyEvent, KeyState, ScancodeSet, EXTENDED2_KEY_CODE,
     EXTENDED_KEY_CODE,
 };
 
-/// Contains the implementation of Scancode Set 1.
-///
-/// See the OS dev wiki: <https://wiki.osdev.org/PS/2_Keyboard#Scan_Code_Set_1>
 pub struct ScancodeSet1 {
     state: DecodeState,
 }
 
 impl ScancodeSet1 {
-    /// Construct a new [`ScancodeSet1`] decoder.
     pub const fn new() -> ScancodeSet1 {
         ScancodeSet1 {
             state: DecodeState::Start,
         }
     }
 
-    /// Implements the single byte codes for Set 1.
     fn map_scancode(code: u8) -> Result<KeyCode, Error> {
         match code {
             0x01 => Ok(KeyCode::Escape),
@@ -115,7 +108,6 @@ impl ScancodeSet1 {
         }
     }
 
-    /// Implements the extended byte codes for set 1 (prefixed with E0)
     fn map_extended_scancode(code: u8) -> Result<KeyCode, Error> {
         match code {
             0x10 => Ok(KeyCode::PrevTrack),
@@ -214,7 +206,6 @@ impl ScancodeSet1 {
         }
     }
 
-    /// Implements the extended byte codes for set 1 (prefixed with E1)
     fn map_extended2_scancode(code: u8) -> Result<KeyCode, Error> {
         match code {
             0x1D => Ok(KeyCode::RControl2),
@@ -304,10 +295,6 @@ impl ScancodeSet for ScancodeSet1 {
                         )))
                     }
                 }
-            }
-            _ => {
-                // Can't get in to this state
-                unimplemented!();
             }
         }
     }

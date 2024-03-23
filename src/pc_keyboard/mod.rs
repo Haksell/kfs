@@ -441,10 +441,7 @@ pub enum DecodedKey {
 enum DecodeState {
     Start,
     Extended,
-    Release,
-    ExtendedRelease,
     Extended2,
-    Extended2Release,
 }
 
 // ****************************************************************************
@@ -453,10 +450,8 @@ enum DecodeState {
 //
 // ****************************************************************************
 
-const KEYCODE_BITS: u8 = 11;
 const EXTENDED_KEY_CODE: u8 = 0xE0;
 const EXTENDED2_KEY_CODE: u8 = 0xE1;
-const KEY_RELEASE_CODE: u8 = 0xF0;
 
 // ****************************************************************************
 //
@@ -478,58 +473,12 @@ where
         }
     }
 
-    /// Get the current key modifier states.
-    pub const fn get_modifiers(&self) -> &Modifiers {
-        &self.event_decoder.modifiers
-    }
-
-    /// Change the Ctrl key mapping.
-    pub fn set_ctrl_handling(&mut self, new_value: HandleControl) {
-        self.event_decoder.set_ctrl_handling(new_value);
-    }
-
-    /// Get the current Ctrl key mapping.
-    pub const fn get_ctrl_handling(&self) -> HandleControl {
-        self.event_decoder.get_ctrl_handling()
-    }
-
-    /// Clears the bit register.
-    ///
-    /// Call this when there is a timeout reading data from the keyboard.
-    pub fn clear(&mut self) {
-        self.ps2_decoder.clear();
-    }
-
-    /// Processes a 16-bit word from the keyboard.
-    ///
-    /// * The start bit (0) must be in bit 0.
-    /// * The data octet must be in bits 1..8, with the LSB in bit 1 and the
-    ///   MSB in bit 8.
-    /// * The parity bit must be in bit 9.
-    /// * The stop bit (1) must be in bit 10.
-    pub fn add_word(&mut self, word: u16) -> Result<Option<KeyEvent>, Error> {
-        let byte = self.ps2_decoder.add_word(word)?;
-        self.add_byte(byte)
-    }
-
     /// Processes an 8-bit byte from the keyboard.
     ///
     /// We assume the start, stop and parity bits have been processed and
     /// verified.
     pub fn add_byte(&mut self, byte: u8) -> Result<Option<KeyEvent>, Error> {
         self.scancode_set.advance_state(byte)
-    }
-
-    /// Shift a bit into the register.
-    ///
-    /// Call this /or/ call `add_word` - don't call both.
-    /// Until the last bit is added you get Ok(None) returned.
-    pub fn add_bit(&mut self, bit: bool) -> Result<Option<KeyEvent>, Error> {
-        if let Some(byte) = self.ps2_decoder.add_bit(bit)? {
-            self.scancode_set.advance_state(byte)
-        } else {
-            Ok(None)
-        }
     }
 
     /// Processes a `KeyEvent` returned from `add_bit`, `add_byte` or `add_word`
@@ -550,72 +499,6 @@ impl Ps2Decoder {
             register: 0,
             num_bits: 0,
         }
-    }
-
-    /// Clears the bit register.
-    ///
-    /// Call this when there is a timeout reading data from the keyboard.
-    pub fn clear(&mut self) {
-        self.register = 0;
-        self.num_bits = 0;
-    }
-
-    /// Shift a bit into the register.
-    ///
-    /// Until the last bit is added you get Ok(None) returned.
-    pub fn add_bit(&mut self, bit: bool) -> Result<Option<u8>, Error> {
-        self.register |= (bit as u16) << self.num_bits;
-        self.num_bits += 1;
-        if self.num_bits == KEYCODE_BITS {
-            let word = self.register;
-            self.register = 0;
-            self.num_bits = 0;
-            let byte = Self::check_word(word)?;
-            Ok(Some(byte))
-        } else {
-            Ok(None)
-        }
-    }
-
-    /// Process an entire 11-bit word.
-    ///
-    /// Must be packed into the bottom 11-bits of the 16-bit value.
-    pub fn add_word(&self, word: u16) -> Result<u8, Error> {
-        Self::check_word(word)
-    }
-
-    /// Check 11-bit word has 1 start bit, 1 stop bit and an odd parity bit.
-    const fn check_word(word: u16) -> Result<u8, Error> {
-        let start_bit = Self::get_bit(word, 0);
-        let parity_bit = Self::get_bit(word, 9);
-        let stop_bit = Self::get_bit(word, 10);
-        let data = ((word >> 1) & 0xFF) as u8;
-
-        if start_bit {
-            return Err(Error::BadStartBit);
-        }
-
-        if !stop_bit {
-            return Err(Error::BadStopBit);
-        }
-
-        // We have odd parity, so if there are an even number of 1 bits, we need
-        // the parity bit set to make it odd.
-        let need_parity = Self::has_even_number_bits(data);
-
-        if need_parity != parity_bit {
-            return Err(Error::ParityError);
-        }
-
-        Ok(data)
-    }
-
-    const fn get_bit(word: u16, offset: usize) -> bool {
-        ((word >> offset) & 0x0001) != 0
-    }
-
-    const fn has_even_number_bits(data: u8) -> bool {
-        (data.count_ones() % 2) == 0
     }
 }
 
@@ -640,16 +523,6 @@ where
             },
             layout,
         }
-    }
-
-    /// Change the Ctrl key mapping.
-    pub fn set_ctrl_handling(&mut self, new_value: HandleControl) {
-        self.handle_ctrl = new_value;
-    }
-
-    /// Get the current Ctrl key mapping.
-    pub const fn get_ctrl_handling(&self) -> HandleControl {
-        self.handle_ctrl
     }
 
     /// Processes a `KeyEvent` returned from `add_bit`, `add_byte` or `add_word`
@@ -789,14 +662,6 @@ where
             _ => None,
         }
     }
-
-    /// Change the keyboard layout.
-    ///
-    /// Only useful with [`layouts::AnyLayout`], otherwise you can only change a
-    /// layout for exactly the same layout.
-    pub fn change_layout(&mut self, new_layout: L) {
-        self.layout = new_layout;
-    }
 }
 
 impl KeyEvent {
@@ -814,18 +679,6 @@ impl KeyEvent {
 impl Modifiers {
     pub const fn is_shifted(&self) -> bool {
         self.lshift | self.rshift
-    }
-
-    pub const fn is_ctrl(&self) -> bool {
-        self.lctrl | self.rctrl
-    }
-
-    pub const fn is_alt(&self) -> bool {
-        self.lalt | self.ralt
-    }
-
-    pub const fn is_altgr(&self) -> bool {
-        self.ralt | (self.lalt & self.is_ctrl())
     }
 
     pub const fn is_caps(&self) -> bool {
