@@ -45,11 +45,11 @@ $(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json vm
 	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(ISOFILES)"
 	@rm -rf $(ISOFILES)
 
-$(RUST_OS):
-	@export RUST_TARGET_PATH=$(shell pwd) ; cargo build --target $(TARGET)
-
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 	@ld $(LD_FLAGS) -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(RUST_OS)
+
+$(RUST_OS):
+	@export RUST_TARGET_PATH=$(shell pwd) ; cargo build --target $(TARGET)
 
 $(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
 	@mkdir -p $(shell dirname $@)
