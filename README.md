@@ -64,6 +64,13 @@
 
 ## todo
 
+### keyboard
+
+-   [ ] flatten module
+-   [ ] remove traits
+-   [ ] simplify to the max
+-   [ ] remove comments
+
 ### misc
 
 -   [ ] implement `pc-keyboard`
