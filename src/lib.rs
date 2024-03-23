@@ -26,14 +26,14 @@ fn panic(info: &PanicInfo) -> ! {
     hlt_loop()
 }
 
-pub fn hlt_loop() -> ! {
+fn hlt_loop() -> ! {
     loop {
         hlt();
     }
 }
 
 #[inline]
-pub fn hlt() {
+fn hlt() {
     unsafe {
         asm!("hlt", options(nomem, nostack, preserves_flags));
     }
