@@ -1,6 +1,6 @@
+use crate::pc_keyboard::{DecodedKey, KeyCode};
 use crate::vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER};
 use lazy_static::lazy_static;
-use pc_keyboard::{DecodedKey, KeyCode};
 use spin::Mutex;
 
 // TODO: test profusely, especially special characters

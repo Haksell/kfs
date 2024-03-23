@@ -1,10 +1,10 @@
 use crate::idt::InterruptDescriptorTable;
+use crate::pc_keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
 use crate::pic::ChainedPics;
 use crate::port::Port;
 use crate::shell::SHELL;
 use core::arch::asm;
 use lazy_static::lazy_static;
-use pc_keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
 use spin::Mutex;
 
 const PIC_1_OFFSET: u8 = 32;
