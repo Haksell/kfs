@@ -1,4 +1,4 @@
 {
-    "rust-analyzer.cargo.target": "src/arch/x86_64/kfs.json",
+    "rust-analyzer.cargo.target": "arch/x86_64/kfs.json",
     "rust-analyzer.checkOnSave.allTargets": false
 }
