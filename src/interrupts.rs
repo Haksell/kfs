@@ -1,9 +1,8 @@
-use core::arch::asm;
-
 use crate::idt::InterruptDescriptorTable;
 use crate::pic::ChainedPics;
 use crate::port::Port;
 use crate::shell::SHELL;
+use core::arch::asm;
 use lazy_static::lazy_static;
 use spin::Mutex;
 

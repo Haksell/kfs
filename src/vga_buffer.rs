@@ -1,10 +1,9 @@
+use crate::interrupts;
+use crate::port::Port;
 use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
-
-use crate::interrupts;
-use crate::port::Port;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

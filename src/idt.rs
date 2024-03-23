@@ -1,9 +1,8 @@
+use crate::entry::{Entry, HandlerFunc};
 use core::{
     arch::asm,
     ops::{Index, IndexMut},
 };
-
-use crate::entry::{Entry, HandlerFunc};
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C, packed(2))]
