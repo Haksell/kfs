@@ -101,11 +101,12 @@ extern "x86-interrupt" fn timer_interrupt_handler() {
 
 extern "x86-interrupt" fn keyboard_interrupt_handler() {
     lazy_static! {
-        // TODO: handle different keyboards
-        // TODO: handle ctrl, altgr and stuff like that
-        static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> = Mutex::new(
-            Keyboard::new(HandleControl::Ignore)
-        );
+        static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> =
+            Mutex::new(Keyboard::new(
+                ScancodeSet1::new(),
+                layouts::Us104Key,
+                HandleControl::Ignore
+            ));
     }
 
     let mut keyboard = KEYBOARD.lock();
