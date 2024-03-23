@@ -54,20 +54,16 @@ impl ScreenChar {
     }
 }
 
-// TODO: put in port module
-fn write_port(port: u16, value: u8) {
-    unsafe {
-        let mut port = Port::new(port);
-        port.write(value);
-    }
-}
-
 fn update_cursor(row: usize, col: usize) {
+    let mut index_register: Port<u8> = Port::new(0x3D4);
+    let mut data_register: Port<u8> = Port::new(0x3D5);
     let pos = row * VGA_WIDTH + col;
-    write_port(0x3D4, 0x0E);
-    write_port(0x3D5, (pos >> 8) as u8);
-    write_port(0x3D4, 0x0F);
-    write_port(0x3D5, (pos & 0xFF) as u8);
+    unsafe {
+        index_register.write(0x0E);
+        data_register.write((pos >> 8) as u8);
+        index_register.write(0x0F);
+        data_register.write((pos & 0xFF) as u8);
+    }
 }
 
 fn hide_cursor() {
