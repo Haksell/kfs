@@ -3,13 +3,13 @@ BUILD := build
 ISOFILES := $(BUILD)/isofiles
 KERNEL := $(BUILD)/kernel-$(ARCH).bin
 ISO := $(BUILD)/os-$(ARCH).iso
-TARGET := src/arch/$(ARCH)/kfs
+TARGET := arch/$(ARCH)/kfs
 RUST_OS := target/$(TARGET)/debug/libkfs.a
 # RUST_OS := target/$(TARGET)/release/libkfs.a
-LINKER_SCRIPT := src/arch/linker.ld
-GRUB_CFG := src/arch/grub.cfg
-ASM_SRCS := $(wildcard src/arch/$(ARCH)/*.asm)
-ASM_OBJS := $(patsubst src/arch/$(ARCH)/%.asm, $(BUILD)/arch/$(ARCH)/%.o, $(ASM_SRCS))
+LINKER_SCRIPT := arch/linker.ld
+GRUB_CFG := arch/grub.cfg
+ASM_SRCS := $(wildcard arch/$(ARCH)/*.asm)
+ASM_OBJS := $(patsubst arch/$(ARCH)/%.asm, $(BUILD)/arch/$(ARCH)/%.o, $(ASM_SRCS))
 QEMU := qemu-system-$(ARCH)
 
 ifeq ($(ARCH), i386)
@@ -51,7 +51,7 @@ $(RUST_OS):
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 	@ld $(LD_FLAGS) -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(RUST_OS)
 
-$(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: src/arch/$(ARCH)/%.asm
+$(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f $(ELF_FORMAT) $< -o $@
 

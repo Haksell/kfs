@@ -77,6 +77,7 @@
 -   [ ] set timeout=10 for correction
 -   [ ] check your work should not exceed 10 MB before push
 -   [ ] basic shell commands
+-   [ ] release rule or arg in Makefile
 
 ### later
 
