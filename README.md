@@ -77,11 +77,7 @@
 -   [ ] install `grub-mkrescue` and all its dependencies locally
 -   [ ] set timeout=10 for correction
 -   [ ] check your work should not exceed 10 MB before push
-
-### shell
-
 -   [ ] basic shell commands
--   [ ] fix num lock off bug
 
 ### later
 

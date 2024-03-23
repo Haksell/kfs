@@ -71,12 +71,12 @@ fn update_cursor(row: usize, col: usize) {
 }
 
 fn hide_cursor() {
-    update_cursor(VGA_HEIGHT + 1, 0); // TODO: check if it is safe
+    update_cursor(VGA_HEIGHT + 1, 0);
 }
 
 pub const VGA_WIDTH: usize = 80;
 pub const VGA_HEIGHT: usize = 25;
-pub const VGA_HISTORY: usize = 50; // TODO: 100. Has to be ≥ VGA_HEIGHT
+pub const VGA_HISTORY: usize = 50; // TODO: assert!(VGA_HISTORY >= VGA_HEIGHT)
 pub const VGA_HIDDEN_LINES: usize = VGA_HISTORY - VGA_HEIGHT;
 pub const VGA_SCREENS: usize = 4;
 
