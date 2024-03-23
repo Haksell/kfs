@@ -14,7 +14,6 @@ mod vga_buffer;
 #[no_mangle]
 pub extern "C" fn rust_main() {
     interrupts::init();
-    interrupts::enable();
     vga_buffer::WRITER.lock().clear_vga_buffer();
     shell::SHELL.lock().init();
     hlt_loop()
