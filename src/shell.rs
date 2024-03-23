@@ -57,17 +57,6 @@ pub struct Shell {
     commands: [CommandBuffer; VGA_SCREENS],
 }
 
-lazy_static! {
-    pub static ref SHELL: Mutex<Shell> = Mutex::new(Shell {
-        screen_idx: 0,
-        commands: core::array::from_fn(|_| CommandBuffer {
-            buffer: ['\0'; MAX_COMMAND_LEN],
-            len: 0,
-            pos: 0,
-        }),
-    });
-}
-
 impl Shell {
     pub fn init(&mut self) {
         for i in (0..VGA_SCREENS).rev() {
@@ -231,4 +220,15 @@ impl Shell {
         }
         println!();
     }
+}
+
+lazy_static! {
+    pub static ref SHELL: Mutex<Shell> = Mutex::new(Shell {
+        screen_idx: 0,
+        commands: core::array::from_fn(|_| CommandBuffer {
+            buffer: ['\0'; MAX_COMMAND_LEN],
+            len: 0,
+            pos: 0,
+        }),
+    });
 }
