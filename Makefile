@@ -35,13 +35,15 @@ clean:
 	rm -rf .vagrant || true
 	rm -rf *VBox*.log || true
 
-$(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json
+vm:
+	@vagrant up
+
+$(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json vm
 	@mkdir -p $(ISOFILES)/boot/grub
 	@cp $(KERNEL) $(ISOFILES)/boot/kernel.bin
 	@cp $(GRUB_CFG) $(ISOFILES)/boot/grub
-	@vagrant up
 	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(ISOFILES)"
-	@rm -r $(ISOFILES)
+	@rm -rf $(ISOFILES)
 
 $(RUST_OS):
 	@export RUST_TARGET_PATH=$(shell pwd) ; cargo build --target $(TARGET)
@@ -53,4 +55,4 @@ $(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: src/arch/$(ARCH)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f $(ELF_FORMAT) $< -o $@
 
-.PHONY: all re run rerun clean $(RUST_OS)
+.PHONY: all re run rerun clean $(RUST_OS) vm
