@@ -16,7 +16,7 @@ mod special_char {
     pub const DELETE: char = '\x7f';
 }
 
-const PROMPT: &'static str = "> "; // TODO: [ScreenChar; PROMPT_LEN]
+const PROMPT: &[u8] = b"> ";
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
 const WELCOME_MARGIN: usize = 0;
 
@@ -150,7 +150,9 @@ impl Shell {
         WRITER
             .lock()
             .set_foreground_color(self.commands[self.screen_idx].color);
-        print!("{}", PROMPT);
+        for &byte in PROMPT {
+            WRITER.lock().write_byte(byte);
+        }
         WRITER.lock().reset_foreground_color();
     }
 
@@ -231,7 +233,7 @@ lazy_static! {
             CommandBuffer::new(Color::Pink),
             CommandBuffer::new(Color::LightCyan),
             CommandBuffer::new(Color::LightRed),
-            CommandBuffer::new(Color::LightBlue),
+            CommandBuffer::new(Color::LightGreen),
         ],
     });
 }
