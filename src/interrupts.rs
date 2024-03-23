@@ -4,6 +4,7 @@ use crate::port::Port;
 use crate::shell::SHELL;
 use core::arch::asm;
 use lazy_static::lazy_static;
+use pc_keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
 use spin::Mutex;
 
 const PIC_1_OFFSET: u8 = 32;
@@ -99,8 +100,6 @@ extern "x86-interrupt" fn timer_interrupt_handler() {
 }
 
 extern "x86-interrupt" fn keyboard_interrupt_handler() {
-    use pc_keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
-
     lazy_static! {
         // TODO: handle different keyboards
         // TODO: handle ctrl, altgr and stuff like that

@@ -1,9 +1,6 @@
-use crate::{
-    print, println,
-    vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER},
-};
+use crate::vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER};
 use lazy_static::lazy_static;
-use pc_keyboard::DecodedKey;
+use pc_keyboard::{DecodedKey, KeyCode};
 use spin::Mutex;
 
 // TODO: test profusely, especially special characters
@@ -16,23 +13,27 @@ mod special_char {
     pub const DELETE: char = '\x7f';
 }
 
-const SCREEN_COLORS: [Color; VGA_SCREENS] = [
-    Color::Pink,
-    Color::LightCyan,
-    Color::LightRed,
-    Color::LightGreen,
-];
-const PROMPT: &'static str = "> "; // TODO: [ScreenChar; PROMPT_LEN]
+const PROMPT: &[u8] = b"> ";
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
 const WELCOME_MARGIN: usize = 0;
 
 struct CommandBuffer {
-    buffer: [char; MAX_COMMAND_LEN], // TODO: [u8; MAX_COMMAND_LEN]
+    buffer: [u8; MAX_COMMAND_LEN],
     len: usize,
     pos: usize,
+    color: Color,
 }
 
 impl CommandBuffer {
+    pub fn new(color: Color) -> Self {
+        CommandBuffer {
+            buffer: [0; MAX_COMMAND_LEN],
+            len: 0,
+            pos: 0,
+            color,
+        }
+    }
+
     pub fn set_pos(&mut self, pos: usize) {
         // Breaks if pos > MAX_COMMAND_LEN. Use assert!() ?
         self.pos = pos;
@@ -57,17 +58,6 @@ pub struct Shell {
     commands: [CommandBuffer; VGA_SCREENS],
 }
 
-lazy_static! {
-    pub static ref SHELL: Mutex<Shell> = Mutex::new(Shell {
-        screen_idx: 0,
-        commands: core::array::from_fn(|_| CommandBuffer {
-            buffer: ['\0'; MAX_COMMAND_LEN],
-            len: 0,
-            pos: 0,
-        }),
-    });
-}
-
 impl Shell {
     pub fn init(&mut self) {
         for i in (0..VGA_SCREENS).rev() {
@@ -75,23 +65,20 @@ impl Shell {
             self.screen_idx = i;
             WRITER.lock().switch_screen(i, 0);
             self.print_welcome();
-            println!();
-            println!();
+            WRITER.lock().write_bytes(b'\n', 2);
             self.print_prompt();
             WRITER.lock().reset_history();
         }
     }
 
     pub fn send_key(&mut self, key: DecodedKey) {
-        use pc_keyboard::KeyCode;
         let screen_idx = self.screen_idx;
-        // TODO: find a way to do let command = self.commands[screen_idx])
         let start_len = self.commands[screen_idx].len;
         let start_pos = self.commands[screen_idx].pos;
         match key {
             DecodedKey::Unicode(character) => match character {
                 special_char::NEWLINE => {
-                    println!();
+                    WRITER.lock().write_byte(b'\n');
                     if self.commands[screen_idx].len > 0 {
                         self.execute_command(screen_idx);
                     }
@@ -115,11 +102,11 @@ impl Shell {
                         for i in (start_pos..start_len).rev() {
                             command.buffer[i + 1] = command.buffer[i];
                         }
-                        command.buffer[start_pos] = character;
+                        command.buffer[start_pos] = character as u8;
                         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
                         command.len += 1;
                         for i in command.pos..command.len {
-                            print!("{}", command.buffer[i]);
+                            WRITER.lock().write_byte(command.buffer[i]);
                         }
                         command.pos += 1;
                         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
@@ -158,8 +145,10 @@ impl Shell {
     fn print_prompt(&self) {
         WRITER
             .lock()
-            .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
-        print!("{}", PROMPT);
+            .set_foreground_color(self.commands[self.screen_idx].color);
+        for &byte in PROMPT {
+            WRITER.lock().write_byte(byte);
+        }
         WRITER.lock().reset_foreground_color();
     }
 
@@ -189,7 +178,7 @@ impl Shell {
     fn print_welcome(&self) {
         WRITER
             .lock()
-            .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
+            .set_foreground_color(self.commands[self.screen_idx].color);
         Self::print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
         Self::print_welcome_line(b'\xba', b' ', b'\xba');
         Self::print_welcome_title(b"\xb0\x20\x20\x20\x20\x20\x20\x20\x20\xb0\x20\x20\x20\x20\x20\x20\x20\x20\xb0\x20\x20\xb0\xb0\xb0\xb0\x20\x20\xb0\x20\x20\x20\x20\x20\x20\x20\xb0\xb0\x20\x20\xb0\xb0\xb0\xb0\xb0\xb0\xb0\x20\x20\x20\x20\x20\x20\x20\x20\xb0\x20\x20\x20\x20\x20\x20\x20\x20\xb0\xb0\x20\x20\x20\x20\x20\x20\xb0\xb0");
@@ -213,9 +202,9 @@ impl Shell {
         }
         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
         for i in command.pos..command.len {
-            print!("{}", command.buffer[i]);
+            WRITER.lock().write_byte(command.buffer[i]);
         }
-        print!(" ");
+        WRITER.lock().write_byte(b' ');
         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
     }
 
@@ -227,8 +216,20 @@ impl Shell {
         // - print shell number
         let command = &mut self.commands[screen_idx];
         for i in (0..command.len).rev() {
-            print!("{}", command.buffer[i]);
+            WRITER.lock().write_byte(command.buffer[i]);
         }
-        println!();
+        WRITER.lock().write_byte(b'\n');
     }
+}
+
+lazy_static! {
+    pub static ref SHELL: Mutex<Shell> = Mutex::new(Shell {
+        screen_idx: 0,
+        commands: [
+            CommandBuffer::new(Color::Pink),
+            CommandBuffer::new(Color::LightCyan),
+            CommandBuffer::new(Color::LightRed),
+            CommandBuffer::new(Color::LightGreen),
+        ],
+    });
 }

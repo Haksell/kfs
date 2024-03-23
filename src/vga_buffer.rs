@@ -133,6 +133,8 @@ impl Writer {
         self.set_foreground_color(Color::White);
     }
 
+    // TODO: with_foreground_color similar to without_interrupts
+
     pub fn set_cursor(&mut self, col: usize) {
         self.column_position = col;
         if self.screens[self.screen_idx].scroll_up == 0 {
