@@ -87,7 +87,7 @@ struct Buffer {
 
 struct Screen {
     bytes: [[ScreenChar; VGA_WIDTH]; VGA_HISTORY],
-    newlines: usize, // TODO: Remove or use for check in move_up?
+    history: usize,
     scroll_up: usize,
 }
 
@@ -165,9 +165,7 @@ impl Writer {
     }
 
     pub fn move_up(&mut self) {
-        if self.screens[self.screen_idx].scroll_up < VGA_HIDDEN_LINES
-            && self.screens[self.screen_idx].scroll_up < self.screens[self.screen_idx].newlines
-        {
+        if self.screens[self.screen_idx].scroll_up < self.screens[self.screen_idx].history {
             self.screens[self.screen_idx].scroll_up += 1;
             self.redraw();
         }
@@ -180,8 +178,8 @@ impl Writer {
         }
     }
 
-    pub fn reset_newlines(&mut self) {
-        self.screens[self.screen_idx].newlines = 0;
+    pub fn reset_history(&mut self) {
+        self.screens[self.screen_idx].history = 0;
     }
 
     fn redraw(&mut self) {
@@ -198,11 +196,6 @@ impl Writer {
 
     fn new_line(&mut self) {
         let screen = &mut self.screens[self.screen_idx];
-        for y in 0..VGA_HEIGHT - 1 {
-            for x in 0..VGA_WIDTH {
-                self.buffer.chars[y][x].write(screen.bytes[VGA_HIDDEN_LINES + y + 1][x]);
-            }
-        }
         for y in 0..VGA_HISTORY - 1 {
             for x in 0..VGA_WIDTH {
                 screen.bytes[y][x] = screen.bytes[y + 1][x];
@@ -213,11 +206,13 @@ impl Writer {
             color_code: self.color_code,
         };
         for x in 0..VGA_WIDTH {
-            self.buffer.chars[VGA_HEIGHT - 1][x].write(blank);
             screen.bytes[VGA_HISTORY - 1][x] = blank;
         }
-        screen.newlines = screen.newlines.saturating_add(1);
+        if screen.history < VGA_HIDDEN_LINES {
+            screen.history += 1;
+        }
         self.column_position = 0;
+        self.redraw();
     }
 }
 
@@ -241,7 +236,7 @@ lazy_static! {
         screen_idx: 0,
         screens: core::array::from_fn(|_| Screen {
             bytes: [[ScreenChar::empty(); VGA_WIDTH]; VGA_HISTORY],
-            newlines: 0,
+            history: 0,
             scroll_up: 0,
         }),
     });
