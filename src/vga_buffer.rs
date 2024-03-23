@@ -178,6 +178,20 @@ impl Writer {
         }
     }
 
+    pub fn move_all_the_way_up(&mut self) {
+        if self.screens[self.screen_idx].scroll_up < self.screens[self.screen_idx].history {
+            self.screens[self.screen_idx].scroll_up = self.screens[self.screen_idx].history;
+            self.redraw();
+        }
+    }
+
+    pub fn move_all_the_way_down(&mut self) {
+        if self.screens[self.screen_idx].scroll_up > 0 {
+            self.screens[self.screen_idx].scroll_up = 0;
+            self.redraw();
+        }
+    }
+
     pub fn reset_history(&mut self) {
         self.screens[self.screen_idx].history = 0;
     }
