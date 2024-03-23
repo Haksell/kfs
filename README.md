@@ -70,6 +70,7 @@
 -   [ ] remove traits
 -   [ ] simplify to the max
 -   [ ] remove comments
+-   [ ] check all characters manually
 
 ### misc
 
