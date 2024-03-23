@@ -7,15 +7,15 @@ use crate::shell::SHELL;
 use lazy_static::lazy_static;
 use spin::Mutex;
 
-pub const PIC_1_OFFSET: u8 = 32;
-pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
+const PIC_1_OFFSET: u8 = 32;
+const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
 
 static PICS: Mutex<ChainedPics> =
     Mutex::new(unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) });
 
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
-pub enum InterruptIndex {
+enum InterruptIndex {
     Timer = PIC_1_OFFSET,
     Keyboard,
 }
@@ -42,12 +42,13 @@ lazy_static! {
 pub fn init() {
     IDT.load();
     unsafe { PICS.lock().init() };
+    enable();
 }
 
 const INTERRUPT_FLAG: usize = 1 << 9;
 
 #[inline]
-pub fn are_enabled() -> bool {
+fn are_enabled() -> bool {
     let r: usize;
 
     unsafe {
@@ -58,18 +59,14 @@ pub fn are_enabled() -> bool {
 }
 
 #[inline]
-pub fn enable() {
-    // Omit `nomem` to imitate a lock release. Otherwise, the compiler
-    // is free to move reads and writes through this asm block.
+fn enable() {
     unsafe {
         asm!("sti", options(preserves_flags, nostack));
     }
 }
 
 #[inline]
-pub fn disable() {
-    // Omit `nomem` to imitate a lock acquire. Otherwise, the compiler
-    // is free to move reads and writes through this asm block.
+fn disable() {
     unsafe {
         asm!("cli", options(preserves_flags, nostack));
     }
