@@ -54,7 +54,7 @@ impl ScreenChar {
     }
 }
 
-// TODO: put in some utility module
+// TODO: put in port module
 fn write_port(port: u16, value: u8) {
     unsafe {
         let mut port = Port::new(port);
@@ -72,7 +72,7 @@ fn update_cursor(row: usize, col: usize) {
 
 pub const VGA_HEIGHT: usize = 25;
 pub const VGA_WIDTH: usize = 80;
-// pub const VGA_HISTORY: usize = 100; // has to be ≥ VGA_HEIGHT
+pub const VGA_HISTORY: usize = 25; // TODO: 100. Has to be ≥ VGA_HEIGHT
 pub const VGA_SCREENS: usize = 4;
 
 #[repr(transparent)]
@@ -80,12 +80,16 @@ struct Buffer {
     chars: [[Volatile<ScreenChar>; VGA_WIDTH]; VGA_HEIGHT],
 }
 
+struct Screen {
+    bytes: [[ScreenChar; VGA_WIDTH]; VGA_HISTORY],
+}
+
 pub struct Writer {
     column_position: usize,
     color_code: ColorCode,
     buffer: &'static mut Buffer,
     screen_idx: usize,
-    screens: [[[ScreenChar; VGA_WIDTH]; VGA_HEIGHT]; VGA_SCREENS],
+    screens: [Screen; VGA_SCREENS],
 }
 
 impl Writer {
@@ -101,7 +105,8 @@ impl Writer {
                     color_code: self.color_code,
                 };
                 self.buffer.chars[VGA_HEIGHT - 1][self.column_position].write(screen_char);
-                self.screens[self.screen_idx][VGA_HEIGHT - 1][self.column_position] = screen_char;
+                self.screens[self.screen_idx].bytes[VGA_HISTORY - 1][self.column_position] =
+                    screen_char;
                 self.column_position += 1;
             }
         }
@@ -135,7 +140,8 @@ impl Writer {
             self.screen_idx = screen_idx;
             for y in 0..VGA_HEIGHT {
                 for x in 0..VGA_WIDTH {
-                    self.buffer.chars[y][x].write(self.screens[screen_idx][y][x]);
+                    // TODO: copy 25 last lines of screens
+                    self.buffer.chars[y][x].write(self.screens[screen_idx].bytes[y][x]);
                 }
             }
             self.set_cursor(cursor)
@@ -156,26 +162,22 @@ impl Writer {
     pub fn move_down(&mut self) {}
 
     fn new_line(&mut self) {
-        // TODO: call redraw
-        for y in 1..VGA_HEIGHT {
+        for y in 1..VGA_HISTORY {
             for x in 0..VGA_WIDTH {
-                self.buffer.chars[y - 1][x].write(self.screens[self.screen_idx][y][x]);
-                self.screens[self.screen_idx][y - 1][x] = self.screens[self.screen_idx][y][x];
+                let sc = self.screens[self.screen_idx].bytes[y][x];
+                self.buffer.chars[y - 1][x].write(sc);
+                self.screens[self.screen_idx].bytes[y - 1][x] = sc;
             }
         }
-        self.clear_row(VGA_HEIGHT - 1);
-        self.column_position = 0;
-    }
-
-    fn clear_row(&mut self, y: usize) {
         let blank = ScreenChar {
             ascii_character: b' ',
             color_code: self.color_code,
         };
         for x in 0..VGA_WIDTH {
-            self.buffer.chars[y][x].write(blank);
-            self.screens[self.screen_idx][y][x] = blank;
+            self.buffer.chars[VGA_HEIGHT - 1][x].write(blank);
+            self.screens[self.screen_idx].bytes[VGA_HISTORY - 1][x] = blank;
         }
+        self.column_position = 0;
     }
 }
 
@@ -197,7 +199,9 @@ lazy_static! {
         color_code: ColorCode::new(Color::White, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
         screen_idx: 0,
-        screens: [[[ScreenChar::empty(); VGA_WIDTH]; VGA_HEIGHT]; VGA_SCREENS],
+        screens: core::array::from_fn(|_| Screen {
+            bytes: [[ScreenChar::empty(); VGA_WIDTH]; VGA_HISTORY],
+        }),
     });
 }
 
