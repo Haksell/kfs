@@ -1,7 +1,4 @@
-use crate::{
-    print, println,
-    vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER},
-};
+use crate::vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER};
 use lazy_static::lazy_static;
 use pc_keyboard::{DecodedKey, KeyCode};
 use spin::Mutex;
@@ -21,7 +18,7 @@ const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
 const WELCOME_MARGIN: usize = 0;
 
 struct CommandBuffer {
-    buffer: [char; MAX_COMMAND_LEN], // TODO: [u8; MAX_COMMAND_LEN]
+    buffer: [u8; MAX_COMMAND_LEN],
     len: usize,
     pos: usize,
     color: Color,
@@ -30,7 +27,7 @@ struct CommandBuffer {
 impl CommandBuffer {
     pub fn new(color: Color) -> Self {
         CommandBuffer {
-            buffer: ['\0'; MAX_COMMAND_LEN],
+            buffer: [0; MAX_COMMAND_LEN],
             len: 0,
             pos: 0,
             color,
@@ -68,8 +65,7 @@ impl Shell {
             self.screen_idx = i;
             WRITER.lock().switch_screen(i, 0);
             self.print_welcome();
-            println!();
-            println!();
+            WRITER.lock().write_bytes(b'\n', 2);
             self.print_prompt();
             WRITER.lock().reset_history();
         }
@@ -82,7 +78,7 @@ impl Shell {
         match key {
             DecodedKey::Unicode(character) => match character {
                 special_char::NEWLINE => {
-                    println!();
+                    WRITER.lock().write_byte(b'\n');
                     if self.commands[screen_idx].len > 0 {
                         self.execute_command(screen_idx);
                     }
@@ -106,11 +102,11 @@ impl Shell {
                         for i in (start_pos..start_len).rev() {
                             command.buffer[i + 1] = command.buffer[i];
                         }
-                        command.buffer[start_pos] = character;
+                        command.buffer[start_pos] = character as u8;
                         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
                         command.len += 1;
                         for i in command.pos..command.len {
-                            print!("{}", command.buffer[i]);
+                            WRITER.lock().write_byte(command.buffer[i]);
                         }
                         command.pos += 1;
                         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
@@ -206,9 +202,9 @@ impl Shell {
         }
         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
         for i in command.pos..command.len {
-            print!("{}", command.buffer[i]);
+            WRITER.lock().write_byte(command.buffer[i]);
         }
-        print!(" ");
+        WRITER.lock().write_byte(b' ');
         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
     }
 
@@ -220,9 +216,9 @@ impl Shell {
         // - print shell number
         let command = &mut self.commands[screen_idx];
         for i in (0..command.len).rev() {
-            print!("{}", command.buffer[i]);
+            WRITER.lock().write_byte(command.buffer[i]);
         }
-        println!();
+        WRITER.lock().write_byte(b'\n');
     }
 }
 
