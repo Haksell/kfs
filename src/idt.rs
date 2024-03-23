@@ -4,6 +4,10 @@ use core::{
     ops::{Index, IndexMut},
 };
 
+const IDT_SIZE: usize = 256;
+const NB_BUILTINS: usize = 32;
+const NB_INTERRUPTS: usize = IDT_SIZE - NB_BUILTINS;
+
 #[derive(Debug, Clone, Copy)]
 #[repr(C, packed(2))]
 pub struct DescriptorTablePointer {
@@ -14,21 +18,21 @@ pub struct DescriptorTablePointer {
 #[repr(C)]
 #[repr(align(16))]
 pub struct InterruptDescriptorTable {
-    builtins: [Entry<HandlerFunc>; 32],
-    interrupts: [Entry<HandlerFunc>; 256 - 32],
+    builtins: [Entry<HandlerFunc>; NB_BUILTINS],
+    interrupts: [Entry<HandlerFunc>; NB_INTERRUPTS],
 }
 
 impl InterruptDescriptorTable {
     pub fn new() -> Self {
         Self {
-            builtins: [Entry::missing(); 32],
-            interrupts: [Entry::missing(); 256 - 32],
+            builtins: [Entry::missing(); NB_BUILTINS],
+            interrupts: [Entry::missing(); NB_INTERRUPTS],
         }
     }
 
     pub fn load(&'static self) {
         unsafe {
-            lidt(&self.pointer());
+            asm!("lidt [{}]", in(reg) &self.pointer(), options(readonly, nostack, preserves_flags));
         }
     }
 
@@ -45,8 +49,8 @@ impl Index<usize> for InterruptDescriptorTable {
 
     fn index(&self, i: usize) -> &Self::Output {
         match i {
-            i @ 0..=31 => &self.builtins[i],
-            _ => &self.interrupts[i - 32],
+            i @ 0..NB_BUILTINS => &self.builtins[i],
+            _ => &self.interrupts[i - NB_BUILTINS],
         }
     }
 }
@@ -54,14 +58,8 @@ impl Index<usize> for InterruptDescriptorTable {
 impl IndexMut<usize> for InterruptDescriptorTable {
     fn index_mut(&mut self, i: usize) -> &mut Self::Output {
         match i {
-            i @ 0..=31 => &mut self.builtins[i],
-            _ => &mut self.interrupts[i - 32],
+            i @ 0..NB_BUILTINS => &mut self.builtins[i],
+            _ => &mut self.interrupts[i - NB_BUILTINS],
         }
-    }
-}
-
-pub unsafe fn lidt(idt: &DescriptorTablePointer) {
-    unsafe {
-        asm!("lidt [{}]", in(reg) idt, options(readonly, nostack, preserves_flags));
     }
 }

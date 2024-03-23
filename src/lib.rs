@@ -1,5 +1,6 @@
 #![no_std]
 #![feature(abi_x86_interrupt)]
+#![feature(exclusive_range_pattern)]
 
 use core::{arch::asm, panic::PanicInfo};
 
