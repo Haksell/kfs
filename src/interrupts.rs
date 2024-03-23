@@ -1,5 +1,5 @@
 use crate::idt::InterruptDescriptorTable;
-use crate::pc_keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
+use crate::keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
 use crate::pic::ChainedPics;
 use crate::port::Port;
 use crate::shell::SHELL;
