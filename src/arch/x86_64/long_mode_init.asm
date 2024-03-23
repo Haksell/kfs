@@ -1,5 +1,5 @@
 global long_mode_start
-extern rust_main
+extern kernel_main
 
 section .text
 bits 64
@@ -11,7 +11,7 @@ long_mode_start:
     mov es, ax
     mov fs, ax
     mov gs, ax
-    call rust_main
+    call kernel_main
     mov rax, 0x2f412f472f4f2f4f
     mov qword [0xb8000], rax
     mov qword [0xb8008], rax

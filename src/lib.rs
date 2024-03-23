@@ -12,7 +12,7 @@ mod shell;
 mod vga_buffer;
 
 #[no_mangle]
-pub extern "C" fn rust_main() {
+pub extern "C" fn kernel_main() {
     interrupts::init();
     vga_buffer::WRITER.lock().clear_vga_buffer();
     shell::SHELL.lock().init();

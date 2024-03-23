@@ -6,8 +6,8 @@ bits 32
 start:
     mov esp, stack_top
     call check_multiboot
-    extern rust_main
-    call rust_main
+    extern kernel_main
+    call kernel_main
     hlt
 
 
