@@ -81,6 +81,7 @@
 ### shell
 
 -   [ ] handle up/down (scroll history)
+-   [ ] handle pageup/pagedown (max scroll history)
 -   [ ] basic shell commands
 -   [ ] fix num lock off bug
 

@@ -78,6 +78,7 @@ impl Shell {
             println!();
             println!();
             self.print_prompt();
+            WRITER.lock().reset_newlines();
         }
     }
 

@@ -70,9 +70,13 @@ fn update_cursor(row: usize, col: usize) {
     write_port(0x3D5, (pos & 0xFF) as u8);
 }
 
+fn hide_cursor() {
+    update_cursor(VGA_HEIGHT + 1, 0); // TODO: check if it is safe
+}
+
 pub const VGA_WIDTH: usize = 80;
 pub const VGA_HEIGHT: usize = 25;
-pub const VGA_HISTORY: usize = 32; // TODO: 100. Has to be ≥ VGA_HEIGHT
+pub const VGA_HISTORY: usize = 50; // TODO: 100. Has to be ≥ VGA_HEIGHT
 pub const VGA_HIDDEN_LINES: usize = VGA_HISTORY - VGA_HEIGHT;
 pub const VGA_SCREENS: usize = 4;
 
@@ -83,7 +87,8 @@ struct Buffer {
 
 struct Screen {
     bytes: [[ScreenChar; VGA_WIDTH]; VGA_HISTORY],
-    newlines: usize,
+    newlines: usize, // TODO: Remove or use for check in move_up?
+    scroll_up: usize,
 }
 
 pub struct Writer {
@@ -106,12 +111,14 @@ impl Writer {
                     ascii_character: byte,
                     color_code: self.color_code,
                 };
-                self.buffer.chars[VGA_HEIGHT - 1][self.column_position].write(sc);
+                if self.screens[self.screen_idx].scroll_up == 0 {
+                    self.buffer.chars[VGA_HEIGHT - 1][self.column_position].write(sc);
+                }
                 self.screens[self.screen_idx].bytes[VGA_HISTORY - 1][self.column_position] = sc;
                 self.column_position += 1;
             }
         }
-        update_cursor(VGA_HEIGHT - 1, self.column_position);
+        self.set_cursor(self.column_position);
     }
 
     // TODO: write_bytes that accepts a &[u8] and only moves the cursor once
@@ -133,19 +140,18 @@ impl Writer {
 
     pub fn set_cursor(&mut self, col: usize) {
         self.column_position = col;
-        update_cursor(VGA_HEIGHT - 1, self.column_position);
+        if self.screens[self.screen_idx].scroll_up == 0 {
+            update_cursor(VGA_HEIGHT - 1, self.column_position);
+        } else {
+            hide_cursor();
+        }
     }
 
     pub fn switch_screen(&mut self, screen_idx: usize, cursor: usize) {
         if screen_idx != self.screen_idx && screen_idx < VGA_SCREENS && cursor < VGA_WIDTH {
             self.screen_idx = screen_idx;
-            let screen = &self.screens[screen_idx];
-            for y in 0..VGA_HEIGHT {
-                for x in 0..VGA_WIDTH {
-                    self.buffer.chars[y][x].write(screen.bytes[VGA_HIDDEN_LINES + y][x]);
-                }
-            }
-            self.set_cursor(cursor)
+            self.set_cursor(cursor);
+            self.redraw();
         }
     }
 
@@ -158,21 +164,48 @@ impl Writer {
         }
     }
 
-    pub fn move_up(&mut self) {} // TODO
+    pub fn move_up(&mut self) {
+        if self.screens[self.screen_idx].scroll_up < VGA_HIDDEN_LINES
+            && self.screens[self.screen_idx].scroll_up < self.screens[self.screen_idx].newlines
+        {
+            self.screens[self.screen_idx].scroll_up += 1;
+            self.redraw();
+        }
+    }
 
-    pub fn move_down(&mut self) {} // TODO
+    pub fn move_down(&mut self) {
+        if self.screens[self.screen_idx].scroll_up > 0 {
+            self.screens[self.screen_idx].scroll_up -= 1;
+            self.redraw();
+        }
+    }
+
+    pub fn reset_newlines(&mut self) {
+        self.screens[self.screen_idx].newlines = 0;
+    }
+
+    fn redraw(&mut self) {
+        let scroll_up = self.screens[self.screen_idx].scroll_up;
+        self.set_cursor(self.column_position);
+        for y in 0..VGA_HEIGHT {
+            for x in 0..VGA_WIDTH {
+                self.buffer.chars[y][x].write(
+                    self.screens[self.screen_idx].bytes[y + VGA_HIDDEN_LINES - scroll_up][x],
+                );
+            }
+        }
+    }
 
     fn new_line(&mut self) {
+        let screen = &mut self.screens[self.screen_idx];
         for y in 0..VGA_HEIGHT - 1 {
             for x in 0..VGA_WIDTH {
-                self.buffer.chars[y][x]
-                    .write(self.screens[self.screen_idx].bytes[VGA_HIDDEN_LINES + y + 1][x]);
+                self.buffer.chars[y][x].write(screen.bytes[VGA_HIDDEN_LINES + y + 1][x]);
             }
         }
         for y in 0..VGA_HISTORY - 1 {
             for x in 0..VGA_WIDTH {
-                self.screens[self.screen_idx].bytes[y][x] =
-                    self.screens[self.screen_idx].bytes[y + 1][x];
+                screen.bytes[y][x] = screen.bytes[y + 1][x];
             }
         }
         let blank = ScreenChar {
@@ -181,9 +214,9 @@ impl Writer {
         };
         for x in 0..VGA_WIDTH {
             self.buffer.chars[VGA_HEIGHT - 1][x].write(blank);
-            self.screens[self.screen_idx].bytes[VGA_HISTORY - 1][x] = blank;
+            screen.bytes[VGA_HISTORY - 1][x] = blank;
         }
-        self.screens[self.screen_idx].newlines += 1;
+        screen.newlines = screen.newlines.saturating_add(1);
         self.column_position = 0;
     }
 }
@@ -208,7 +241,8 @@ lazy_static! {
         screen_idx: 0,
         screens: core::array::from_fn(|_| Screen {
             bytes: [[ScreenChar::empty(); VGA_WIDTH]; VGA_HISTORY],
-            newlines: 0
+            newlines: 0,
+            scroll_up: 0,
         }),
     });
 }
