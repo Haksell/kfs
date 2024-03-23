@@ -16,12 +16,6 @@ mod special_char {
     pub const DELETE: char = '\x7f';
 }
 
-const SCREEN_COLORS: [Color; VGA_SCREENS] = [
-    Color::Pink,
-    Color::LightCyan,
-    Color::LightRed,
-    Color::LightGreen,
-];
 const PROMPT: &'static str = "> "; // TODO: [ScreenChar; PROMPT_LEN]
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
 const WELCOME_MARGIN: usize = 0;
@@ -30,9 +24,19 @@ struct CommandBuffer {
     buffer: [char; MAX_COMMAND_LEN], // TODO: [u8; MAX_COMMAND_LEN]
     len: usize,
     pos: usize,
+    color: Color,
 }
 
 impl CommandBuffer {
+    pub fn new(color: Color) -> Self {
+        CommandBuffer {
+            buffer: ['\0'; MAX_COMMAND_LEN],
+            len: 0,
+            pos: 0,
+            color,
+        }
+    }
+
     pub fn set_pos(&mut self, pos: usize) {
         // Breaks if pos > MAX_COMMAND_LEN. Use assert!() ?
         self.pos = pos;
@@ -147,7 +151,7 @@ impl Shell {
     fn print_prompt(&self) {
         WRITER
             .lock()
-            .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
+            .set_foreground_color(self.commands[self.screen_idx].color);
         print!("{}", PROMPT);
         WRITER.lock().reset_foreground_color();
     }
@@ -178,7 +182,7 @@ impl Shell {
     fn print_welcome(&self) {
         WRITER
             .lock()
-            .set_foreground_color(SCREEN_COLORS[self.screen_idx]);
+            .set_foreground_color(self.commands[self.screen_idx].color);
         Self::print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
         Self::print_welcome_line(b'\xba', b' ', b'\xba');
         Self::print_welcome_title(b"\xb0\x20\x20\x20\x20\x20\x20\x20\x20\xb0\x20\x20\x20\x20\x20\x20\x20\x20\xb0\x20\x20\xb0\xb0\xb0\xb0\x20\x20\xb0\x20\x20\x20\x20\x20\x20\x20\xb0\xb0\x20\x20\xb0\xb0\xb0\xb0\xb0\xb0\xb0\x20\x20\x20\x20\x20\x20\x20\x20\xb0\x20\x20\x20\x20\x20\x20\x20\x20\xb0\xb0\x20\x20\x20\x20\x20\x20\xb0\xb0");
@@ -225,10 +229,11 @@ impl Shell {
 lazy_static! {
     pub static ref SHELL: Mutex<Shell> = Mutex::new(Shell {
         screen_idx: 0,
-        commands: core::array::from_fn(|_| CommandBuffer {
-            buffer: ['\0'; MAX_COMMAND_LEN],
-            len: 0,
-            pos: 0,
-        }),
+        commands: [
+            CommandBuffer::new(Color::Pink),
+            CommandBuffer::new(Color::LightCyan),
+            CommandBuffer::new(Color::LightRed),
+            CommandBuffer::new(Color::LightBlue),
+        ],
     });
 }
