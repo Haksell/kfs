@@ -66,7 +66,6 @@
 
 ### misc
 
--   [ ] implement `x86_64`
 -   [ ] implement `pc-keyboard`
 -   [ ] make everything work with `i386`
 -   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
