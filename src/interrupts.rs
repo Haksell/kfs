@@ -10,7 +10,7 @@ use spin::Mutex;
 pub const PIC_1_OFFSET: u8 = 32;
 pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
 
-pub static PICS: Mutex<ChainedPics> =
+static PICS: Mutex<ChainedPics> =
     Mutex::new(unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) });
 
 #[derive(Debug, Clone, Copy)]
@@ -41,6 +41,7 @@ lazy_static! {
 
 pub fn init() {
     IDT.load();
+    unsafe { PICS.lock().init() };
 }
 
 const INTERRUPT_FLAG: usize = 1 << 9;
@@ -95,7 +96,6 @@ where
 }
 
 extern "x86-interrupt" fn timer_interrupt_handler() {
-    // print!(".");
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());

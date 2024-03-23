@@ -71,10 +71,7 @@ impl ChainedPics {
         }
     }
 
-    /// Initialize both our PICs.  We initialize them together, at the same
-    /// time, because it's traditional to do so, and because I/O operations
-    /// might not be instantaneous on older processors.
-    pub unsafe fn initialize(&mut self) {
+    pub unsafe fn init(&mut self) {
         // We need to add a delay between writes to our PICs, especially on
         // older motherboards.  But we don't necessarily have any kind of
         // timers yet, because most of them require interrupts.  Various
