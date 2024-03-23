@@ -5,6 +5,8 @@ const CMD_END_OF_INTERRUPT: u8 = 0x20;
 
 const MODE_8086: u8 = 0x01;
 
+const NB_PICS: usize = 2;
+
 struct Pic {
     offset: u8,
     command: Port<u8>,
@@ -49,7 +51,7 @@ impl Pic {
 }
 
 pub struct ChainedPics {
-    pics: [Pic; 2],
+    pics: [Pic; NB_PICS],
 }
 
 impl ChainedPics {
@@ -60,7 +62,7 @@ impl ChainedPics {
                     offset: offset1,
                     command: Port::new(0x20),
                     data: Port::new(0x21),
-                    cascade: 0b100,
+                    cascade: 4,
                 },
                 Pic {
                     offset: offset2,
@@ -82,16 +84,17 @@ impl ChainedPics {
                 wait();
             }
         }
-        self.write_masks(saved_masks[0], saved_masks[1])
+        self.write_masks(&saved_masks)
     }
 
-    unsafe fn read_masks(&mut self) -> [u8; 2] {
+    unsafe fn read_masks(&mut self) -> [u8; NB_PICS] {
         [self.pics[0].read_mask(), self.pics[1].read_mask()]
     }
 
-    unsafe fn write_masks(&mut self, mask1: u8, mask2: u8) {
-        self.pics[0].write_mask(mask1);
-        self.pics[1].write_mask(mask2);
+    unsafe fn write_masks(&mut self, masks: &[u8; NB_PICS]) {
+        for (i, &mask) in masks.iter().enumerate() {
+            self.pics[i].write_mask(mask);
+        }
     }
 
     pub unsafe fn notify_end_of_interrupt(&mut self, interrupt_id: u8) {
