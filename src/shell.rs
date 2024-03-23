@@ -3,7 +3,7 @@ use crate::{
     vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER},
 };
 use lazy_static::lazy_static;
-use pc_keyboard::DecodedKey;
+use pc_keyboard::{DecodedKey, KeyCode};
 use spin::Mutex;
 
 // TODO: test profusely, especially special characters
@@ -76,9 +76,7 @@ impl Shell {
     }
 
     pub fn send_key(&mut self, key: DecodedKey) {
-        use pc_keyboard::KeyCode;
         let screen_idx = self.screen_idx;
-        // TODO: find a way to do let command = self.commands[screen_idx])
         let start_len = self.commands[screen_idx].len;
         let start_pos = self.commands[screen_idx].pos;
         match key {
