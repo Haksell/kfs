@@ -191,6 +191,7 @@ where
         Keyboard {
             layout,
             scancode_set,
+            // TODO: check if there is a way to get accurate modifiers state at the start
             modifiers: Modifiers {
                 lshift: false,
                 rshift: false,
@@ -212,50 +213,32 @@ where
             KeyEvent {
                 code: KeyCode::LShift,
                 state: KeyState::Down,
-            } => {
-                self.modifiers.lshift = true;
-                Some(DecodedKey::RawKey(KeyCode::LShift))
-            }
+            } => self.modifiers.lshift = true,
             KeyEvent {
                 code: KeyCode::RShift,
                 state: KeyState::Down,
-            } => {
-                self.modifiers.rshift = true;
-                Some(DecodedKey::RawKey(KeyCode::RShift))
-            }
+            } => self.modifiers.rshift = true,
             KeyEvent {
                 code: KeyCode::LShift,
                 state: KeyState::Up,
-            } => {
-                self.modifiers.lshift = false;
-                None
-            }
+            } => self.modifiers.lshift = false,
             KeyEvent {
                 code: KeyCode::RShift,
                 state: KeyState::Up,
-            } => {
-                self.modifiers.rshift = false;
-                None
-            }
+            } => self.modifiers.rshift = false,
             KeyEvent {
                 code: KeyCode::CapsLock,
                 state: KeyState::Down,
-            } => {
-                self.modifiers.capslock = !self.modifiers.capslock;
-                Some(DecodedKey::RawKey(KeyCode::CapsLock))
-            }
+            } => self.modifiers.capslock = !self.modifiers.capslock,
             KeyEvent {
                 code: KeyCode::NumpadLock,
                 state: KeyState::Down,
-            } => {
-                self.modifiers.numlock = !self.modifiers.numlock;
-                Some(DecodedKey::RawKey(KeyCode::NumpadLock))
-            }
-            KeyEvent {
-                code: c,
-                state: KeyState::Down,
-            } => Some(self.layout.map_keycode(c, &self.modifiers)),
-            _ => None,
+            } => self.modifiers.numlock = !self.modifiers.numlock,
+            _ => {}
+        }
+        match ev.state {
+            KeyState::Down => Some(self.layout.map_keycode(ev.code, &self.modifiers)),
+            KeyState::Up => None,
         }
     }
 }

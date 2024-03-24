@@ -70,8 +70,8 @@
 -   [ ] remove traits
 -   [ ] simplify to the max
 -   [ ] check all characters manually
--   [ ] fix NumLock 5 bug
--   [ ] fix `\|` bug
+-   [ ] fix numlock 5 bug
+-   [ ] check and rename all oems
 
 ### misc
 
