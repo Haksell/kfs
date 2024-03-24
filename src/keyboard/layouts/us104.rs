@@ -373,7 +373,13 @@ impl KeyboardLayout for Us104Key {
                     DecodedKey::RawKey(KeyCode::ArrowLeft)
                 }
             }
-            KeyCode::Numpad5 => DecodedKey::Unicode('5'), // TODO: nothing if numlock off
+            KeyCode::Numpad5 => {
+                if modifiers.numlock {
+                    DecodedKey::Unicode('5')
+                } else {
+                    DecodedKey::RawKey(KeyCode::Numpad5)
+                }
+            }
             KeyCode::Numpad6 => {
                 if modifiers.numlock {
                     DecodedKey::Unicode('6')

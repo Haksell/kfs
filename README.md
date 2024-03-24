@@ -70,7 +70,6 @@
 -   [ ] remove traits
 -   [ ] simplify to the max
 -   [ ] check all characters manually
--   [ ] fix numlock 5 bug
 -   [ ] check and rename all oems
 
 ### misc
