@@ -1,5 +1,5 @@
-use super::super::{Error, KeyCode, KeyEvent, KeyState, ScancodeSet};
-use super::{EXTENDED2_KEY_CODE, EXTENDED_KEY_CODE};
+use super::super::{Error, KeyCode, KeyEvent, KeyState};
+use super::{ScancodeSet, EXTENDED2_KEY_CODE, EXTENDED_KEY_CODE};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 enum DecodeState {

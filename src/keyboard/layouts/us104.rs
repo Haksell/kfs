@@ -1,4 +1,5 @@
-use super::super::{DecodedKey, KeyCode, KeyboardLayout, Modifiers};
+use super::super::{DecodedKey, KeyCode, Modifiers};
+use super::KeyboardLayout;
 
 pub struct Us104Key;
 

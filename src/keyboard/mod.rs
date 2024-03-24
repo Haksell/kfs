@@ -1,6 +1,9 @@
 pub mod layouts;
 pub mod scancodes;
 
+use layouts::KeyboardLayout;
+use scancodes::ScancodeSet;
+
 #[derive(Debug)]
 pub struct Keyboard<L, S>
 where
@@ -154,16 +157,6 @@ pub enum KeyState {
 pub struct KeyEvent {
     pub code: KeyCode,
     pub state: KeyState,
-}
-
-// TODO: put in subfolder without pub
-pub trait KeyboardLayout {
-    fn map_keycode(&self, keycode: KeyCode, modifiers: &Modifiers) -> DecodedKey;
-}
-
-// TODO: put in subfolder without pub
-pub trait ScancodeSet {
-    fn add_byte(&mut self, code: u8) -> Result<Option<KeyEvent>, Error>;
 }
 
 #[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
