@@ -67,6 +67,7 @@
 ### keyboard
 
 -   [ ] flatten module
+-   [ ] remove pub
 -   [ ] remove traits
 -   [ ] simplify to the max
 -   [ ] remove comments

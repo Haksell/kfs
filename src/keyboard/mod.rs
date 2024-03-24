@@ -1,7 +1,5 @@
 pub mod layouts;
-
-mod scancodes;
-pub use scancodes::ScancodeSet1;
+pub mod scancodes;
 
 #[derive(Debug)]
 pub struct Keyboard<L, S>
@@ -14,7 +12,7 @@ where
 }
 
 #[derive(Debug)]
-pub struct EventDecoder<L: KeyboardLayout> {
+struct EventDecoder<L: KeyboardLayout> {
     modifiers: Modifiers,
     layout: L,
 }
@@ -24,7 +22,7 @@ pub enum Error {
     UnknownKeyCode,
 }
 
-// #[allow(dead_code)]
+#[allow(dead_code)]
 #[derive(Debug, PartialEq, Eq, Copy, Clone, PartialOrd, Ord)]
 #[repr(u8)]
 pub enum KeyCode {
