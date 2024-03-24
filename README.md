@@ -71,8 +71,8 @@
 -   [ ] call `exit_qemu` on `Esc` command
 -   [ ] release rule or arg in Makefile
 -   [ ] optimize vga history by wrapping around
--   [ ] better welcome message
 -   [ ] find project name and rebrand
+-   [ ] better welcome message
 
 ### later
 
