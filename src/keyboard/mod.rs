@@ -24,7 +24,7 @@ pub enum Error {
 #[repr(u8)]
 pub enum KeyCode {
     Escape,
-    // Letters
+    // ======= LETTERS =======
     A,
     B,
     C,
@@ -51,17 +51,13 @@ pub enum KeyCode {
     X,
     Y,
     Z,
-    // ========= Function Keys =========
+    // ======= FUNCTIONS KEYS =======
     F1,
     F2,
     F3,
     F4,
-    // ========= Row 1 (the F-keys) =========
-    PrintScreen,
-    SysRq,
-    ScrollLock,
-    // ========= Row 2 (the numbers) =========
-    Oem8,
+    // ======= TOP NUMBERS =======
+    Key0,
     Key1,
     Key2,
     Key3,
@@ -71,7 +67,23 @@ pub enum KeyCode {
     Key7,
     Key8,
     Key9,
-    Key0,
+    // ======= NUMPAD =======
+    Numpad0,
+    Numpad1,
+    Numpad2,
+    Numpad3,
+    Numpad4,
+    Numpad5,
+    Numpad6,
+    Numpad7,
+    Numpad8,
+    Numpad9,
+    // ======= Row 1 (the F-keys) =======
+    PrintScreen,
+    SysRq,
+    ScrollLock,
+    // ======= Row 2 (the numbers) =======
+    Oem8,
     OemMinus,
     OemPlus,
     Backspace,
@@ -82,7 +94,7 @@ pub enum KeyCode {
     NumpadDivide,
     NumpadMultiply,
     NumpadSubtract,
-    // ========= Row 3 (QWERTY) =========
+    // ======= Row 3 (QWERTY) =======
     Tab,
     Oem4,
     Oem6,
@@ -91,30 +103,21 @@ pub enum KeyCode {
     Delete,
     End,
     PageDown,
-    Numpad7,
-    Numpad8,
-    Numpad9,
     NumpadAdd,
-    // ========= Row 4 (ASDF) =========
+    // ======= Row 4 (ASDF) =======
     CapsLock,
     Oem1,
     Oem3,
     Return,
-    Numpad4,
-    Numpad5,
-    Numpad6,
-    // ========= Row 5 (ZXCV) =========
+    // ======= Row 5 (ZXCV) =======
     LShift,
     OemComma,
     OemPeriod,
     Oem2,
     RShift,
     ArrowUp,
-    Numpad1,
-    Numpad2,
-    Numpad3,
     NumpadEnter,
-    // ========= Row 6 (modifers and space bar) =========
+    // ======= Row 6 (modifers and space bar) =======
     LWin,
     Spacebar,
     RWin,
@@ -122,15 +125,8 @@ pub enum KeyCode {
     ArrowLeft,
     ArrowDown,
     ArrowRight,
-    Numpad0,
     NumpadPeriod,
-    // ========= JIS 109-key extra keys =========
-    Oem9,
-    Oem10,
-    Oem11,
-    Oem12,
-    Oem13,
-    // ========= Extra Keys ========= (TODO: remove for now)
+    // ======= Extra Keys ======= (TODO: remove for now)
     PrevTrack,
     NextTrack,
     Mute,

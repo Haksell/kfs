@@ -132,11 +132,6 @@ impl ScancodeSet1 {
             0x5B => Ok(KeyCode::LWin),
             0x5C => Ok(KeyCode::RWin),
             0x5D => Ok(KeyCode::Apps),
-            0x70 => Ok(KeyCode::Oem11),
-            0x73 => Ok(KeyCode::Oem12),
-            0x79 => Ok(KeyCode::Oem10),
-            0x7B => Ok(KeyCode::Oem9),
-            0x7D => Ok(KeyCode::Oem13),
             _ => Err(Error::UnknownKeyCode),
         }
     }
