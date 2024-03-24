@@ -29,7 +29,7 @@ impl<F> Entry<F> {
     }
 
     #[inline]
-    pub unsafe fn set_handler_addr(&mut self, addr: u64) -> &mut EntryOptions {
+    pub unsafe fn set_handler_addr(&mut self, addr: usize) -> &mut EntryOptions {
         self.pointer_low = addr as u16;
         self.pointer_middle = (addr >> 16) as u16;
         self.pointer_high = (addr >> 32) as u32;
@@ -64,7 +64,7 @@ impl<F> Entry<F> {
     }
 
     #[inline]
-    pub unsafe fn set_handler_addr(&mut self, addr: u32) -> &mut EntryOptions {
+    pub unsafe fn set_handler_addr(&mut self, addr: usize) -> &mut EntryOptions {
         self.pointer_low = addr as u16;
         self.pointer_middle = (addr >> 16) as u16;
         self.gdt_selector = CS::get_reg().0;
@@ -75,27 +75,13 @@ impl<F> Entry<F> {
 
 pub type HandlerFunc = extern "x86-interrupt" fn();
 
-#[cfg(target_arch = "x86_64")]
 pub trait HandlerFuncType {
-    fn to_virt_addr(self) -> u64;
+    fn to_virt_addr(self) -> usize;
 }
 
-#[cfg(target_arch = "x86_64")]
 impl HandlerFuncType for HandlerFunc {
-    fn to_virt_addr(self) -> u64 {
-        self as u64
-    }
-}
-
-#[cfg(target_arch = "x86")]
-pub trait HandlerFuncType {
-    fn to_virt_addr(self) -> u32;
-}
-
-#[cfg(target_arch = "x86")]
-impl HandlerFuncType for HandlerFunc {
-    fn to_virt_addr(self) -> u32 {
-        self as u32
+    fn to_virt_addr(self) -> usize {
+        self as usize
     }
 }
 
