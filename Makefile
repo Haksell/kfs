@@ -2,20 +2,24 @@ ARCH ?= i386
 DEBUG ?= false
 
 ifeq ($(ARCH), i386)
-	LD_FLAGS := -m elf_i386
-	ELF_FORMAT := elf32
+LD_FLAGS := -m elf_i386
+ELF_FORMAT := elf32
+else ifeq ($(ARCH), x86_64)
+ELF_FORMAT := elf64
 else
-	ELF_FORMAT := elf64
+$(error ARCH must be either i386 or x86_64)
 endif
 
-ifeq ($(DEBUG), false)
-	BUILD_MODE := release
-	CARGO_FLAGS := --release
+ifeq ($(DEBUG),true)
+BUILD_MODE := debug
+else ifeq ($(DEBUG),false)
+BUILD_MODE := release
+CARGO_FLAGS := --release
 else
-	BUILD_MODE := debug
+$(error DEBUG must be either true or false)
 endif
 
-BUILD := build/$(BUILD_MODE)
+BUILD := build/$(ARCH)/$(BUILD_MODE)
 ISOFILES := $(BUILD)/isofiles
 KERNEL := $(BUILD)/kernel-$(ARCH).bin
 ISO := $(BUILD)/os-$(ARCH).iso
