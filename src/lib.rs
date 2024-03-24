@@ -18,6 +18,7 @@ pub extern "C" fn kernel_main() {
     interrupts::init();
     vga_buffer::WRITER.lock().clear_vga_buffer();
     shell::SHELL.lock().init();
+    interrupts::enable();
     hlt_loop()
 }
 
