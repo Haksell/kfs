@@ -32,7 +32,6 @@ pub enum KeyCode {
     PrintScreen,
     SysRq,
     ScrollLock,
-    PauseBreak,
     // ========= Row 2 (the numbers) =========
     Oem8,
     Key1,
@@ -114,14 +113,12 @@ pub enum KeyCode {
     Numpad3,
     NumpadEnter,
     // ========= Row 6 (modifers and space bar) =========
-    LControl,
     LWin,
     LAlt,
     Spacebar,
     RAltGr,
     RWin,
     Apps,
-    RControl,
     ArrowLeft,
     ArrowDown,
     ArrowRight,
@@ -143,7 +140,6 @@ pub enum KeyCode {
     VolumeDown,
     VolumeUp,
     WWWHome,
-    RControl2,
     RAlt2,
 }
 
@@ -169,13 +165,10 @@ impl KeyEvent {
 pub struct Modifiers {
     pub lshift: bool,
     pub rshift: bool,
-    pub lctrl: bool,
-    pub rctrl: bool,
     pub numlock: bool,
     pub capslock: bool,
     pub lalt: bool,
     pub ralt: bool,
-    pub rctrl2: bool,
 }
 
 impl Modifiers {
@@ -206,13 +199,10 @@ where
             modifiers: Modifiers {
                 lshift: false,
                 rshift: false,
-                lctrl: false,
-                rctrl: false,
                 numlock: true,
                 capslock: false,
                 lalt: false,
                 ralt: false,
-                rctrl2: false,
             },
         }
     }
@@ -265,40 +255,8 @@ where
                 code: KeyCode::NumpadLock,
                 state: KeyState::Down,
             } => {
-                if self.modifiers.rctrl2 {
-                    Some(DecodedKey::RawKey(KeyCode::PauseBreak))
-                } else {
-                    self.modifiers.numlock = !self.modifiers.numlock;
-                    Some(DecodedKey::RawKey(KeyCode::NumpadLock))
-                }
-            }
-            KeyEvent {
-                code: KeyCode::LControl,
-                state: KeyState::Down,
-            } => {
-                self.modifiers.lctrl = true;
-                Some(DecodedKey::RawKey(KeyCode::LControl))
-            }
-            KeyEvent {
-                code: KeyCode::LControl,
-                state: KeyState::Up,
-            } => {
-                self.modifiers.lctrl = false;
-                None
-            }
-            KeyEvent {
-                code: KeyCode::RControl,
-                state: KeyState::Down,
-            } => {
-                self.modifiers.rctrl = true;
-                Some(DecodedKey::RawKey(KeyCode::RControl))
-            }
-            KeyEvent {
-                code: KeyCode::RControl,
-                state: KeyState::Up,
-            } => {
-                self.modifiers.rctrl = false;
-                None
+                self.modifiers.numlock = !self.modifiers.numlock;
+                Some(DecodedKey::RawKey(KeyCode::NumpadLock))
             }
             KeyEvent {
                 code: KeyCode::LAlt,
@@ -326,20 +284,6 @@ where
                 state: KeyState::Up,
             } => {
                 self.modifiers.ralt = false;
-                None
-            }
-            KeyEvent {
-                code: KeyCode::RControl2,
-                state: KeyState::Down,
-            } => {
-                self.modifiers.rctrl2 = true;
-                Some(DecodedKey::RawKey(KeyCode::RControl2))
-            }
-            KeyEvent {
-                code: KeyCode::RControl2,
-                state: KeyState::Up,
-            } => {
-                self.modifiers.rctrl2 = false;
                 None
             }
             KeyEvent {

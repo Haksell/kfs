@@ -52,7 +52,6 @@ impl ScancodeSet1 {
             0x1A => Ok(KeyCode::Oem4),
             0x1B => Ok(KeyCode::Oem6),
             0x1C => Ok(KeyCode::Return),
-            0x1D => Ok(KeyCode::LControl),
             0x1E => Ok(KeyCode::A),
             0x1F => Ok(KeyCode::S),
             0x20 => Ok(KeyCode::D),
@@ -112,7 +111,6 @@ impl ScancodeSet1 {
             0x10 => Ok(KeyCode::PrevTrack),
             0x19 => Ok(KeyCode::NextTrack),
             0x1C => Ok(KeyCode::NumpadEnter),
-            0x1D => Ok(KeyCode::RControl),
             0x20 => Ok(KeyCode::Mute),
             0x21 => Ok(KeyCode::Calculator),
             0x22 => Ok(KeyCode::Play),
@@ -145,18 +143,10 @@ impl ScancodeSet1 {
             _ => Err(Error::UnknownKeyCode),
         }
     }
-
-    fn map_extended2_scancode(code: u8) -> Result<KeyCode, Error> {
-        match code {
-            0x1D => Ok(KeyCode::RControl2),
-            _ => Err(Error::UnknownKeyCode),
-        }
-    }
 }
 
 impl ScancodeSet for ScancodeSet1 {
     fn add_byte(&mut self, code: u8) -> Result<Option<KeyEvent>, Error> {
-        // crate::println!("{}", code);
         match self.state {
             DecodeState::Start => match code {
                 EXTENDED_KEY_CODE => {
@@ -191,16 +181,7 @@ impl ScancodeSet for ScancodeSet1 {
             }
             DecodeState::Extended2 => {
                 self.state = DecodeState::Start;
-                match code {
-                    0x80..=0xFF => Ok(Some(KeyEvent::new(
-                        Self::map_extended2_scancode(code - 0x80)?,
-                        KeyState::Up,
-                    ))),
-                    _ => Ok(Some(KeyEvent::new(
-                        Self::map_extended2_scancode(code)?,
-                        KeyState::Down,
-                    ))),
-                }
+                Err(Error::UnknownKeyCode)
             }
         }
     }
