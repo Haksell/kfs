@@ -201,11 +201,14 @@ where
         }
     }
 
-    pub fn add_byte(&mut self, byte: u8) -> Result<Option<KeyEvent>, Error> {
-        self.scancode_set.add_byte(byte)
+    pub fn add_byte(&mut self, byte: u8) -> Option<DecodedKey> {
+        match self.scancode_set.add_byte(byte) {
+            Ok(Some(key_event)) => self.process_keyevent(key_event),
+            _ => None,
+        }
     }
 
-    pub fn process_keyevent(&mut self, ev: KeyEvent) -> Option<DecodedKey> {
+    fn process_keyevent(&mut self, ev: KeyEvent) -> Option<DecodedKey> {
         match ev {
             KeyEvent {
                 code: KeyCode::LShift,
