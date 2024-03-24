@@ -24,6 +24,7 @@ pub enum Error {
     UnknownKeyCode,
 }
 
+// #[allow(dead_code)]
 #[derive(Debug, PartialEq, Eq, Copy, Clone, PartialOrd, Ord)]
 #[repr(u8)]
 pub enum KeyCode {
