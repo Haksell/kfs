@@ -171,7 +171,6 @@ where
         Self {
             layout,
             scancode_set,
-            // TODO: check if there is a way to get accurate modifiers state at the start
             modifiers: Modifiers {
                 lshift: false,
                 rshift: false,
