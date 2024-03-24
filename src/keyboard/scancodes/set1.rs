@@ -1,7 +1,13 @@
 use super::super::{
-    DecodeState, Error, KeyCode, KeyEvent, KeyState, ScancodeSet, EXTENDED2_KEY_CODE,
-    EXTENDED_KEY_CODE,
+    Error, KeyCode, KeyEvent, KeyState, ScancodeSet, EXTENDED2_KEY_CODE, EXTENDED_KEY_CODE,
 };
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+enum DecodeState {
+    Start,
+    Extended,
+    Extended2,
+}
 
 pub struct ScancodeSet1 {
     state: DecodeState,
@@ -215,85 +221,50 @@ impl ScancodeSet1 {
 }
 
 impl ScancodeSet for ScancodeSet1 {
-    /// Implements state logic for scancode set 1
-    ///
-    /// ## Start:
-    /// * `E0` => Goto Extended
-    /// * `E1` => Goto Extended 2
-    /// * `< 0x80` => Key Down
-    /// * `>= 0x80` => Key Up
-    ///
-    /// ## Extended:
-    /// * `< 0x80` => Extended Key Down
-    /// * `>= 0x80` => Extended Key Up
-    ///
-    /// ## Extended 2:
-    /// * `< 0x80` => Extended 2 Key Down
-    /// * `>= 0x80` => Extended 2 Key Up
     fn advance_state(&mut self, code: u8) -> Result<Option<KeyEvent>, Error> {
         match self.state {
-            DecodeState::Start => {
-                match code {
-                    EXTENDED_KEY_CODE => {
-                        self.state = DecodeState::Extended;
-                        Ok(None)
-                    }
-                    EXTENDED2_KEY_CODE => {
-                        self.state = DecodeState::Extended2;
-                        Ok(None)
-                    }
-                    0x80..=0xFF => {
-                        // Break codes
-                        Ok(Some(KeyEvent::new(
-                            Self::map_scancode(code - 0x80)?,
-                            KeyState::Up,
-                        )))
-                    }
-                    _ => {
-                        // Make codes
-                        Ok(Some(KeyEvent::new(
-                            Self::map_scancode(code)?,
-                            KeyState::Down,
-                        )))
-                    }
+            DecodeState::Start => match code {
+                EXTENDED_KEY_CODE => {
+                    self.state = DecodeState::Extended;
+                    Ok(None)
                 }
-            }
+                EXTENDED2_KEY_CODE => {
+                    self.state = DecodeState::Extended2;
+                    Ok(None)
+                }
+                0x80..=0xFF => Ok(Some(KeyEvent::new(
+                    Self::map_scancode(code - 0x80)?,
+                    KeyState::Up,
+                ))),
+                _ => Ok(Some(KeyEvent::new(
+                    Self::map_scancode(code)?,
+                    KeyState::Down,
+                ))),
+            },
             DecodeState::Extended => {
                 self.state = DecodeState::Start;
                 match code {
-                    0x80..=0xFF => {
-                        // Extended break codes
-                        Ok(Some(KeyEvent::new(
-                            Self::map_extended_scancode(code - 0x80)?,
-                            KeyState::Up,
-                        )))
-                    }
-                    _ => {
-                        // Extended make codes
-                        Ok(Some(KeyEvent::new(
-                            Self::map_extended_scancode(code)?,
-                            KeyState::Down,
-                        )))
-                    }
+                    0x80..=0xFF => Ok(Some(KeyEvent::new(
+                        Self::map_extended_scancode(code - 0x80)?,
+                        KeyState::Up,
+                    ))),
+                    _ => Ok(Some(KeyEvent::new(
+                        Self::map_extended_scancode(code)?,
+                        KeyState::Down,
+                    ))),
                 }
             }
             DecodeState::Extended2 => {
                 self.state = DecodeState::Start;
                 match code {
-                    0x80..=0xFF => {
-                        // Extended 2 break codes
-                        Ok(Some(KeyEvent::new(
-                            Self::map_extended2_scancode(code - 0x80)?,
-                            KeyState::Up,
-                        )))
-                    }
-                    _ => {
-                        // Extended 2 make codes
-                        Ok(Some(KeyEvent::new(
-                            Self::map_extended2_scancode(code)?,
-                            KeyState::Down,
-                        )))
-                    }
+                    0x80..=0xFF => Ok(Some(KeyEvent::new(
+                        Self::map_extended2_scancode(code - 0x80)?,
+                        KeyState::Up,
+                    ))),
+                    _ => Ok(Some(KeyEvent::new(
+                        Self::map_extended2_scancode(code)?,
+                        KeyState::Down,
+                    ))),
                 }
             }
         }
