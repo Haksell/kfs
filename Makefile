@@ -15,6 +15,7 @@ BUILD_MODE := debug
 else ifeq ($(DEBUG),false)
 BUILD_MODE := release
 CARGO_FLAGS := --release
+GRUB_FLAGS := --compress xz
 else
 $(error DEBUG must be either true or false)
 endif
@@ -54,7 +55,7 @@ $(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json vm
 	@mkdir -p $(ISOFILES)/boot/grub
 	@cp $(KERNEL) $(ISOFILES)/boot/kernel.bin
 	@cp $(GRUB_CFG) $(ISOFILES)/boot/grub
-	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(ISOFILES)"
+	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(GRUB_FLAGS) $(ISOFILES)"
 	@rm -rf $(ISOFILES)
 
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
