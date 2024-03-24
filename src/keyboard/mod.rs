@@ -7,11 +7,11 @@ use scancodes::ScancodeSet;
 #[derive(Debug)]
 pub struct Keyboard<L, S>
 where
-    S: ScancodeSet,
     L: KeyboardLayout,
+    S: ScancodeSet,
 {
-    scancode_set: S,
     layout: L,
+    scancode_set: S,
     modifiers: Modifiers,
 }
 
@@ -192,10 +192,10 @@ where
     L: KeyboardLayout,
     S: ScancodeSet,
 {
-    pub const fn new(scancode_set: S, layout: L) -> Keyboard<L, S> {
+    pub const fn new(layout: L, scancode_set: S) -> Keyboard<L, S> {
         Keyboard {
-            scancode_set,
             layout,
+            scancode_set,
             modifiers: Modifiers {
                 lshift: false,
                 rshift: false,
