@@ -1,5 +1,5 @@
 use crate::idt::InterruptDescriptorTable;
-use crate::keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
+use crate::keyboard::{layouts, Keyboard, ScancodeSet1};
 use crate::pic::ChainedPics;
 use crate::port::Port;
 use crate::shell::SHELL;
@@ -102,11 +102,7 @@ extern "x86-interrupt" fn timer_interrupt_handler() {
 extern "x86-interrupt" fn keyboard_interrupt_handler() {
     lazy_static! {
         static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> =
-            Mutex::new(Keyboard::new(
-                ScancodeSet1::new(),
-                layouts::Us104Key,
-                HandleControl::Ignore
-            ));
+            Mutex::new(Keyboard::new(ScancodeSet1::new(), layouts::Us104Key));
     }
 
     let mut keyboard = KEYBOARD.lock();
