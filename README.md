@@ -10,7 +10,7 @@
 -   [x] Compile it with correct flags, and link it to make it bootable.
 -   [ ] Once all of those steps above are done, you can write some helpers like kernel types or basic functions (strlen, strcmp, ...)
 -   [x] Code the interface between your kernel and the screen.
--   [x] Display "42" on the screen.
+-   [ ] Display "42" on the screen.
 -   [x] For the link part, you must create a linker file with the GNU linker (ld).
 -   [x] Your Makefile must compile all your source files with the right flags and the right compiler.
 -   [x] After compilation, all the objects must be linked together in order to create the final Kernel binary.
