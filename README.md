@@ -69,7 +69,6 @@
 -   [ ] make everything work with `i386`
 -   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
 -   [ ] call `exit_qemu` on `Esc` command
--   [ ] release rule or arg in Makefile
 -   [ ] optimize vga history by wrapping around
 -   [ ] find project name and rebrand
 -   [ ] better welcome message
