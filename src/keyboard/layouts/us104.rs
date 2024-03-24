@@ -1,14 +1,9 @@
-use super::super::{DecodedKey, HandleControl, KeyCode, KeyboardLayout, Modifiers};
+use super::super::{DecodedKey, KeyCode, KeyboardLayout, Modifiers};
 
 pub struct Us104Key;
 
 impl KeyboardLayout for Us104Key {
-    fn map_keycode(
-        &self,
-        keycode: KeyCode,
-        modifiers: &Modifiers,
-        handle_ctrl: HandleControl,
-    ) -> DecodedKey {
+    fn map_keycode(&self, keycode: KeyCode, modifiers: &Modifiers) -> DecodedKey {
         match keycode {
             KeyCode::Oem8 => {
                 if modifiers.is_shifted() {
