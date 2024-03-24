@@ -165,16 +165,11 @@ impl ScancodeSet for ScancodeSet1 {
             },
             DecodeState::Extended => {
                 self.state = DecodeState::Start;
-                match code {
-                    0x80..=0xFF => Ok(Some(KeyEvent::new(
-                        Self::map_extended_scancode(code - 0x80)?,
-                        KeyState::Up,
-                    ))),
-                    _ => Ok(Some(KeyEvent::new(
-                        Self::map_extended_scancode(code)?,
-                        KeyState::Down,
-                    ))),
-                }
+                Ok(Some(if code >= 0x80 {
+                    KeyEvent::new(Self::map_extended_scancode(code - 0x80)?, KeyState::Up)
+                } else {
+                    KeyEvent::new(Self::map_extended_scancode(code)?, KeyState::Down)
+                }))
             }
             DecodeState::Extended2 => {
                 self.state = DecodeState::Start;
