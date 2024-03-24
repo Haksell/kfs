@@ -2,25 +2,6 @@
 
 ## subject
 
-### kfs1
-
--   [x] Install GRUB on a virtual image
--   [x] Write an ASM boot code that handles multiboot header, and use GRUB to init and call main function of the kernel itself.
--   [x] Write basic kernel code of the choosen language.
--   [x] Compile it with correct flags, and link it to make it bootable.
--   [ ] Once all of those steps above are done, you can write some helpers like kernel types or basic functions (strlen, strcmp, ...)
--   [x] Code the interface between your kernel and the screen.
--   [ ] Display "42" on the screen.
--   [x] For the link part, you must create a linker file with the GNU linker (ld).
--   [x] Your Makefile must compile all your source files with the right flags and the right compiler.
--   [x] After compilation, all the objects must be linked together in order to create the final Kernel binary.
--   [x] Add scroll support to your I/O interface.
--   [x] Add cursor support to your I/O interface.
--   [x] Add colors support to your I/O interface.
--   [x] Add helpers like printf / printk in order to print information / debug easily.
--   [x] Handle keyboard entries and print them.
--   [x] Handle different screens, and keyboard shortcuts to switch easily between then.
-
 ### kfs2
 
 -   [ ] You must create a Global Descriptor Table.
@@ -64,14 +45,9 @@
 
 ## todo
 
-### kfs1
-
--   [ ] make everything work with `i386`
--   [ ] find project name and rebrand
--   [ ] better welcome message
-
 ### later
 
+-   [ ] find project name and rebrand
 -   [ ] finish 1st edition
 -   [ ] finish 2nd edition
 -   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
