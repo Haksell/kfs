@@ -154,8 +154,8 @@ pub struct KeyEvent {
 }
 
 impl KeyEvent {
-    const fn new(code: KeyCode, state: KeyState) -> KeyEvent {
-        KeyEvent { code, state }
+    const fn new(code: KeyCode, state: KeyState) -> Self {
+        Self { code, state }
     }
 }
 
@@ -188,8 +188,8 @@ where
     L: KeyboardLayout,
     S: ScancodeSet,
 {
-    pub const fn new(layout: L, scancode_set: S) -> Keyboard<L, S> {
-        Keyboard {
+    pub const fn new(layout: L, scancode_set: S) -> Self {
+        Self {
             layout,
             scancode_set,
             // TODO: check if there is a way to get accurate modifiers state at the start

@@ -55,8 +55,8 @@ pub struct ChainedPics {
 }
 
 impl ChainedPics {
-    pub const unsafe fn new(offset1: u8, offset2: u8) -> ChainedPics {
-        ChainedPics {
+    pub const unsafe fn new(offset1: u8, offset2: u8) -> Self {
+        Self {
             pics: [
                 Pic {
                     offset: offset1,

@@ -16,8 +16,8 @@ pub struct ScancodeSet1 {
 }
 
 impl ScancodeSet1 {
-    pub const fn new() -> ScancodeSet1 {
-        ScancodeSet1 {
+    pub const fn new() -> Self {
+        Self {
             state: DecodeState::Start,
         }
     }
