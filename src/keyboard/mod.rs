@@ -16,7 +16,6 @@ where
     S: ScancodeSet,
     L: KeyboardLayout,
 {
-    ps2_decoder: Ps2Decoder,
     scancode_set: S,
     event_decoder: EventDecoder<L>,
 }
@@ -457,7 +456,6 @@ where
     /// Make a new Keyboard object with the given layout.
     pub const fn new(scancode_set: S, layout: L, handle_ctrl: HandleControl) -> Keyboard<L, S> {
         Keyboard {
-            ps2_decoder: Ps2Decoder::new(),
             scancode_set,
             event_decoder: EventDecoder::new(layout, handle_ctrl),
         }
