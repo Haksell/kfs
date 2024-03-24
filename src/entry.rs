@@ -92,30 +92,10 @@ impl<F: HandlerFuncType> Entry<F> {
     }
 }
 
-#[cfg(target_arch = "x86_64")]
 #[repr(transparent)]
 #[derive(Clone, Copy, PartialEq)]
 pub struct EntryOptions(u16);
 
-#[cfg(target_arch = "x86_64")]
-impl EntryOptions {
-    #[inline]
-    const fn minimal() -> Self {
-        EntryOptions(0b1110_0000_0000)
-    }
-
-    #[inline]
-    pub fn set_present(&mut self) {
-        self.0 |= 1 << 15;
-    }
-}
-
-#[cfg(target_arch = "x86")]
-#[repr(transparent)]
-#[derive(Clone, Copy, PartialEq)]
-pub struct EntryOptions(u16);
-
-#[cfg(target_arch = "x86")]
 impl EntryOptions {
     #[inline]
     const fn minimal() -> Self {
