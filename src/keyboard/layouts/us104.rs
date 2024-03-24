@@ -267,8 +267,7 @@ impl KeyboardLayout for Us104Key {
                     DecodedKey::Unicode('\'')
                 }
             }
-            // Enter gives LF, not CRLF or CR
-            KeyCode::Return => DecodedKey::Unicode(10.into()),
+            KeyCode::Return => DecodedKey::Unicode('\n'),
             KeyCode::Z => {
                 if modifiers.is_caps() {
                     DecodedKey::Unicode('Z')
