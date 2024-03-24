@@ -184,7 +184,7 @@ impl KeyboardLayout for Us104Key {
                     DecodedKey::Unicode(']')
                 }
             }
-            KeyCode::Oem5 => {
+            KeyCode::Oem7 => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('|')
                 } else {
