@@ -114,9 +114,7 @@ pub enum KeyCode {
     NumpadEnter,
     // ========= Row 6 (modifers and space bar) =========
     LWin,
-    LAlt,
     Spacebar,
-    RAltGr,
     RWin,
     Apps,
     ArrowLeft,
@@ -140,7 +138,6 @@ pub enum KeyCode {
     VolumeDown,
     VolumeUp,
     WWWHome,
-    RAlt2,
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -167,8 +164,6 @@ pub struct Modifiers {
     pub rshift: bool,
     pub numlock: bool,
     pub capslock: bool,
-    pub lalt: bool,
-    pub ralt: bool,
 }
 
 impl Modifiers {
@@ -201,8 +196,6 @@ where
                 rshift: false,
                 numlock: true,
                 capslock: false,
-                lalt: false,
-                ralt: false,
             },
         }
     }
@@ -257,34 +250,6 @@ where
             } => {
                 self.modifiers.numlock = !self.modifiers.numlock;
                 Some(DecodedKey::RawKey(KeyCode::NumpadLock))
-            }
-            KeyEvent {
-                code: KeyCode::LAlt,
-                state: KeyState::Down,
-            } => {
-                self.modifiers.lalt = true;
-                Some(DecodedKey::RawKey(KeyCode::LAlt))
-            }
-            KeyEvent {
-                code: KeyCode::LAlt,
-                state: KeyState::Up,
-            } => {
-                self.modifiers.lalt = false;
-                None
-            }
-            KeyEvent {
-                code: KeyCode::RAltGr,
-                state: KeyState::Down,
-            } => {
-                self.modifiers.ralt = true;
-                Some(DecodedKey::RawKey(KeyCode::RAltGr))
-            }
-            KeyEvent {
-                code: KeyCode::RAltGr,
-                state: KeyState::Up,
-            } => {
-                self.modifiers.ralt = false;
-                None
             }
             KeyEvent {
                 code: c,
