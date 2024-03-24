@@ -16,7 +16,7 @@ pub struct Entry<F> {
 impl<F> Entry<F> {
     #[inline]
     pub const fn missing() -> Self {
-        Entry {
+        Self {
             pointer_low: 0,
             gdt_selector: 0,
             options: EntryOptions::minimal(),
@@ -70,7 +70,6 @@ impl EntryOptions {
         EntryOptions(0b1110_0000_0000)
     }
 
-    /// Set or reset the preset bit.
     #[inline]
     pub fn set_present(&mut self, present: bool) -> &mut Self {
         self.0.set_bit(15, present);
@@ -80,13 +79,13 @@ impl EntryOptions {
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
-pub struct SegmentSelector(pub u16);
+struct SegmentSelector(pub u16);
 
-pub trait Segment {
+trait Segment {
     fn get_reg() -> SegmentSelector;
 }
 
-pub struct CS;
+struct CS;
 
 impl Segment for CS {
     #[inline]
