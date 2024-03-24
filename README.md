@@ -66,7 +66,8 @@
 
 ### keyboard
 
--   [ ] use ranges like KeyCode::A..=KeyCode::Z
+-   [ ] use ranges like KeyCode::A..=KeyCode::Z in `us104.rs`
+-   [ ] limit range of if statements in `us104.rs`
 -   [ ] remove unused `pub`
 -   [ ] remove overengineered traits
 -   [ ] check all characters manually
