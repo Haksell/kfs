@@ -209,32 +209,20 @@ where
     }
 
     fn process_keyevent(&mut self, ev: KeyEvent) -> Option<DecodedKey> {
-        match ev {
-            KeyEvent {
-                code: KeyCode::LShift,
-                state: KeyState::Down,
-            } => self.modifiers.lshift = true,
-            KeyEvent {
-                code: KeyCode::RShift,
-                state: KeyState::Down,
-            } => self.modifiers.rshift = true,
-            KeyEvent {
-                code: KeyCode::LShift,
-                state: KeyState::Up,
-            } => self.modifiers.lshift = false,
-            KeyEvent {
-                code: KeyCode::RShift,
-                state: KeyState::Up,
-            } => self.modifiers.rshift = false,
-            KeyEvent {
-                code: KeyCode::CapsLock,
-                state: KeyState::Down,
-            } => self.modifiers.capslock = !self.modifiers.capslock,
-            KeyEvent {
-                code: KeyCode::NumpadLock,
-                state: KeyState::Down,
-            } => self.modifiers.numlock = !self.modifiers.numlock,
-            ev => {
+        match ev.code {
+            KeyCode::LShift => self.modifiers.lshift = ev.state == KeyState::Down,
+            KeyCode::RShift => self.modifiers.rshift = ev.state == KeyState::Down,
+            KeyCode::CapsLock => {
+                if ev.state == KeyState::Down {
+                    self.modifiers.capslock = !self.modifiers.capslock
+                }
+            }
+            KeyCode::NumpadLock => {
+                if ev.state == KeyState::Down {
+                    self.modifiers.numlock = !self.modifiers.numlock
+                }
+            }
+            _ => {
                 if ev.state == KeyState::Down {
                     return Some(self.layout.map_keycode(ev.code, &self.modifiers));
                 }
