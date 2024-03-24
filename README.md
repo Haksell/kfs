@@ -67,8 +67,6 @@
 ### kfs1
 
 -   [ ] make everything work with `i386`
--   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
--   [ ] call `exit_qemu` on `Esc` command
 -   [ ] optimize vga history by wrapping around
 -   [ ] find project name and rebrand
 -   [ ] better welcome message
@@ -77,6 +75,8 @@
 
 -   [ ] finish 1st edition
 -   [ ] finish 2nd edition
+-   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
+-   [ ] call `exit_qemu` on `Esc` command
 -   [ ] `qemu` in terminal like lsimanic (`-display curses` with a black screen)
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
 -   [ ] use KVM on top of QEMU?
