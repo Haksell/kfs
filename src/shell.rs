@@ -128,10 +128,7 @@ impl Shell {
                 KeyCode::F2 => self.switch_screen(1),
                 KeyCode::F3 => self.switch_screen(2),
                 KeyCode::F4 => self.switch_screen(3),
-                key => {
-                    use crate::println;
-                    println!("{:#?}", key) // TODO: remove
-                }
+                _ => {}
             },
         }
     }
