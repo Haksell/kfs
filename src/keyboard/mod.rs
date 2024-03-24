@@ -234,11 +234,12 @@ where
                 code: KeyCode::NumpadLock,
                 state: KeyState::Down,
             } => self.modifiers.numlock = !self.modifiers.numlock,
-            _ => {}
+            ev => {
+                if ev.state == KeyState::Down {
+                    return Some(self.layout.map_keycode(ev.code, &self.modifiers));
+                }
+            }
         }
-        match ev.state {
-            KeyState::Down => Some(self.layout.map_keycode(ev.code, &self.modifiers)),
-            KeyState::Up => None,
-        }
+        None
     }
 }
