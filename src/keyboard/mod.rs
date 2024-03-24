@@ -51,11 +51,12 @@ pub enum KeyCode {
     X,
     Y,
     Z,
-    // ========= Row 1 (the F-keys) =========
+    // ========= Function Keys =========
     F1,
     F2,
     F3,
     F4,
+    // ========= Row 1 (the F-keys) =========
     PrintScreen,
     SysRq,
     ScrollLock,
