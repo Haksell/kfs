@@ -7,6 +7,7 @@ use core::{arch::asm, panic::PanicInfo};
 mod entry;
 mod idt;
 mod interrupts;
+mod keyboard;
 mod pic;
 mod port;
 mod shell;
