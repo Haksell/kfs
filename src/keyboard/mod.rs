@@ -51,11 +51,6 @@ pub enum KeyCode {
     X,
     Y,
     Z,
-    // ======= FUNCTIONS KEYS =======
-    F1,
-    F2,
-    F3,
-    F4,
     // ======= TOP NUMBERS =======
     Key0,
     Key1,
@@ -106,6 +101,11 @@ pub enum KeyCode {
     Backspace,
     Enter,
     RightShift,
+    // ======= FUNCTIONS KEYS =======
+    F1,
+    F2,
+    F3,
+    F4,
     // ======= DOUBLE ASCII (names subject to change) =======
     OemTilde,
     OemMinus,
