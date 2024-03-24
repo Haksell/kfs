@@ -185,9 +185,6 @@ pub enum DecodedKey {
     Unicode(char),
 }
 
-const EXTENDED_KEY_CODE: u8 = 0xE0;
-const EXTENDED2_KEY_CODE: u8 = 0xE1;
-
 impl<L, S> Keyboard<L, S>
 where
     L: KeyboardLayout,
