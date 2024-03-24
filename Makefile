@@ -42,7 +42,7 @@ run: all
 rerun: re run
 
 clean:
-	rm -rf $(BUILD) || true
+	rm -rf build || true
 	cargo clean || true
 	vagrant destroy -f || true
 	rm -rf .vagrant || true
