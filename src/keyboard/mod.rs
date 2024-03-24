@@ -140,18 +140,18 @@ impl KeyEvent {
 
 #[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
 pub struct Modifiers {
-    pub lshift: bool,
-    pub rshift: bool,
-    pub numlock: bool,
-    pub capslock: bool,
+    lshift: bool,
+    rshift: bool,
+    numlock: bool,
+    capslock: bool,
 }
 
 impl Modifiers {
-    pub const fn is_shifted(&self) -> bool {
+    const fn is_shifted(&self) -> bool {
         self.lshift | self.rshift
     }
 
-    pub const fn is_caps(&self) -> bool {
+    const fn is_caps(&self) -> bool {
         self.is_shifted() ^ self.capslock
     }
 }
