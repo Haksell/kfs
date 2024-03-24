@@ -20,7 +20,7 @@ pub enum Error {
     UnknownKeyCode,
 }
 
-#[derive(Debug, PartialEq, Eq, Copy, Clone, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(u8)]
 pub enum KeyCode {
     // ========= Row 1 (the F-keys) =========

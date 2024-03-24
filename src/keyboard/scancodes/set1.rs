@@ -1,5 +1,8 @@
 use super::super::{Error, KeyCode, KeyEvent, KeyState};
-use super::{ScancodeSet, EXTENDED2_KEY_CODE, EXTENDED_KEY_CODE};
+use super::ScancodeSet;
+
+const EXTENDED_KEY_CODE: u8 = 0xE0;
+const EXTENDED2_KEY_CODE: u8 = 0xE1;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 enum DecodeState {
