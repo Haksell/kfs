@@ -159,6 +159,12 @@ pub struct KeyEvent {
     pub state: KeyState,
 }
 
+impl KeyEvent {
+    pub const fn new(code: KeyCode, state: KeyState) -> KeyEvent {
+        KeyEvent { code, state }
+    }
+}
+
 #[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
 pub struct Modifiers {
     pub lshift: bool,
@@ -170,6 +176,16 @@ pub struct Modifiers {
     pub lalt: bool,
     pub ralt: bool,
     pub rctrl2: bool,
+}
+
+impl Modifiers {
+    pub const fn is_shifted(&self) -> bool {
+        self.lshift | self.rshift
+    }
+
+    pub const fn is_caps(&self) -> bool {
+        self.is_shifted() ^ self.capslock
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -332,21 +348,5 @@ where
             } => Some(self.layout.map_keycode(c, &self.modifiers)),
             _ => None,
         }
-    }
-}
-
-impl KeyEvent {
-    pub const fn new(code: KeyCode, state: KeyState) -> KeyEvent {
-        KeyEvent { code, state }
-    }
-}
-
-impl Modifiers {
-    pub const fn is_shifted(&self) -> bool {
-        self.lshift | self.rshift
-    }
-
-    pub const fn is_caps(&self) -> bool {
-        self.is_shifted() ^ self.capslock
     }
 }
