@@ -64,11 +64,6 @@
 
 ## todo
 
-### keyboard
-
--   [ ] remove unused `pub`
--   [ ] remove overengineered traits
-
 ### kfs1
 
 -   [ ] make everything work with `i386`
