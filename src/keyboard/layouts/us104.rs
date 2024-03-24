@@ -3,247 +3,84 @@ use super::KeyboardLayout;
 
 pub struct Us104Key;
 
+const KEY_SHIFTS: [char; 10] = [')', '!', '@', '#', '$', '%', '^', '&', '*', '('];
+const NUMPAD_SHIFTS: [KeyCode; 10] = [
+    KeyCode::Insert,
+    KeyCode::End,
+    KeyCode::ArrowDown,
+    KeyCode::PageDown,
+    KeyCode::ArrowLeft,
+    KeyCode::Numpad5,
+    KeyCode::ArrowRight,
+    KeyCode::Home,
+    KeyCode::ArrowUp,
+    KeyCode::PageUp,
+];
+
 impl KeyboardLayout for Us104Key {
     fn map_keycode(&self, keycode: KeyCode, modifiers: &Modifiers) -> DecodedKey {
         match keycode {
             KeyCode::Escape => DecodedKey::Unicode(0x1B.into()),
-            k if k >= KeyCode::A && k <= KeyCode::Z => {
-                DecodedKey::Unicode((k as u8 | if modifiers.is_caps() { 64 } else { 96 }) as char)
+            k if (KeyCode::A..=KeyCode::Z).contains(&k) => {
+                DecodedKey::Unicode((k as u8 | if modifiers.is_caps() { 64 } else { 96 }).into())
             }
-            KeyCode::Oem8 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('~')
+            k if (KeyCode::Key0..=KeyCode::Key9).contains(&k) => {
+                let num = k as u8 - KeyCode::Key0 as u8;
+                DecodedKey::Unicode(if modifiers.is_shifted() {
+                    KEY_SHIFTS[num as usize]
                 } else {
-                    DecodedKey::Unicode('`')
+                    (num | 48).into()
+                })
+            }
+            k if (KeyCode::Numpad0..=KeyCode::Numpad9).contains(&k) => {
+                let num = k as u8 - KeyCode::Numpad0 as u8;
+                if modifiers.numlock {
+                    DecodedKey::Unicode((num | 48).into())
+                } else {
+                    DecodedKey::RawKey(NUMPAD_SHIFTS[num as usize])
                 }
             }
-            KeyCode::Key1 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('!')
-                } else {
-                    DecodedKey::Unicode('1')
-                }
+            KeyCode::OemOpen => DecodedKey::Unicode(if modifiers.is_shifted() { '{' } else { '[' }),
+            KeyCode::OemClose => {
+                DecodedKey::Unicode(if modifiers.is_shifted() { '}' } else { ']' })
             }
-            KeyCode::Key2 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('@')
-                } else {
-                    DecodedKey::Unicode('2')
-                }
+            KeyCode::OemPipe => {
+                DecodedKey::Unicode(if modifiers.is_shifted() { '|' } else { '\\' })
             }
-            KeyCode::Key3 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('#')
-                } else {
-                    DecodedKey::Unicode('3')
-                }
+            KeyCode::OemColon => {
+                DecodedKey::Unicode(if modifiers.is_shifted() { ':' } else { ';' })
             }
-            KeyCode::Key4 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('$')
-                } else {
-                    DecodedKey::Unicode('4')
-                }
+            KeyCode::OemQuote => {
+                DecodedKey::Unicode(if modifiers.is_shifted() { '"' } else { '\'' })
             }
-            KeyCode::Key5 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('%')
-                } else {
-                    DecodedKey::Unicode('5')
-                }
-            }
-            KeyCode::Key6 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('^')
-                } else {
-                    DecodedKey::Unicode('6')
-                }
-            }
-            KeyCode::Key7 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('&')
-                } else {
-                    DecodedKey::Unicode('7')
-                }
-            }
-            KeyCode::Key8 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('*')
-                } else {
-                    DecodedKey::Unicode('8')
-                }
-            }
-            KeyCode::Key9 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('(')
-                } else {
-                    DecodedKey::Unicode('9')
-                }
-            }
-            KeyCode::Key0 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode(')')
-                } else {
-                    DecodedKey::Unicode('0')
-                }
-            }
-            KeyCode::OemMinus => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('_')
-                } else {
-                    DecodedKey::Unicode('-')
-                }
-            }
-            KeyCode::OemPlus => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('+')
-                } else {
-                    DecodedKey::Unicode('=')
-                }
-            }
-            KeyCode::Backspace => DecodedKey::Unicode(0x08.into()),
-            KeyCode::Tab => DecodedKey::Unicode(0x09.into()),
-            KeyCode::Oem4 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('{')
-                } else {
-                    DecodedKey::Unicode('[')
-                }
-            }
-            KeyCode::Oem6 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('}')
-                } else {
-                    DecodedKey::Unicode(']')
-                }
-            }
-            KeyCode::Oem7 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('|')
-                } else {
-                    DecodedKey::Unicode('\\')
-                }
-            }
-            KeyCode::Oem1 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode(':')
-                } else {
-                    DecodedKey::Unicode(';')
-                }
-            }
-            KeyCode::Oem3 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('"')
-                } else {
-                    DecodedKey::Unicode('\'')
-                }
-            }
-            KeyCode::Return => DecodedKey::Unicode('\n'),
             KeyCode::OemComma => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('<')
-                } else {
-                    DecodedKey::Unicode(',')
-                }
+                DecodedKey::Unicode(if modifiers.is_shifted() { '<' } else { ',' })
             }
             KeyCode::OemPeriod => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('>')
-                } else {
-                    DecodedKey::Unicode('.')
-                }
+                DecodedKey::Unicode(if modifiers.is_shifted() { '>' } else { '.' })
             }
-            KeyCode::Oem2 => {
-                if modifiers.is_shifted() {
-                    DecodedKey::Unicode('?')
-                } else {
-                    DecodedKey::Unicode('/')
-                }
+            KeyCode::OemQuestion => {
+                DecodedKey::Unicode(if modifiers.is_shifted() { '?' } else { '/' })
             }
-            KeyCode::Spacebar => DecodedKey::Unicode(' '),
-            KeyCode::Delete => DecodedKey::Unicode(127.into()),
+            KeyCode::OemTilde => {
+                DecodedKey::Unicode(if modifiers.is_shifted() { '~' } else { '`' })
+            }
+            KeyCode::OemMinus => {
+                DecodedKey::Unicode(if modifiers.is_shifted() { '_' } else { '-' })
+            }
+            KeyCode::OemPlus => DecodedKey::Unicode(if modifiers.is_shifted() { '+' } else { '=' }),
+            KeyCode::NumpadPeriod => {
+                DecodedKey::Unicode(if modifiers.numlock { '.' } else { 127.into() })
+            }
             KeyCode::NumpadDivide => DecodedKey::Unicode('/'),
             KeyCode::NumpadMultiply => DecodedKey::Unicode('*'),
             KeyCode::NumpadSubtract => DecodedKey::Unicode('-'),
-            KeyCode::Numpad7 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('7')
-                } else {
-                    DecodedKey::RawKey(KeyCode::Home)
-                }
-            }
-            KeyCode::Numpad8 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('8')
-                } else {
-                    DecodedKey::RawKey(KeyCode::ArrowUp)
-                }
-            }
-            KeyCode::Numpad9 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('9')
-                } else {
-                    DecodedKey::RawKey(KeyCode::PageUp)
-                }
-            }
             KeyCode::NumpadAdd => DecodedKey::Unicode('+'),
-            KeyCode::Numpad4 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('4')
-                } else {
-                    DecodedKey::RawKey(KeyCode::ArrowLeft)
-                }
-            }
-            KeyCode::Numpad5 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('5')
-                } else {
-                    DecodedKey::RawKey(KeyCode::Numpad5)
-                }
-            }
-            KeyCode::Numpad6 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('6')
-                } else {
-                    DecodedKey::RawKey(KeyCode::ArrowRight)
-                }
-            }
-            KeyCode::Numpad1 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('1')
-                } else {
-                    DecodedKey::RawKey(KeyCode::End)
-                }
-            }
-            KeyCode::Numpad2 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('2')
-                } else {
-                    DecodedKey::RawKey(KeyCode::ArrowDown)
-                }
-            }
-            KeyCode::Numpad3 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('3')
-                } else {
-                    DecodedKey::RawKey(KeyCode::PageDown)
-                }
-            }
-            KeyCode::Numpad0 => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('0')
-                } else {
-                    DecodedKey::RawKey(KeyCode::Insert)
-                }
-            }
-            KeyCode::NumpadPeriod => {
-                if modifiers.numlock {
-                    DecodedKey::Unicode('.')
-                } else {
-                    DecodedKey::Unicode(127.into())
-                }
-            }
-            KeyCode::NumpadEnter => DecodedKey::Unicode(10.into()),
+            KeyCode::Backspace => DecodedKey::Unicode(8.into()),
+            KeyCode::Tab => DecodedKey::Unicode('\t'),
+            KeyCode::Spacebar => DecodedKey::Unicode(' '),
+            KeyCode::Delete => DecodedKey::Unicode(127.into()),
+            KeyCode::Enter | KeyCode::NumpadEnter => DecodedKey::Unicode('\n'),
             k => DecodedKey::RawKey(k),
         }
     }

@@ -24,7 +24,7 @@ pub enum Error {
 #[repr(u8)]
 pub enum KeyCode {
     Escape,
-    // Letters
+    // ======= LETTERS =======
     A,
     B,
     C,
@@ -51,16 +51,8 @@ pub enum KeyCode {
     X,
     Y,
     Z,
-    // ========= Row 1 (the F-keys) =========
-    F1,
-    F2,
-    F3,
-    F4,
-    PrintScreen,
-    SysRq,
-    ScrollLock,
-    // ========= Row 2 (the numbers) =========
-    Oem8,
+    // ======= TOP NUMBERS =======
+    Key0,
     Key1,
     Key2,
     Key3,
@@ -70,75 +62,62 @@ pub enum KeyCode {
     Key7,
     Key8,
     Key9,
-    Key0,
-    OemMinus,
-    OemPlus,
-    Backspace,
-    Insert,
-    Home,
-    PageUp,
+    // ======= NUMPAD NUMBERS =======
+    Numpad0,
+    Numpad1,
+    Numpad2,
+    Numpad3,
+    Numpad4,
+    Numpad5,
+    Numpad6,
+    Numpad7,
+    Numpad8,
+    Numpad9,
+    // ======= NUMPAD OTHERS =======
     NumpadLock,
     NumpadDivide,
     NumpadMultiply,
     NumpadSubtract,
-    // ========= Row 3 (QWERTY) =========
-    Tab,
-    Oem4,
-    Oem6,
-    Oem5,
-    Oem7,
-    Delete,
-    End,
-    PageDown,
-    Numpad7,
-    Numpad8,
-    Numpad9,
     NumpadAdd,
-    // ========= Row 4 (ASDF) =========
+    NumpadEnter,
+    NumpadPeriod,
+    // ======= NAVIGATION =======
+    Insert,
+    Delete,
+    Home,
+    End,
+    PageUp,
+    PageDown,
+    // ======= ARROWS =======
+    ArrowUp,
+    ArrowRight,
+    ArrowDown,
+    ArrowLeft,
+    // ======= CONTROL =======
+    Tab,
     CapsLock,
-    Oem1,
-    Oem3,
-    Return,
-    Numpad4,
-    Numpad5,
-    Numpad6,
-    // ========= Row 5 (ZXCV) =========
-    LShift,
+    LeftShift,
+    Spacebar,
+    Backspace,
+    Enter,
+    RightShift,
+    // ======= FUNCTIONS KEYS =======
+    F1,
+    F2,
+    F3,
+    F4,
+    // ======= DOUBLE ASCII (names subject to change) =======
+    OemTilde,
+    OemMinus,
+    OemPlus,
+    OemOpen,
+    OemClose,
+    OemPipe,
+    OemColon,
+    OemQuote,
     OemComma,
     OemPeriod,
-    Oem2,
-    RShift,
-    ArrowUp,
-    Numpad1,
-    Numpad2,
-    Numpad3,
-    NumpadEnter,
-    // ========= Row 6 (modifers and space bar) =========
-    LWin,
-    Spacebar,
-    RWin,
-    Apps,
-    ArrowLeft,
-    ArrowDown,
-    ArrowRight,
-    Numpad0,
-    NumpadPeriod,
-    // ========= JIS 109-key extra keys =========
-    Oem9,
-    Oem10,
-    Oem11,
-    Oem12,
-    Oem13,
-    // ========= Extra Keys ========= (TODO: remove for now)
-    PrevTrack,
-    NextTrack,
-    Mute,
-    Calculator,
-    Play,
-    Stop,
-    VolumeDown,
-    VolumeUp,
-    WWWHome,
+    OemQuestion,
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -161,18 +140,18 @@ impl KeyEvent {
 
 #[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
 pub struct Modifiers {
-    pub lshift: bool,
-    pub rshift: bool,
-    pub numlock: bool,
-    pub capslock: bool,
+    lshift: bool,
+    rshift: bool,
+    numlock: bool,
+    capslock: bool,
 }
 
 impl Modifiers {
-    pub const fn is_shifted(&self) -> bool {
+    const fn is_shifted(&self) -> bool {
         self.lshift | self.rshift
     }
 
-    pub const fn is_caps(&self) -> bool {
+    const fn is_caps(&self) -> bool {
         self.is_shifted() ^ self.capslock
     }
 }
@@ -192,7 +171,6 @@ where
         Self {
             layout,
             scancode_set,
-            // TODO: check if there is a way to get accurate modifiers state at the start
             modifiers: Modifiers {
                 lshift: false,
                 rshift: false,
@@ -211,8 +189,8 @@ where
 
     fn process_keyevent(&mut self, ev: KeyEvent) -> Option<DecodedKey> {
         match ev.code {
-            KeyCode::LShift => self.modifiers.lshift = ev.state == KeyState::Down,
-            KeyCode::RShift => self.modifiers.rshift = ev.state == KeyState::Down,
+            KeyCode::LeftShift => self.modifiers.lshift = ev.state == KeyState::Down,
+            KeyCode::RightShift => self.modifiers.rshift = ev.state == KeyState::Down,
             KeyCode::CapsLock => {
                 if ev.state == KeyState::Down {
                     self.modifiers.capslock = !self.modifiers.capslock

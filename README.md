@@ -10,7 +10,7 @@
 -   [x] Compile it with correct flags, and link it to make it bootable.
 -   [ ] Once all of those steps above are done, you can write some helpers like kernel types or basic functions (strlen, strcmp, ...)
 -   [x] Code the interface between your kernel and the screen.
--   [x] Display "42" on the screen.
+-   [ ] Display "42" on the screen.
 -   [x] For the link part, you must create a linker file with the GNU linker (ld).
 -   [x] Your Makefile must compile all your source files with the right flags and the right compiler.
 -   [x] After compilation, all the objects must be linked together in order to create the final Kernel binary.
@@ -64,15 +64,6 @@
 
 ## todo
 
-### keyboard
-
--   [ ] use ranges like KeyCode::A..=KeyCode::Z in `us104.rs`
--   [ ] limit range of if statements in `us104.rs`
--   [ ] remove unused `pub`
--   [ ] remove overengineered traits
--   [ ] check all characters manually
--   [ ] check and rename all oems
-
 ### kfs1
 
 -   [ ] make everything work with `i386`
@@ -80,8 +71,8 @@
 -   [ ] call `exit_qemu` on `Esc` command
 -   [ ] release rule or arg in Makefile
 -   [ ] optimize vga history by wrapping around
--   [ ] better welcome message
 -   [ ] find project name and rebrand
+-   [ ] better welcome message
 
 ### later
 
