@@ -77,17 +77,13 @@ where
     F: FnOnce() -> R,
 {
     let saved_intpt_flag = are_enabled();
-
     if saved_intpt_flag {
         disable();
     }
-
     let ret = f();
-
     if saved_intpt_flag {
         enable();
     }
-
     ret
 }
 
