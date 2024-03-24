@@ -51,6 +51,10 @@ fn are_enabled() -> bool {
     let r: usize;
 
     unsafe {
+        #[cfg(target_arch = "x86_64")]
+        asm!("pushfq; pop {}", out(reg) r, options(nomem, preserves_flags));
+
+        #[cfg(target_arch = "x86")]
         asm!("pushfd; pop {}", out(reg) r, options(nomem, preserves_flags));
     }
 
