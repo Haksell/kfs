@@ -82,6 +82,7 @@
 -   http://www.brokenthorn.com/Resources/OSDevIndex.html
 -   https://samypesse.gitbook.io/how-to-create-an-operating-system
 -   https://www.gnu.org/software/grub/manual/multiboot2/multiboot.pdf
+-   https://nfil.dev/categories/#kernel
 -   `#os-dev`: https://discord.com/channels/273534239310479360/375706574133526529
 
 ## artistic direction
