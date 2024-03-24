@@ -84,12 +84,6 @@ impl ScancodeSet1 {
             0x3C => Ok(KeyCode::F2),
             0x3D => Ok(KeyCode::F3),
             0x3E => Ok(KeyCode::F4),
-            0x3F => Ok(KeyCode::F5),
-            0x40 => Ok(KeyCode::F6),
-            0x41 => Ok(KeyCode::F7),
-            0x42 => Ok(KeyCode::F8),
-            0x43 => Ok(KeyCode::F9),
-            0x44 => Ok(KeyCode::F10),
             0x45 => Ok(KeyCode::NumpadLock),
             0x46 => Ok(KeyCode::ScrollLock),
             0x47 => Ok(KeyCode::Numpad7),
@@ -106,10 +100,7 @@ impl ScancodeSet1 {
             0x52 => Ok(KeyCode::Numpad0),
             0x53 => Ok(KeyCode::NumpadPeriod),
             0x54 => Ok(KeyCode::SysRq),
-            // 0x55 is unused?
             0x56 => Ok(KeyCode::Oem5),
-            0x57 => Ok(KeyCode::F11),
-            0x58 => Ok(KeyCode::F12),
             _ => Err(Error::UnknownKeyCode),
         }
     }
