@@ -106,7 +106,7 @@ pub enum KeyCode {
     Backspace,
     Enter,
     RightShift,
-    // ======= DOUBLE ASCII =======
+    // ======= DOUBLE ASCII (names subject to change) =======
     OemTilde,
     OemMinus,
     OemPlus,
