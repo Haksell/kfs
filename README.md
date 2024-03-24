@@ -66,9 +66,9 @@
 
 ### keyboard
 
--   [ ] remove pub
--   [ ] remove traits
--   [ ] simplify to the max
+-   [ ] use ranges like KeyCode::A..=KeyCode::Z
+-   [ ] remove unused `pub`
+-   [ ] remove overengineered traits
 -   [ ] check all characters manually
 -   [ ] check and rename all oems
 

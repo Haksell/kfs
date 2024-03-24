@@ -6,6 +6,10 @@ pub struct Us104Key;
 impl KeyboardLayout for Us104Key {
     fn map_keycode(&self, keycode: KeyCode, modifiers: &Modifiers) -> DecodedKey {
         match keycode {
+            KeyCode::Escape => DecodedKey::Unicode(0x1B.into()),
+            x if x >= KeyCode::A && x <= KeyCode::Z => {
+                DecodedKey::Unicode((x as u8 | if modifiers.is_caps() { 64 } else { 96 }) as char)
+            }
             KeyCode::Oem8 => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('~')
@@ -13,7 +17,6 @@ impl KeyboardLayout for Us104Key {
                     DecodedKey::Unicode('`')
                 }
             }
-            KeyCode::Escape => DecodedKey::Unicode(0x1B.into()),
             KeyCode::Key1 => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('!')
@@ -100,76 +103,6 @@ impl KeyboardLayout for Us104Key {
             }
             KeyCode::Backspace => DecodedKey::Unicode(0x08.into()),
             KeyCode::Tab => DecodedKey::Unicode(0x09.into()),
-            KeyCode::Q => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('Q')
-                } else {
-                    DecodedKey::Unicode('q')
-                }
-            }
-            KeyCode::W => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('W')
-                } else {
-                    DecodedKey::Unicode('w')
-                }
-            }
-            KeyCode::E => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('E')
-                } else {
-                    DecodedKey::Unicode('e')
-                }
-            }
-            KeyCode::R => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('R')
-                } else {
-                    DecodedKey::Unicode('r')
-                }
-            }
-            KeyCode::T => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('T')
-                } else {
-                    DecodedKey::Unicode('t')
-                }
-            }
-            KeyCode::Y => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('Y')
-                } else {
-                    DecodedKey::Unicode('y')
-                }
-            }
-            KeyCode::U => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('U')
-                } else {
-                    DecodedKey::Unicode('u')
-                }
-            }
-            KeyCode::I => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('I')
-                } else {
-                    DecodedKey::Unicode('i')
-                }
-            }
-            KeyCode::O => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('O')
-                } else {
-                    DecodedKey::Unicode('o')
-                }
-            }
-            KeyCode::P => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('P')
-                } else {
-                    DecodedKey::Unicode('p')
-                }
-            }
             KeyCode::Oem4 => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('{')
@@ -191,69 +124,6 @@ impl KeyboardLayout for Us104Key {
                     DecodedKey::Unicode('\\')
                 }
             }
-            KeyCode::A => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('A')
-                } else {
-                    DecodedKey::Unicode('a')
-                }
-            }
-            KeyCode::S => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('S')
-                } else {
-                    DecodedKey::Unicode('s')
-                }
-            }
-            KeyCode::D => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('D')
-                } else {
-                    DecodedKey::Unicode('d')
-                }
-            }
-            KeyCode::F => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('F')
-                } else {
-                    DecodedKey::Unicode('f')
-                }
-            }
-            KeyCode::G => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('G')
-                } else {
-                    DecodedKey::Unicode('g')
-                }
-            }
-            KeyCode::H => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('H')
-                } else {
-                    DecodedKey::Unicode('h')
-                }
-            }
-            KeyCode::J => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('J')
-                } else {
-                    DecodedKey::Unicode('j')
-                }
-            }
-            KeyCode::K => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('K')
-                } else {
-                    DecodedKey::Unicode('k')
-                }
-            }
-            KeyCode::L => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('L')
-                } else {
-                    DecodedKey::Unicode('l')
-                }
-            }
             KeyCode::Oem1 => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode(':')
@@ -269,55 +139,6 @@ impl KeyboardLayout for Us104Key {
                 }
             }
             KeyCode::Return => DecodedKey::Unicode('\n'),
-            KeyCode::Z => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('Z')
-                } else {
-                    DecodedKey::Unicode('z')
-                }
-            }
-            KeyCode::X => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('X')
-                } else {
-                    DecodedKey::Unicode('x')
-                }
-            }
-            KeyCode::C => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('C')
-                } else {
-                    DecodedKey::Unicode('c')
-                }
-            }
-            KeyCode::V => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('V')
-                } else {
-                    DecodedKey::Unicode('v')
-                }
-            }
-            KeyCode::B => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('B')
-                } else {
-                    DecodedKey::Unicode('b')
-                }
-            }
-            KeyCode::N => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('N')
-                } else {
-                    DecodedKey::Unicode('n')
-                }
-            }
-            KeyCode::M => {
-                if modifiers.is_caps() {
-                    DecodedKey::Unicode('M')
-                } else {
-                    DecodedKey::Unicode('m')
-                }
-            }
             KeyCode::OemComma => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('<')
