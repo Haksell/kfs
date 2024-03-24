@@ -153,7 +153,7 @@ impl ScancodeSet1 {
 }
 
 impl ScancodeSet for ScancodeSet1 {
-    fn advance_state(&mut self, code: u8) -> Result<Option<KeyEvent>, Error> {
+    fn add_byte(&mut self, code: u8) -> Result<Option<KeyEvent>, Error> {
         match self.state {
             DecodeState::Start => match code {
                 EXTENDED_KEY_CODE => {

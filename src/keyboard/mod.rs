@@ -166,7 +166,7 @@ pub trait KeyboardLayout {
 }
 
 pub trait ScancodeSet {
-    fn advance_state(&mut self, code: u8) -> Result<Option<KeyEvent>, Error>;
+    fn add_byte(&mut self, code: u8) -> Result<Option<KeyEvent>, Error>;
 }
 
 #[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
@@ -204,7 +204,7 @@ where
     }
 
     pub fn add_byte(&mut self, byte: u8) -> Result<Option<KeyEvent>, Error> {
-        self.scancode_set.advance_state(byte)
+        self.scancode_set.add_byte(byte)
     }
 
     pub fn process_keyevent(&mut self, ev: KeyEvent) -> Option<DecodedKey> {
