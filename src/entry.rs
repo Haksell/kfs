@@ -1,4 +1,3 @@
-use bit_field::BitField;
 use core::{arch::asm, marker::PhantomData};
 
 #[derive(Clone, Copy)]
@@ -32,11 +31,8 @@ impl<F> Entry<F> {
         self.pointer_low = addr as u16;
         self.pointer_middle = (addr >> 16) as u16;
         self.pointer_high = (addr >> 32) as u32;
-
         self.gdt_selector = CS::get_reg().0;
-
-        self.options.set_present(true);
-
+        self.options.set_present();
         &mut self.options
     }
 }
@@ -71,9 +67,8 @@ impl EntryOptions {
     }
 
     #[inline]
-    pub fn set_present(&mut self, present: bool) -> &mut Self {
-        self.0.set_bit(15, present);
-        self
+    pub fn set_present(&mut self) {
+        self.0 |= 1 << 15;
     }
 }
 
