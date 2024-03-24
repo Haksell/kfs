@@ -8,13 +8,8 @@ where
     L: KeyboardLayout,
 {
     scancode_set: S,
-    event_decoder: EventDecoder<L>, // TODO: flatten
-}
-
-#[derive(Debug)]
-struct EventDecoder<L: KeyboardLayout> {
-    modifiers: Modifiers,
     layout: L,
+    modifiers: Modifiers,
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -161,10 +156,12 @@ pub struct KeyEvent {
     pub state: KeyState,
 }
 
+// TODO: put in subfolder without pub
 pub trait KeyboardLayout {
     fn map_keycode(&self, keycode: KeyCode, modifiers: &Modifiers) -> DecodedKey;
 }
 
+// TODO: put in subfolder without pub
 pub trait ScancodeSet {
     fn add_byte(&mut self, code: u8) -> Result<Option<KeyEvent>, Error>;
 }
@@ -199,25 +196,7 @@ where
     pub const fn new(scancode_set: S, layout: L) -> Keyboard<L, S> {
         Keyboard {
             scancode_set,
-            event_decoder: EventDecoder::new(layout),
-        }
-    }
-
-    pub fn add_byte(&mut self, byte: u8) -> Result<Option<KeyEvent>, Error> {
-        self.scancode_set.add_byte(byte)
-    }
-
-    pub fn process_keyevent(&mut self, ev: KeyEvent) -> Option<DecodedKey> {
-        self.event_decoder.process_keyevent(ev)
-    }
-}
-
-impl<L> EventDecoder<L>
-where
-    L: KeyboardLayout,
-{
-    pub const fn new(layout: L) -> EventDecoder<L> {
-        EventDecoder {
+            layout,
             modifiers: Modifiers {
                 lshift: false,
                 rshift: false,
@@ -229,8 +208,11 @@ where
                 ralt: false,
                 rctrl2: false,
             },
-            layout,
         }
+    }
+
+    pub fn add_byte(&mut self, byte: u8) -> Result<Option<KeyEvent>, Error> {
+        self.scancode_set.add_byte(byte)
     }
 
     pub fn process_keyevent(&mut self, ev: KeyEvent) -> Option<DecodedKey> {
