@@ -10,7 +10,7 @@ impl KeyboardLayout for Us104Key {
             k if (KeyCode::A..=KeyCode::Z).contains(&k) => {
                 DecodedKey::Unicode((k as u8 | if modifiers.is_caps() { 64 } else { 96 }).into())
             }
-            KeyCode::Oem8 => {
+            KeyCode::OemTilde => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('~')
                 } else {
@@ -103,35 +103,35 @@ impl KeyboardLayout for Us104Key {
             }
             KeyCode::Backspace => DecodedKey::Unicode(0x08.into()),
             KeyCode::Tab => DecodedKey::Unicode('\t'),
-            KeyCode::Oem4 => {
+            KeyCode::OemOpen => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('{')
                 } else {
                     DecodedKey::Unicode('[')
                 }
             }
-            KeyCode::Oem6 => {
+            KeyCode::OemClose => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('}')
                 } else {
                     DecodedKey::Unicode(']')
                 }
             }
-            KeyCode::Oem7 => {
+            KeyCode::OemPipe => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('|')
                 } else {
                     DecodedKey::Unicode('\\')
                 }
             }
-            KeyCode::Oem1 => {
+            KeyCode::OemColon => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode(':')
                 } else {
                     DecodedKey::Unicode(';')
                 }
             }
-            KeyCode::Oem3 => {
+            KeyCode::OemQuote => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('"')
                 } else {
@@ -152,7 +152,7 @@ impl KeyboardLayout for Us104Key {
                     DecodedKey::Unicode('.')
                 }
             }
-            KeyCode::Oem2 => {
+            KeyCode::OemQuestion => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('?')
                 } else {

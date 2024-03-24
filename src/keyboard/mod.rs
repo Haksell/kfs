@@ -107,17 +107,17 @@ pub enum KeyCode {
     Enter,
     RightShift,
     // ======= DOUBLE ASCII =======
-    Oem1,
-    Oem2,
-    Oem3,
-    Oem4,
-    Oem6,
-    Oem7,
-    Oem8,
+    OemTilde,
     OemMinus,
     OemPlus,
+    OemOpen,
+    OemClose,
+    OemPipe,
+    OemColon,
+    OemQuote,
     OemComma,
     OemPeriod,
+    OemQuestion,
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
