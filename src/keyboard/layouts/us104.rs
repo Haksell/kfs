@@ -8,7 +8,7 @@ impl KeyboardLayout for Us104Key {
         match keycode {
             KeyCode::Escape => DecodedKey::Unicode(0x1B.into()),
             k if (KeyCode::A..=KeyCode::Z).contains(&k) => {
-                DecodedKey::Unicode((k as u8 | if modifiers.is_caps() { 64 } else { 96 }) as char)
+                DecodedKey::Unicode((k as u8 | if modifiers.is_caps() { 64 } else { 96 }).into())
             }
             KeyCode::Oem8 => {
                 if modifiers.is_shifted() {
@@ -102,7 +102,7 @@ impl KeyboardLayout for Us104Key {
                 }
             }
             KeyCode::Backspace => DecodedKey::Unicode(0x08.into()),
-            KeyCode::Tab => DecodedKey::Unicode(0x09.into()),
+            KeyCode::Tab => DecodedKey::Unicode('\t'),
             KeyCode::Oem4 => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('{')
@@ -242,7 +242,7 @@ impl KeyboardLayout for Us104Key {
                     DecodedKey::Unicode(127.into())
                 }
             }
-            KeyCode::Return | KeyCode::NumpadEnter => DecodedKey::Unicode('\n'),
+            KeyCode::Enter | KeyCode::NumpadEnter => DecodedKey::Unicode('\n'),
             k => DecodedKey::RawKey(k),
         }
     }

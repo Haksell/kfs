@@ -67,7 +67,7 @@ pub enum KeyCode {
     Key7,
     Key8,
     Key9,
-    // ======= NUMPAD =======
+    // ======= NUMPAD NUMBERS =======
     Numpad0,
     Numpad1,
     Numpad2,
@@ -78,64 +78,46 @@ pub enum KeyCode {
     Numpad7,
     Numpad8,
     Numpad9,
-    // ======= Row 1 (the F-keys) =======
-    PrintScreen,
-    SysRq,
-    ScrollLock,
-    // ======= Row 2 (the numbers) =======
-    Oem8,
-    OemMinus,
-    OemPlus,
-    Backspace,
-    Insert,
-    Home,
-    PageUp,
+    // ======= NUMPAD OTHERS =======
     NumpadLock,
     NumpadDivide,
     NumpadMultiply,
     NumpadSubtract,
-    // ======= Row 3 (QWERTY) =======
+    NumpadAdd,
+    NumpadEnter,
+    NumpadPeriod,
+    // ======= NAVIGATION =======
+    Insert,
+    Delete,
+    Home,
+    End,
+    PageUp,
+    PageDown,
+    // ======= ARROWS =======
+    ArrowUp,
+    ArrowRight,
+    ArrowDown,
+    ArrowLeft,
+    // ======= CONTROL =======
     Tab,
+    CapsLock,
+    LeftShift,
+    Spacebar,
+    Backspace,
+    Enter,
+    RightShift,
+    // ======= DOUBLE ASCII =======
+    Oem1,
+    Oem2,
+    Oem3,
     Oem4,
     Oem6,
-    Oem5,
     Oem7,
-    Delete,
-    End,
-    PageDown,
-    NumpadAdd,
-    // ======= Row 4 (ASDF) =======
-    CapsLock,
-    Oem1,
-    Oem3,
-    Return,
-    // ======= Row 5 (ZXCV) =======
-    LShift,
+    Oem8,
+    OemMinus,
+    OemPlus,
     OemComma,
     OemPeriod,
-    Oem2,
-    RShift,
-    ArrowUp,
-    NumpadEnter,
-    // ======= Row 6 (modifers and space bar) =======
-    LWin,
-    Spacebar,
-    RWin,
-    Apps,
-    ArrowLeft,
-    ArrowDown,
-    ArrowRight,
-    NumpadPeriod,
-    // ======= Extra Keys ======= (TODO: remove for now)
-    PrevTrack,
-    NextTrack,
-    Mute,
-    Calculator,
-    Play,
-    Stop,
-    VolumeDown,
-    VolumeUp,
-    WWWHome,
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -208,8 +190,8 @@ where
 
     fn process_keyevent(&mut self, ev: KeyEvent) -> Option<DecodedKey> {
         match ev.code {
-            KeyCode::LShift => self.modifiers.lshift = ev.state == KeyState::Down,
-            KeyCode::RShift => self.modifiers.rshift = ev.state == KeyState::Down,
+            KeyCode::LeftShift => self.modifiers.lshift = ev.state == KeyState::Down,
+            KeyCode::RightShift => self.modifiers.rshift = ev.state == KeyState::Down,
             KeyCode::CapsLock => {
                 if ev.state == KeyState::Down {
                     self.modifiers.capslock = !self.modifiers.capslock
