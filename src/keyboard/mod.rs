@@ -8,7 +8,7 @@ where
     L: KeyboardLayout,
 {
     scancode_set: S,
-    event_decoder: EventDecoder<L>,
+    event_decoder: EventDecoder<L>, // TODO: flatten
 }
 
 #[derive(Debug)]
