@@ -51,7 +51,7 @@ fn are_enabled() -> bool {
     let r: usize;
 
     unsafe {
-        asm!("pushfq; pop {}", out(reg) r, options(nomem, preserves_flags));
+        asm!("pushfd; pop {}", out(reg) r, options(nomem, preserves_flags));
     }
 
     r & INTERRUPT_FLAG != 0
