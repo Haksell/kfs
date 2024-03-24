@@ -148,19 +148,19 @@ pub enum KeyCode {
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
-pub enum KeyState {
+enum KeyState {
     Up,
     Down,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct KeyEvent {
-    pub code: KeyCode,
-    pub state: KeyState,
+    code: KeyCode,
+    state: KeyState,
 }
 
 impl KeyEvent {
-    pub const fn new(code: KeyCode, state: KeyState) -> KeyEvent {
+    const fn new(code: KeyCode, state: KeyState) -> KeyEvent {
         KeyEvent { code, state }
     }
 }
