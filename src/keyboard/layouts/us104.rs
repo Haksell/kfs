@@ -138,7 +138,6 @@ impl KeyboardLayout for Us104Key {
                     DecodedKey::Unicode('\'')
                 }
             }
-            KeyCode::Return => DecodedKey::Unicode('\n'),
             KeyCode::OemComma => {
                 if modifiers.is_shifted() {
                     DecodedKey::Unicode('<')
@@ -243,7 +242,7 @@ impl KeyboardLayout for Us104Key {
                     DecodedKey::Unicode(127.into())
                 }
             }
-            KeyCode::NumpadEnter => DecodedKey::Unicode(10.into()),
+            KeyCode::Return | KeyCode::NumpadEnter => DecodedKey::Unicode('\n'),
             k => DecodedKey::RawKey(k),
         }
     }
