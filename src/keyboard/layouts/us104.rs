@@ -7,8 +7,8 @@ impl KeyboardLayout for Us104Key {
     fn map_keycode(&self, keycode: KeyCode, modifiers: &Modifiers) -> DecodedKey {
         match keycode {
             KeyCode::Escape => DecodedKey::Unicode(0x1B.into()),
-            x if x >= KeyCode::A && x <= KeyCode::Z => {
-                DecodedKey::Unicode((x as u8 | if modifiers.is_caps() { 64 } else { 96 }) as char)
+            k if k >= KeyCode::A && k <= KeyCode::Z => {
+                DecodedKey::Unicode((k as u8 | if modifiers.is_caps() { 64 } else { 96 }) as char)
             }
             KeyCode::Oem8 => {
                 if modifiers.is_shifted() {
