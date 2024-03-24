@@ -20,20 +20,12 @@ where
     event_decoder: EventDecoder<L>,
 }
 
-/// Handles decoding of IBM PS/2 Keyboard (and IBM PC/AT Keyboard) bit-streams.
-#[derive(Debug)]
-pub struct Ps2Decoder {
-    register: u16,
-    num_bits: u8,
-}
-
 /// Converts KeyEvents into Unicode, according to the current Keyboard Layout
 #[derive(Debug)]
 pub struct EventDecoder<L>
 where
     L: KeyboardLayout,
 {
-    handle_ctrl: HandleControl,
     modifiers: Modifiers,
     layout: L,
 }
@@ -457,7 +449,7 @@ where
     pub const fn new(scancode_set: S, layout: L, handle_ctrl: HandleControl) -> Keyboard<L, S> {
         Keyboard {
             scancode_set,
-            event_decoder: EventDecoder::new(layout, handle_ctrl),
+            event_decoder: EventDecoder::new(layout),
         }
     }
 
@@ -480,24 +472,13 @@ where
     }
 }
 
-impl Ps2Decoder {
-    /// Build a new PS/2 protocol decoder.
-    pub const fn new() -> Ps2Decoder {
-        Ps2Decoder {
-            register: 0,
-            num_bits: 0,
-        }
-    }
-}
-
 impl<L> EventDecoder<L>
 where
     L: KeyboardLayout,
 {
     /// Construct a new event decoder.
-    pub const fn new(layout: L, handle_ctrl: HandleControl) -> EventDecoder<L> {
+    pub const fn new(layout: L) -> EventDecoder<L> {
         EventDecoder {
-            handle_ctrl,
             modifiers: Modifiers {
                 lshift: false,
                 rshift: false,
