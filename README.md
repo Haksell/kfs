@@ -66,8 +66,6 @@
 
 ### keyboard
 
--   [ ] check all characters manually
--   [ ] check and rename all oems
 -   [ ] remove unused `pub`
 -   [ ] remove overengineered traits
 
