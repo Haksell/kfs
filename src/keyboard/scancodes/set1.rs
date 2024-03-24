@@ -23,7 +23,6 @@ impl ScancodeSet1 {
     }
 
     fn map_scancode(code: u8) -> Result<KeyCode, Error> {
-        // crate::println!("{}", code);
         match code {
             0x01 => Ok(KeyCode::Escape),
             0x02 => Ok(KeyCode::Key1),
