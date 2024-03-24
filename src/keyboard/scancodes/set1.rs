@@ -108,68 +108,25 @@ impl ScancodeSet1 {
     fn map_extended_scancode(code: u8) -> Result<KeyCode, Error> {
         match code {
             0x10 => Ok(KeyCode::PrevTrack),
-            //0x11
-            //0x12
-            //0x13
-            //0x14
-            //0x15
-            //0x16
-            //0x17
-            //0x18
             0x19 => Ok(KeyCode::NextTrack),
-            //0x1A
-            //0x1B
             0x1C => Ok(KeyCode::NumpadEnter),
             0x1D => Ok(KeyCode::RControl),
-            //0x1E
-            //0x1F
             0x20 => Ok(KeyCode::Mute),
             0x21 => Ok(KeyCode::Calculator),
             0x22 => Ok(KeyCode::Play),
-            //0x23
             0x24 => Ok(KeyCode::Stop),
-            //0x25
-            //0x26
-            //0x27
-            //0x28
-            //0x29
             0x2A => Ok(KeyCode::RAlt2),
-            //0x2B
-            //0x2C
-            //0x2D
             0x2E => Ok(KeyCode::VolumeDown),
-            //0x2F
             0x30 => Ok(KeyCode::VolumeUp),
-            //0x31
             0x32 => Ok(KeyCode::WWWHome),
-            //0x33
-            //0x34
             0x35 => Ok(KeyCode::NumpadDivide),
-            //0x36
             0x37 => Ok(KeyCode::PrintScreen),
             0x38 => Ok(KeyCode::RAltGr),
-            //0x39
-            //0x3A
-            //0x3B
-            //0x3C
-            //0x3D
-            //0x3E
-            //0x3F
-            //0x40
-            //0x41
-            //0x42
-            //0x43
-            //0x44
-            //0x45
-            //0x46
             0x47 => Ok(KeyCode::Home),
             0x48 => Ok(KeyCode::ArrowUp),
             0x49 => Ok(KeyCode::PageUp),
-            //0x4A
             0x4B => Ok(KeyCode::ArrowLeft),
-            //0x4C
             0x4D => Ok(KeyCode::ArrowRight),
-            //0x4E
             0x4F => Ok(KeyCode::End),
             0x50 => Ok(KeyCode::ArrowDown),
             0x51 => Ok(KeyCode::PageDown),
@@ -178,22 +135,6 @@ impl ScancodeSet1 {
             0x5B => Ok(KeyCode::LWin),
             0x5C => Ok(KeyCode::RWin),
             0x5D => Ok(KeyCode::Apps),
-            // 0x5E ACPI Power
-            // 0x5F ACPI Sleep
-            // 0x60
-            // 0x61
-            // 0x62
-            // 0x63 ACPI Wake
-            // 0x64
-            // 0x65 WWW Search
-            // 0x66 WWW Favourites
-            // 0x67 WWW Refresh
-            // 0x68 WWW Stop
-            // 0x69 WWW Forward
-            // 0x6A WWW Back
-            // 0x6B My Computer
-            // 0x6C Email
-            // 0x6D Media Select
             0x70 => Ok(KeyCode::Oem11),
             0x73 => Ok(KeyCode::Oem12),
             0x79 => Ok(KeyCode::Oem10),
