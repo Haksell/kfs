@@ -66,6 +66,7 @@
 -   [ ] find a way for rust-analyzer to analyze with both targets
 -   [ ] `print_screen` creates a file using serial port
 -   [ ] `insert`
+-   [ ] [Interrupt handlers should only perform the minimal amount of work necessary](https://os.phil-opp.com/async-await/#scancode-queue)
 
 ## check before each push
 
