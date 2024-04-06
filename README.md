@@ -47,11 +47,12 @@
 
 ### kfs2
 
--   [ ] `clear` command
 -   [ ] `help` command (automatize)
--   [ ] `halt` command
 -   [ ] `pks` command
+-   [ ] `halt` command
 -   [ ] `reboot` command
+-   [ ] warning screen (F11)
+-   [ ] debug screen (F12)
 
 ### later
 

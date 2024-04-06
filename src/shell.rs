@@ -127,8 +127,7 @@ impl Shell {
                         for i in command.pos..command.len {
                             WRITER.lock().write_byte(command.buffer[i]);
                         }
-                        command.pos += 1;
-                        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                        command.set_pos(command.pos + 1);
                     }
                 }
                 _ => {}
@@ -248,7 +247,7 @@ impl Shell {
     }
 
     fn execute_clear(&self) {
-        println!("no.");
+        WRITER.lock().clear_screen();
     }
 
     fn execute_halt(&self) {

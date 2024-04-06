@@ -45,10 +45,17 @@ struct ScreenChar {
 }
 
 impl ScreenChar {
-    fn empty() -> Self {
+    fn black_space() -> Self {
         Self {
             ascii_character: b' ',
             color_code: ColorCode::new(Color::Black, Color::Black),
+        }
+    }
+
+    fn white_space() -> Self {
+        Self {
+            ascii_character: b' ',
+            color_code: ColorCode::new(Color::White, Color::Black),
         }
     }
 }
@@ -153,12 +160,23 @@ impl Writer {
     }
 
     pub fn clear_vga_buffer(&mut self) {
-        let blank = ScreenChar::empty();
         for y in 0..VGA_HEIGHT {
             for x in 0..VGA_WIDTH {
-                self.buffer.chars[y][x].write(blank);
+                self.buffer.chars[y][x].write(ScreenChar::black_space());
             }
         }
+    }
+
+    pub fn clear_screen(&mut self) {
+        let screen = &mut self.screens[self.screen_idx];
+        screen.history = 0;
+        screen.scroll_up = 0;
+        for y in 0..VGA_HISTORY {
+            for x in 0..VGA_WIDTH {
+                screen.bytes[y][x] = ScreenChar::white_space();
+            }
+        }
+        self.redraw();
     }
 
     pub fn move_up(&mut self) {
@@ -246,7 +264,7 @@ lazy_static! {
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
         screen_idx: 0,
         screens: core::array::from_fn(|_| Screen {
-            bytes: [[ScreenChar::empty(); VGA_WIDTH]; VGA_HISTORY],
+            bytes: [[ScreenChar::black_space(); VGA_WIDTH]; VGA_HISTORY],
             history: 0,
             scroll_up: 0,
         }),
