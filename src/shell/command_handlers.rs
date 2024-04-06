@@ -11,7 +11,7 @@ pub struct CommandHandler {
 pub const COMMAND_HANDLERS: [CommandHandler; 6] = [
     CommandHandler {
         name: b"clear",
-        description: b"Clear the screen",
+        description: b"Clear the screen.",
         handler: |_: &Shell| WRITER.lock().clear_screen(),
     },
     CommandHandler {
@@ -21,7 +21,7 @@ pub const COMMAND_HANDLERS: [CommandHandler; 6] = [
     },
     CommandHandler {
         name: b"help",
-        description: b"Show this help message",
+        description: b"Show this help message.",
         handler: |_: &Shell| {
             println!("Available commands:");
             let max_length = COMMAND_HANDLERS
@@ -40,17 +40,17 @@ pub const COMMAND_HANDLERS: [CommandHandler; 6] = [
     },
     CommandHandler {
         name: b"pks",
-        description: b"Print the kernel stack",
+        description: b"Print the kernel stack.",
         handler: |_: &Shell| println!("<<< TODO >>>"),
     },
     CommandHandler {
         name: b"reboot",
-        description: b"Reboot the system",
+        description: b"Reboot the system.",
         handler: |_: &Shell| println!("<<< TODO >>>"),
     },
     CommandHandler {
         name: b"tty",
-        description: b"Show the current screen number",
+        description: b"Show the current screen number.",
         handler: |shell: &Shell| println!("F{}", shell.screen_idx + 1),
     },
 ];

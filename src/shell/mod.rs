@@ -3,6 +3,7 @@ mod command_handlers;
 use crate::keyboard::{DecodedKey, KeyCode};
 use crate::println;
 use crate::vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER};
+use command_handlers::COMMAND_HANDLERS;
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -56,7 +57,7 @@ impl CommandBuffer {
         }
     }
 
-    fn trim(&self) -> &[u8] {
+    fn trimmed(&self) -> &[u8] {
         // b'\0' and b'\xff' are also whitespace, but they can't be typed for now
         let mut start = 0;
         while start < self.len && self.buffer[start] == b' ' {
@@ -226,11 +227,11 @@ impl Shell {
 
     fn execute_command(&self) {
         // TODO: split args (right now it's just a single command)
-        let command_buffer = self.commands[self.screen_idx].trim();
+        let command_buffer = self.commands[self.screen_idx].trimmed();
         if command_buffer.is_empty() {
             return;
         }
-        for handler in command_handlers::COMMAND_HANDLERS.iter() {
+        for handler in COMMAND_HANDLERS.iter() {
             if handler.name == command_buffer {
                 (handler.handler)(&self);
                 return;
