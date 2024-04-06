@@ -50,14 +50,14 @@
 -   [ ] find project name and rebrand
 -   [ ] finish 1st edition
 -   [ ] finish 2nd edition
--   [ ] `exit_qemu` from https://github.com/Haksell/os_blog_v2 without `x86_64` crate
+-   [ ] `exit_qemu` from https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2 without `x86_64` crate
 -   [ ] call `exit_qemu` on `Esc` command
 -   [ ] optimize vga history with a ring buffer
 -   [ ] `qemu` in terminal like lsimanic (`-display curses` with a black screen)
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
 -   [ ] use KVM on top of QEMU?
 -   [ ] specify exact nightly version
--   [ ] bring back testing and more useful stuff from from https://github.com/Haksell/os_blog_v2
+-   [ ] bring back testing and more useful stuff from https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2
 -   [ ] colorful tests (with color module based on `colored`)
 -   [ ] install `grub-mkrescue` and all its dependencies locally
 -   [ ] basic shell commands
