@@ -225,43 +225,19 @@ impl Shell {
     fn execute_command(&self) {
         // TODO: split args (right now it's just a single command)
         let command_buffer = self.commands[self.screen_idx].trim();
-        match command_buffer {
-            b"" => {}
-            b"clear" => self.execute_clear(),
-            b"halt" => self.execute_halt(),
-            b"help" => self.execute_help(),
-            b"pks" => self.execute_pks(),
-            b"reboot" => self.execute_reboot(),
-            b"tty" => self.execute_tty(),
-            _ => println!(
-                "kfs: command not found: \"{}\"",
-                core::str::from_utf8(command_buffer).unwrap_or("invalid utf-8")
-            ),
+        if command_buffer.is_empty() {
+            return;
         }
-    }
-
-    fn execute_clear(&self) {
-        WRITER.lock().clear_screen();
-    }
-
-    fn execute_halt(&self) {
-        println!("<<< TODO >>>");
-    }
-
-    fn execute_help(&self) {
-        println!("<<< TODO >>>");
-    }
-
-    fn execute_pks(&self) {
-        println!("<<< TODO >>>");
-    }
-
-    fn execute_reboot(&self) {
-        println!("<<< TODO >>>");
-    }
-
-    fn execute_tty(&self) {
-        println!("F{}", self.screen_idx + 1);
+        for handler in COMMAND_HANDLERS.iter() {
+            if handler.name == command_buffer {
+                (handler.handler)(&self);
+                return;
+            }
+        }
+        println!(
+            "kfs: command not found: \"{}\"",
+            core::str::from_utf8(command_buffer).unwrap_or("invalid utf-8")
+        );
     }
 }
 
@@ -276,3 +252,57 @@ lazy_static! {
         ],
     });
 }
+
+#[derive(Clone, Copy)]
+struct CommandHandler {
+    name: &'static [u8],
+    description: &'static [u8],
+    handler: fn(&Shell),
+}
+
+const COMMAND_HANDLERS: [CommandHandler; 6] = [
+    CommandHandler {
+        name: b"clear",
+        description: b"Clear the screen",
+        handler: |_: &Shell| WRITER.lock().clear_screen(),
+    },
+    CommandHandler {
+        name: b"halt",
+        description: b"???",
+        handler: |_: &Shell| println!("<<< TODO >>>"),
+    },
+    CommandHandler {
+        name: b"help",
+        description: b"Show this help message",
+        handler: |_: &Shell| {
+            println!("Available commands:");
+            let max_length = COMMAND_HANDLERS
+                .iter()
+                .map(|handler| handler.name.len())
+                .max()
+                .unwrap();
+            for handler in COMMAND_HANDLERS.iter() {
+                println!(
+                    "- {:max_length$}   {}",
+                    core::str::from_utf8(handler.name).unwrap_or("invalid utf-8"),
+                    core::str::from_utf8(handler.description).unwrap_or("invalid utf-8"),
+                );
+            }
+        },
+    },
+    CommandHandler {
+        name: b"pks",
+        description: b"Print the kernel stack",
+        handler: |_: &Shell| println!("<<< TODO >>>"),
+    },
+    CommandHandler {
+        name: b"reboot",
+        description: b"Reboot the system",
+        handler: |_: &Shell| println!("<<< TODO >>>"),
+    },
+    CommandHandler {
+        name: b"tty",
+        description: b"Show the current screen number",
+        handler: |shell: &Shell| println!("F{}", shell.screen_idx + 1),
+    },
+];

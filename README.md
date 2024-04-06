@@ -47,7 +47,7 @@
 
 ### kfs2
 
--   [ ] `help` command (automatize)
+-   [ ] `shell` directory (at least `mod.rs` and `commands.rs`)
 -   [ ] `pks` command
 -   [ ] `halt` command
 -   [ ] `reboot` command
