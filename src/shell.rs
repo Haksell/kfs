@@ -151,7 +151,6 @@ impl Shell {
         WRITER.lock().reset_foreground_color();
     }
 
-    // TODO: better parameter names
     fn print_welcome_line(left: u8, left2: u8, middle: u8, right2: u8, right: u8) {
         WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
         WRITER.lock().write_byte(left);
