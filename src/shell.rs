@@ -251,19 +251,19 @@ impl Shell {
     }
 
     fn execute_halt(&self) {
-        println!("no.");
+        println!("<<< TODO >>>");
     }
 
     fn execute_help(&self) {
-        println!("no.");
+        println!("<<< TODO >>>");
     }
 
     fn execute_pks(&self) {
-        println!("no.");
+        println!("<<< TODO >>>");
     }
 
     fn execute_reboot(&self) {
-        println!("no.");
+        println!("<<< TODO >>>");
     }
 
     fn execute_tty(&self) {
