@@ -12,7 +12,7 @@ long_mode_start:
     mov fs, ax
     mov gs, ax
     call kernel_main
-    mov rax, 0x2f412f472f4f2f4f
+    ; we shouldn't arrive here
+    mov rax, 0x2f212f4d2f532f41
     mov qword [0xb8000], rax
-    mov qword [0xb8008], rax
     hlt

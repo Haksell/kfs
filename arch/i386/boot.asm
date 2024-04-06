@@ -1,4 +1,5 @@
 global start
+extern kernel_main
 
 section .text
 bits 32
@@ -6,10 +7,8 @@ bits 32
 start:
     mov esp, stack_top
     call check_multiboot
-    extern kernel_main
     call kernel_main
     hlt
-
 
 check_multiboot:
     cmp eax, 0x36d76289
@@ -18,7 +17,6 @@ check_multiboot:
     .no_multiboot:
         mov al, "0"
         jmp error
-
 
 error:
     mov dword [0xb8000], 0x4f524f45
