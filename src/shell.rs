@@ -15,7 +15,8 @@ mod special_char {
 
 const PROMPT: &[u8] = b"> ";
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
-const WELCOME_MARGIN: usize = 4;
+const WELCOME_MARGIN: usize = 2;
+const CORNER_REPEAT: usize = 3; // 1 for something not too weird
 
 struct CommandBuffer {
     buffer: [u8; MAX_COMMAND_LEN],
@@ -150,12 +151,15 @@ impl Shell {
         WRITER.lock().reset_foreground_color();
     }
 
-    fn print_welcome_line(left: u8, middle: u8, right: u8) {
+    // TODO: better parameter names
+    fn print_welcome_line(left: u8, left2: u8, middle: u8, right2: u8, right: u8) {
         WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
         WRITER.lock().write_byte(left);
+        WRITER.lock().write_bytes(left2, CORNER_REPEAT);
         WRITER
             .lock()
-            .write_bytes(middle, VGA_WIDTH - 2 - 2 * WELCOME_MARGIN);
+            .write_bytes(middle, VGA_WIDTH - 2 * (WELCOME_MARGIN + CORNER_REPEAT + 1));
+        WRITER.lock().write_bytes(right2, CORNER_REPEAT);
         WRITER.lock().write_byte(right);
         WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
     }
@@ -177,8 +181,8 @@ impl Shell {
         WRITER
             .lock()
             .set_foreground_color(self.commands[self.screen_idx].color);
-        Self::print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
-        Self::print_welcome_line(b'\xba', b' ', b'\xba');
+        Self::print_welcome_line(b' ', b'\xc9', b'\xcd', b'\xbb', b' ');
+        Self::print_welcome_line(b'\xc9', b'\xbc', b' ', b'\xc8', b'\xbb');
         Self::print_welcome_title(b"\x20\x20\x20\x20\x20\x20\x3a\x3a\x3a\x20\x20\x20\x20\x3a\x3a\x3a\x20\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x20\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x3a\x3a\x3a\x20\x20\x20\x20\x20\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a");
         Self::print_welcome_title(b"\x20\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x3a\x2b\x3a\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x3a\x2b\x3a");
         Self::print_welcome_title(b"\x20\x20\x20\x20\x2b\x3a\x2b\x20\x20\x2b\x3a\x2b\x20\x20\x20\x2b\x3a\x2b\x20\x20\x20\x20\x20\x20\x20\x2b\x3a\x2b\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2b\x3a\x2b\x20\x2b\x3a\x2b\x20\x20\x20\x20\x20\x20\x20\x20\x2b\x3a\x2b\x20\x20");
@@ -186,9 +190,8 @@ impl Shell {
         Self::print_welcome_title(b"\x20\x20\x2b\x23\x2b\x20\x20\x2b\x23\x2b\x20\x20\x20\x2b\x23\x2b\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2b\x23\x2b\x20\x20\x20\x20\x20\x20\x20\x2b\x23\x2b\x23\x2b\x23\x2b\x23\x2b\x23\x2b\x20\x20\x2b\x23\x2b\x20\x20\x20\x20\x20\x20\x20\x20");
         Self::print_welcome_title(b"\x20\x23\x2b\x23\x20\x20\x20\x23\x2b\x23\x20\x20\x23\x2b\x23\x20\x20\x20\x20\x20\x20\x20\x23\x2b\x23\x20\x20\x20\x20\x23\x2b\x23\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x23\x2b\x23\x20\x20\x20\x23\x2b\x23\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20");
         Self::print_welcome_title(b"\x23\x23\x23\x20\x20\x20\x20\x23\x23\x23\x20\x23\x23\x23\x20\x20\x20\x20\x20\x20\x20\x20\x23\x23\x23\x23\x23\x23\x23\x23\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x23\x23\x23\x20\x20\x23\x23\x23\x23\x23\x23\x23\x23\x23\x23\x20\x20\x20\x20\x20");
-
-        Self::print_welcome_line(b'\xba', b' ', b'\xba');
-        Self::print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
+        Self::print_welcome_line(b'\xc8', b'\xbb', b' ', b'\xc9', b'\xbc');
+        Self::print_welcome_line(b' ', b'\xc8', b'\xcd', b'\xbc', b' ');
         WRITER.lock().reset_foreground_color();
     }
 
@@ -210,11 +213,6 @@ impl Shell {
     }
 
     fn execute_command(&mut self, screen_idx: usize) {
-        // TODO: basic commands:
-        // - clear screen
-        // - get basic info
-        // - exit
-        // - print shell number
         let command = &mut self.commands[screen_idx];
         for i in (0..command.len).rev() {
             WRITER.lock().write_byte(command.buffer[i]);
