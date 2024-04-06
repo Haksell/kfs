@@ -1,4 +1,5 @@
 use crate::keyboard::{DecodedKey, KeyCode};
+use crate::println;
 use crate::vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER};
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -35,22 +36,41 @@ impl CommandBuffer {
         }
     }
 
-    pub fn set_pos(&mut self, pos: usize) {
+    fn set_pos(&mut self, pos: usize) {
         // Breaks if pos > MAX_COMMAND_LEN. Use assert!() ?
         self.pos = pos;
         WRITER.lock().set_cursor(PROMPT.len() + pos);
     }
 
-    pub fn move_left(&mut self) {
+    fn move_left(&mut self) {
         if self.pos > 0 {
             self.set_pos(self.pos - 1);
         }
     }
 
-    pub fn move_right(&mut self) {
+    fn move_right(&mut self) {
         if self.pos < self.len {
             self.set_pos(self.pos + 1);
         }
+    }
+
+    fn trim(&self) -> &[u8] {
+        // b'\0' and b'\xff' are also whitespace, but they can't be typed for now
+        let mut start = 0;
+        while start < self.len && self.buffer[start] == b' ' {
+            start += 1;
+        }
+        let mut end = self.len;
+        while end > start && self.buffer[end - 1] == b' ' {
+            end -= 1;
+        }
+        &self.buffer[start..end]
+    }
+}
+
+impl PartialEq<[u8]> for CommandBuffer {
+    fn eq(&self, other: &[u8]) -> bool {
+        self.len == other.len() && &self.buffer[..self.len] == other
     }
 }
 
@@ -80,9 +100,7 @@ impl Shell {
             DecodedKey::Unicode(character) => match character {
                 special_char::NEWLINE => {
                     WRITER.lock().write_byte(b'\n');
-                    if self.commands[screen_idx].len > 0 {
-                        self.execute_command(screen_idx);
-                    }
+                    self.execute_command();
                     self.print_prompt();
                     self.commands[screen_idx].len = 0;
                     self.commands[screen_idx].set_pos(0);
@@ -211,12 +229,46 @@ impl Shell {
         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
     }
 
-    fn execute_command(&mut self, screen_idx: usize) {
-        let command = &mut self.commands[screen_idx];
-        for i in (0..command.len).rev() {
-            WRITER.lock().write_byte(command.buffer[i]);
+    fn execute_command(&self) {
+        // TODO: split args (right now it's just a single command)
+        let command_buffer = self.commands[self.screen_idx].trim();
+        match command_buffer {
+            b"" => {}
+            b"clear" => self.execute_clear(),
+            b"halt" => self.execute_halt(),
+            b"help" => self.execute_help(),
+            b"pks" => self.execute_pks(),
+            b"reboot" => self.execute_reboot(),
+            b"tty" => self.execute_tty(),
+            _ => println!(
+                "kfs: command not found: \"{}\"",
+                core::str::from_utf8(command_buffer).unwrap_or("invalid utf-8")
+            ),
         }
-        WRITER.lock().write_byte(b'\n');
+    }
+
+    fn execute_clear(&self) {
+        println!("no.");
+    }
+
+    fn execute_halt(&self) {
+        println!("no.");
+    }
+
+    fn execute_help(&self) {
+        println!("no.");
+    }
+
+    fn execute_pks(&self) {
+        println!("no.");
+    }
+
+    fn execute_reboot(&self) {
+        println!("no.");
+    }
+
+    fn execute_tty(&self) {
+        println!("F{}", self.screen_idx + 1);
     }
 }
 

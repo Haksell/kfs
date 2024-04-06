@@ -1,14 +1,5 @@
 # KFS
 
-## branch
-
--   better welcome screen
--   handler system for commands
--   `pks`, `reboot`, `halt` default handlers
--   `clear` function
--   `tty` function
--   `rev` function
-
 ## subject
 
 ### kfs2
@@ -53,6 +44,14 @@
 -   [ ] Also, you can add some features to the keyboard handler, for example multi layouts (qwerty, azerty), base functions like get_line (just like read: waits for characters and return them when \n is pressed).
 
 ## todo
+
+### kfs2
+
+-   [ ] `clear` command
+-   [ ] `help` command (automatize)
+-   [ ] `halt` command
+-   [ ] `pks` command
+-   [ ] `reboot` command
 
 ### later
 
