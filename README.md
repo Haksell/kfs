@@ -49,7 +49,6 @@
 
 -   [ ] find project name and rebrand
 -   [ ] finish 1st edition
--   [ ] finish 2nd edition
 -   [ ] `exit_qemu` from https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2 without `x86_64` crate
 -   [ ] call `exit_qemu` on `Esc` command
 -   [ ] optimize vga history with a ring buffer
