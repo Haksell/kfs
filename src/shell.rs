@@ -68,12 +68,6 @@ impl CommandBuffer {
     }
 }
 
-impl PartialEq<[u8]> for CommandBuffer {
-    fn eq(&self, other: &[u8]) -> bool {
-        self.len == other.len() && &self.buffer[..self.len] == other
-    }
-}
-
 pub struct Shell {
     screen_idx: usize,
     commands: [CommandBuffer; VGA_SCREENS],
