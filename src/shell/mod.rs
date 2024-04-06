@@ -1,5 +1,9 @@
+mod command_handlers;
+
 use crate::keyboard::{DecodedKey, KeyCode};
+use crate::println;
 use crate::vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER};
+use command_handlers::COMMAND_HANDLERS;
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -15,7 +19,8 @@ mod special_char {
 
 const PROMPT: &[u8] = b"> ";
 const MAX_COMMAND_LEN: usize = VGA_WIDTH - PROMPT.len() - 1;
-const WELCOME_MARGIN: usize = 4;
+const WELCOME_MARGIN: usize = 2;
+const CORNER_REPEAT: usize = 3; // 1 for something not too weird
 
 struct CommandBuffer {
     buffer: [u8; MAX_COMMAND_LEN],
@@ -34,22 +39,35 @@ impl CommandBuffer {
         }
     }
 
-    pub fn set_pos(&mut self, pos: usize) {
+    fn set_pos(&mut self, pos: usize) {
         // Breaks if pos > MAX_COMMAND_LEN. Use assert!() ?
         self.pos = pos;
         WRITER.lock().set_cursor(PROMPT.len() + pos);
     }
 
-    pub fn move_left(&mut self) {
+    fn move_left(&mut self) {
         if self.pos > 0 {
             self.set_pos(self.pos - 1);
         }
     }
 
-    pub fn move_right(&mut self) {
+    fn move_right(&mut self) {
         if self.pos < self.len {
             self.set_pos(self.pos + 1);
         }
+    }
+
+    fn trimmed(&self) -> &[u8] {
+        // b'\0' and b'\xff' are also whitespace, but they can't be typed for now
+        let mut start = 0;
+        while start < self.len && self.buffer[start] == b' ' {
+            start += 1;
+        }
+        let mut end = self.len;
+        while end > start && self.buffer[end - 1] == b' ' {
+            end -= 1;
+        }
+        &self.buffer[start..end]
     }
 }
 
@@ -79,9 +97,7 @@ impl Shell {
             DecodedKey::Unicode(character) => match character {
                 special_char::NEWLINE => {
                     WRITER.lock().write_byte(b'\n');
-                    if self.commands[screen_idx].len > 0 {
-                        self.execute_command(screen_idx);
-                    }
+                    self.execute_command();
                     self.print_prompt();
                     self.commands[screen_idx].len = 0;
                     self.commands[screen_idx].set_pos(0);
@@ -108,8 +124,7 @@ impl Shell {
                         for i in command.pos..command.len {
                             WRITER.lock().write_byte(command.buffer[i]);
                         }
-                        command.pos += 1;
-                        WRITER.lock().set_cursor(PROMPT.len() + command.pos);
+                        command.set_pos(command.pos + 1);
                     }
                 }
                 _ => {}
@@ -150,12 +165,14 @@ impl Shell {
         WRITER.lock().reset_foreground_color();
     }
 
-    fn print_welcome_line(left: u8, middle: u8, right: u8) {
+    fn print_welcome_line(left: u8, left2: u8, middle: u8, right2: u8, right: u8) {
         WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
         WRITER.lock().write_byte(left);
+        WRITER.lock().write_bytes(left2, CORNER_REPEAT);
         WRITER
             .lock()
-            .write_bytes(middle, VGA_WIDTH - 2 - 2 * WELCOME_MARGIN);
+            .write_bytes(middle, VGA_WIDTH - 2 * (WELCOME_MARGIN + CORNER_REPEAT + 1));
+        WRITER.lock().write_bytes(right2, CORNER_REPEAT);
         WRITER.lock().write_byte(right);
         WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
     }
@@ -177,8 +194,8 @@ impl Shell {
         WRITER
             .lock()
             .set_foreground_color(self.commands[self.screen_idx].color);
-        Self::print_welcome_line(b'\xc9', b'\xcd', b'\xbb');
-        Self::print_welcome_line(b'\xba', b' ', b'\xba');
+        Self::print_welcome_line(b' ', b'\xc9', b'\xcd', b'\xbb', b' ');
+        Self::print_welcome_line(b'\xc9', b'\xbc', b' ', b'\xc8', b'\xbb');
         Self::print_welcome_title(b"\x20\x20\x20\x20\x20\x20\x3a\x3a\x3a\x20\x20\x20\x20\x3a\x3a\x3a\x20\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x20\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x3a\x3a\x3a\x20\x20\x20\x20\x20\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a");
         Self::print_welcome_title(b"\x20\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x3a\x2b\x3a\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x20\x3a\x2b\x3a\x20\x20\x20\x20\x3a\x2b\x3a");
         Self::print_welcome_title(b"\x20\x20\x20\x20\x2b\x3a\x2b\x20\x20\x2b\x3a\x2b\x20\x20\x20\x2b\x3a\x2b\x20\x20\x20\x20\x20\x20\x20\x2b\x3a\x2b\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2b\x3a\x2b\x20\x2b\x3a\x2b\x20\x20\x20\x20\x20\x20\x20\x20\x2b\x3a\x2b\x20\x20");
@@ -186,9 +203,8 @@ impl Shell {
         Self::print_welcome_title(b"\x20\x20\x2b\x23\x2b\x20\x20\x2b\x23\x2b\x20\x20\x20\x2b\x23\x2b\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2b\x23\x2b\x20\x20\x20\x20\x20\x20\x20\x2b\x23\x2b\x23\x2b\x23\x2b\x23\x2b\x23\x2b\x20\x20\x2b\x23\x2b\x20\x20\x20\x20\x20\x20\x20\x20");
         Self::print_welcome_title(b"\x20\x23\x2b\x23\x20\x20\x20\x23\x2b\x23\x20\x20\x23\x2b\x23\x20\x20\x20\x20\x20\x20\x20\x23\x2b\x23\x20\x20\x20\x20\x23\x2b\x23\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x23\x2b\x23\x20\x20\x20\x23\x2b\x23\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20");
         Self::print_welcome_title(b"\x23\x23\x23\x20\x20\x20\x20\x23\x23\x23\x20\x23\x23\x23\x20\x20\x20\x20\x20\x20\x20\x20\x23\x23\x23\x23\x23\x23\x23\x23\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x23\x23\x23\x20\x20\x23\x23\x23\x23\x23\x23\x23\x23\x23\x23\x20\x20\x20\x20\x20");
-
-        Self::print_welcome_line(b'\xba', b' ', b'\xba');
-        Self::print_welcome_line(b'\xc8', b'\xcd', b'\xbc');
+        Self::print_welcome_line(b'\xc8', b'\xbb', b' ', b'\xc9', b'\xbc');
+        Self::print_welcome_line(b' ', b'\xc8', b'\xcd', b'\xbc', b' ');
         WRITER.lock().reset_foreground_color();
     }
 
@@ -209,17 +225,22 @@ impl Shell {
         WRITER.lock().set_cursor(PROMPT.len() + command.pos);
     }
 
-    fn execute_command(&mut self, screen_idx: usize) {
-        // TODO: basic commands:
-        // - clear screen
-        // - get basic info
-        // - exit
-        // - print shell number
-        let command = &mut self.commands[screen_idx];
-        for i in (0..command.len).rev() {
-            WRITER.lock().write_byte(command.buffer[i]);
+    fn execute_command(&self) {
+        // TODO: split args (right now it's just a single command)
+        let command_buffer = self.commands[self.screen_idx].trimmed();
+        if command_buffer.is_empty() {
+            return;
         }
-        WRITER.lock().write_byte(b'\n');
+        for handler in COMMAND_HANDLERS.iter() {
+            if handler.name == command_buffer {
+                (handler.handler)(&self);
+                return;
+            }
+        }
+        println!(
+            "kfs: command not found: \"{}\"",
+            core::str::from_utf8(command_buffer).unwrap_or("invalid utf-8")
+        );
     }
 }
 
