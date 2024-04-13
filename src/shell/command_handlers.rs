@@ -1,11 +1,11 @@
 use super::Shell;
-use crate::{println, vga_buffer::WRITER};
+use crate::{port::Port, println, vga_buffer::WRITER};
 
 #[derive(Clone, Copy)]
 pub struct CommandHandler {
     pub name: &'static [u8],
     description: &'static [u8],
-    pub handler: fn(&Shell),
+    pub handler: fn(&Shell), // Does it really make sense to take a shell as argument?
 }
 
 pub const COMMAND_HANDLERS: [CommandHandler; 6] = [
@@ -16,8 +16,12 @@ pub const COMMAND_HANDLERS: [CommandHandler; 6] = [
     },
     CommandHandler {
         name: b"halt",
-        description: b"???",
-        handler: |_: &Shell| println!("<<< TODO >>>"),
+        description: b"Halt the kernel.",
+        handler: |_: &Shell| unsafe {
+            // TODO: allow unhalt with F12or ESC?
+            core::arch::asm!("cli");
+            core::arch::asm!("hlt");
+        },
     },
     CommandHandler {
         name: b"help",
@@ -46,7 +50,10 @@ pub const COMMAND_HANDLERS: [CommandHandler; 6] = [
     CommandHandler {
         name: b"reboot",
         description: b"Reboot the system.",
-        handler: |_: &Shell| println!("<<< TODO >>>"),
+        handler: |_: &Shell| unsafe {
+            let mut port = Port::new(0x64);
+            port.write(0xFEu8);
+        },
     },
     CommandHandler {
         name: b"tty",
