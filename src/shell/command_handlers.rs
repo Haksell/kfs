@@ -5,6 +5,19 @@ use crate::{
     vga_buffer::{VGA_WIDTH, WRITER},
 };
 
+#[allow(dead_code)] // TODO: remove because it doesn't make sense to never use success or failed
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x10,
+    Failed = 0x11,
+}
+
+// TODO: more generic exit which doesn't only work on QEMU
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    unsafe { Port::new(0xf4).write(exit_code as u32) }
+}
+
 #[derive(Clone, Copy)]
 pub struct CommandHandler {
     pub name: &'static [u8],
@@ -12,11 +25,16 @@ pub struct CommandHandler {
     pub handler: fn(&Shell), // Does it really make sense to take a shell as argument?
 }
 
-pub const COMMAND_HANDLERS: [CommandHandler; 6] = [
+pub const COMMAND_HANDLERS: [CommandHandler; 7] = [
     CommandHandler {
         name: b"clear",
         description: b"Clear the screen.",
         handler: |_: &Shell| WRITER.lock().clear_screen(),
+    },
+    CommandHandler {
+        name: b"exit",
+        description: b"Exit the system.",
+        handler: |_: &Shell| exit_qemu(QemuExitCode::Success),
     },
     CommandHandler {
         name: b"halt",

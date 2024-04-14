@@ -3,7 +3,7 @@ mod command_handlers;
 use crate::keyboard::{DecodedKey, KeyCode};
 use crate::println;
 use crate::vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER};
-use command_handlers::COMMAND_HANDLERS;
+use command_handlers::{exit_qemu, QemuExitCode, COMMAND_HANDLERS};
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -14,6 +14,7 @@ use spin::Mutex;
 mod special_char {
     pub const BACKSPACE: char = '\x08';
     pub const NEWLINE: char = '\x0a';
+    pub const ESCAPE: char = '\x1b';
     pub const DELETE: char = '\x7f';
 }
 
@@ -107,6 +108,7 @@ impl Shell {
                         self.delete_char(screen_idx, true);
                     }
                 }
+                special_char::ESCAPE => exit_qemu(QemuExitCode::Success),
                 special_char::DELETE => {
                     if start_pos < start_len {
                         self.delete_char(screen_idx, false);
