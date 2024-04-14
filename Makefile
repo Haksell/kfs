@@ -37,7 +37,12 @@ all: $(ISO)
 re: clean all
 
 run: all
-	@$(QEMU) -cdrom $(ISO)
+	@$(QEMU) -cdrom $(ISO) -device isa-debug-exit,iobase=0xf4,iosize=0x04; \
+    ret=$$?; \
+    if [ $$ret -ne 0 ] && [ $$ret -ne 33 ]; then \
+        echo "Failed with status $$ret."; \
+        exit $$ret; \
+    fi
 
 rerun: re run
 
