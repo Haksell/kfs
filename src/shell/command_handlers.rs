@@ -1,5 +1,9 @@
 use super::Shell;
-use crate::{port::Port, println, vga_buffer::WRITER};
+use crate::{
+    port::Port,
+    print, println,
+    vga_buffer::{VGA_WIDTH, WRITER},
+};
 
 #[derive(Clone, Copy)]
 pub struct CommandHandler {
@@ -16,10 +20,11 @@ pub const COMMAND_HANDLERS: [CommandHandler; 6] = [
     },
     CommandHandler {
         name: b"halt",
-        description: b"Halt the kernel.",
+        description: b"Halt the system.",
         handler: |_: &Shell| unsafe {
-            // TODO: allow unhalt with F12or ESC?
             core::arch::asm!("cli");
+            print!("System halted.");
+            WRITER.lock().set_cursor(VGA_WIDTH);
             core::arch::asm!("hlt");
         },
     },
@@ -50,10 +55,7 @@ pub const COMMAND_HANDLERS: [CommandHandler; 6] = [
     CommandHandler {
         name: b"reboot",
         description: b"Reboot the system.",
-        handler: |_: &Shell| unsafe {
-            let mut port = Port::new(0x64);
-            port.write(0xFEu8);
-        },
+        handler: |_: &Shell| unsafe { Port::new(0x64).write(0xFEu8) },
     },
     CommandHandler {
         name: b"tty",
