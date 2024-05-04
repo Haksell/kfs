@@ -28,9 +28,16 @@ TARGET := arch/$(ARCH)/kfs
 RUST_OS := target/$(TARGET)/$(BUILD_MODE)/libkfs.a
 LINKER_SCRIPT := arch/linker.ld
 GRUB_CFG := arch/grub.cfg
-ASM_SRCS := $(wildcard arch/$(ARCH)/*.asm)
-ASM_OBJS := $(patsubst arch/$(ARCH)/%.asm, $(BUILD)/arch/$(ARCH)/%.o, $(ASM_SRCS))
+ASM_SRCS := $(wildcard arch/*.asm arch/$(ARCH)/*.asm)
+ASM_OBJS := $(patsubst arch/%.asm, $(BUILD)/arch/$(ARCH)/%.o, $(ASM_SRCS))
 QEMU := qemu-system-$(ARCH)
+
+RESET := \033[0m
+GREEN := \033[1m\033[32m
+
+# lol:
+# 	@echo $(ASM_SRCS)
+# 	@echo $(ASM_OBJS)
 
 all: $(ISO)
 
@@ -56,7 +63,7 @@ clean:
 vm:
 	@vagrant up
 
-$(ISO): $(KERNEL) $(GRUB_CFG) $(ASM_SRCS) $(TARGET).json vm
+$(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json vm
 	@mkdir -p $(ISOFILES)/boot/grub
 	@cp $(KERNEL) $(ISOFILES)/boot/kernel.bin
 	@cp $(GRUB_CFG) $(ISOFILES)/boot/grub
@@ -69,9 +76,10 @@ $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 $(RUST_OS):
 	@export RUST_TARGET_PATH=$(shell pwd) ; cargo build --target $(TARGET) $(CARGO_FLAGS)
 
-$(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
+$(ASM_OBJS): $(BUILD)/arch/$(ARCH)/%.o : arch/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f $(ELF_FORMAT) $< -o $@
+	@echo "$(GREEN)+++ $@$(RESET)"
 
 loc:
 	@find src -name '*.rs' | sort | xargs wc -l
