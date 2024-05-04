@@ -31,7 +31,8 @@ GRUB_CFG := arch/grub.cfg
 QEMU := qemu-system-$(ARCH)
 
 ASM_SRCS := $(wildcard arch/*.asm arch/$(ARCH)/*.asm)
-ASM_OBJS := $(patsubst arch/%.asm, $(BUILD)/asm/%.o, $(ASM_SRCS))
+ASM_OBJS := $(patsubst %.asm, $(BUILD)/asm/%.o, $(notdir $(ASM_SRCS)))
+vpath %.asm $(dir $(ASM_SRCS))
 
 RESET := \033[0m
 GREEN := \033[1m\033[32m
@@ -74,7 +75,7 @@ $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 $(RUST_OS):
 	@export RUST_TARGET_PATH=$(shell pwd) ; cargo build --target $(TARGET) $(CARGO_FLAGS)
 
-$(ASM_OBJS): $(BUILD)/asm/%.o: arch/%.asm
+$(ASM_OBJS): $(BUILD)/asm/%.o: %.asm
 	@mkdir -p $(dir $@)
 	@nasm -f $(ELF_FORMAT) $< -o $@
 	@echo "$(GREEN)+++ $@$(RESET)"
