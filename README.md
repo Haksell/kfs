@@ -48,8 +48,6 @@
 ### kfs2
 
 -   [ ] `pks` command
--   [ ] warning screen (F11)
--   [ ] debug screen (F12)
 
 ### later
 
@@ -58,7 +56,7 @@
 -   [ ] optimize vga history with a ring buffer
 -   [ ] `qemu` in terminal like lsimanic (`-display curses` with a black screen)
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
--   [ ] use KVM on top of QEMU?
+-   [ ] use KVM on top of QEMU? (idk what it means anymore)
 -   [ ] specify exact nightly version
 -   [ ] bring back testing and more useful stuff from https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2
 -   [ ] colorful tests (with color module based on `colored`)
@@ -70,6 +68,8 @@
 -   [ ] `insert`
 -   [ ] use https://doc.rust-lang.org/nightly/core/cell/ instead of `lazy_static` crate
 -   [ ] [Interrupt handlers should only perform the minimal amount of work necessary](https://os.phil-opp.com/async-await/#scancode-queue)
+-   [ ] warning screen (F11)
+-   [ ] debug screen (F12)
 
 ## check before each push
 
