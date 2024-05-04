@@ -19,6 +19,6 @@ error:
     mov word [0xb8008], 0x4f52
     mov word [0xb800a], 0x4f3a
     mov word [0xb800c], 0x4f20
-    mov word [0xb800e], 0x4f20
     mov byte [0xb800e], al
+    mov byte [0xb800f], 0x4f
     hlt
