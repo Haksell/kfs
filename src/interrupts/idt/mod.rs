@@ -1,6 +1,7 @@
 mod entry;
 
 use self::entry::{Entry, HandlerFunc};
+use core::arch::asm;
 use core::ops::{Index, IndexMut};
 
 const IDT_SIZE: usize = 256;
@@ -31,7 +32,7 @@ impl InterruptDescriptorTable {
 
     pub fn load(&'static self) {
         unsafe {
-            core::arch::asm!("lidt [{}]", in(reg) &self.pointer(), options(readonly, nostack, preserves_flags));
+            asm!("lidt [{}]", in(reg) &self.pointer(), options(readonly, nostack, preserves_flags));
         }
     }
 

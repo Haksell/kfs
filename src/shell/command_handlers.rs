@@ -4,6 +4,7 @@ use crate::{
     print, println,
     vga_buffer::{VGA_WIDTH, WRITER},
 };
+use core::arch::asm;
 
 #[allow(dead_code)] // TODO: remove because it doesn't make sense to never use success or failed
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -40,10 +41,10 @@ pub const COMMAND_HANDLERS: [CommandHandler; 7] = [
         name: b"halt",
         description: b"Halt the system.",
         handler: |_: &Shell| unsafe {
-            core::arch::asm!("cli");
+            asm!("cli");
             print!("System halted.");
             WRITER.lock().set_cursor(VGA_WIDTH);
-            core::arch::asm!("hlt");
+            asm!("hlt");
         },
     },
     CommandHandler {

@@ -7,6 +7,7 @@ mod port;
 mod shell;
 mod vga_buffer;
 
+use core::arch::asm;
 use core::panic::PanicInfo;
 
 #[no_mangle]
@@ -28,7 +29,7 @@ fn panic(info: &PanicInfo) -> ! {
 fn hlt_loop() -> ! {
     loop {
         unsafe {
-            core::arch::asm!("hlt", options(nomem, nostack, preserves_flags));
+            asm!("hlt", options(nomem, nostack, preserves_flags));
         }
     }
 }
