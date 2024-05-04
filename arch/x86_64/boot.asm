@@ -60,7 +60,7 @@ set_up_page_tables:
     ; map each P2 entry to a huge 2MiB page
     mov ecx, 0
     .map_p2_table:
-        mov eax, 0x200000
+        mov eax, 0x200000 ; 2MiB
         mul ecx
         or eax, 0b10000011 ; present + writable + huge
         mov [p2_table + ecx * 8], eax
