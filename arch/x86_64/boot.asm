@@ -51,11 +51,11 @@ check_long_mode:
 set_up_page_tables:
     ; P4[0] = P3
     mov eax, p3_table
-    or eax, 0b11
+    or eax, 0b11 ; present + writable
     mov [p4_table], eax
     ; P3[0] = P2
     mov eax, p2_table
-    or eax, 0b11
+    or eax, 0b11 ; present + writable
     mov [p3_table], eax
     ; map each P2 entry to a huge 2MiB page
     mov ecx, 0
