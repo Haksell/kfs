@@ -49,7 +49,7 @@ run: all
         exit $$ret; \
     fi
 
-rerun: re run
+rerun: clean run
 
 clean:
 	rm -rf build || true
