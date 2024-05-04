@@ -11,14 +11,19 @@ check_multiboot:
         mov al, '0'
         jmp error
 
+%macro WRITE_CHAR 2
+    mov byte [%1], %2
+    mov byte [%1 + 1], 0x4f
+%endmacro
+
 error:
-    mov word [0xb8000], 0x4f45
-    mov word [0xb8002], 0x4f52
-    mov word [0xb8004], 0x4f52
-    mov word [0xb8006], 0x4f4f
-    mov word [0xb8008], 0x4f52
-    mov word [0xb800a], 0x4f3a
-    mov word [0xb800c], 0x4f20
-    mov byte [0xb800e], al
-    mov byte [0xb800f], 0x4f
+    mov cl, 0x4f
+    WRITE_CHAR 0xb8000, 'E'
+    WRITE_CHAR 0xb8002, 'R'
+    WRITE_CHAR 0xb8004, 'R'
+    WRITE_CHAR 0xb8006, 'O'
+    WRITE_CHAR 0xb8008, 'R'
+    WRITE_CHAR 0xb800a, ':'
+    WRITE_CHAR 0xb800c, ' '
+    WRITE_CHAR 0xb800e, al
     hlt
