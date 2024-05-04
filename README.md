@@ -81,6 +81,7 @@
 
 -   https://os.phil-opp.com/edition-1/
 -   https://os.phil-opp.com/edition-2/
+-   https://intermezzos.github.io/book/first-edition
 -   https://osdev.org/Main_Page
 -   https://github.com/rust-osdev
 -   https://pages.cs.wisc.edu/~remzi/OSTEP
