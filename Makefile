@@ -10,7 +10,7 @@ else
 $(error ARCH must be either i386 or x86_64)
 endif
 
-ifeq ($(DEBUG),true)
+ifeq ($(DEBUG), true)
 BUILD_MODE := debug
 else ifeq ($(DEBUG),false)
 BUILD_MODE := release
