@@ -84,7 +84,8 @@ enable_paging:
     wrmsr
     ; enable paging in the cr0 register
     mov eax, cr0
-    or eax, 1 << 31
+    or eax, 1 << 16 ; write protect
+    or eax, 1 << 31 ; paging
     mov cr0, eax
     ret
 
