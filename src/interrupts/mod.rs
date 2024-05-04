@@ -1,6 +1,9 @@
-use crate::idt::InterruptDescriptorTable;
+mod idt;
+mod pic;
+
+use self::idt::InterruptDescriptorTable;
+use self::pic::ChainedPics;
 use crate::keyboard::{layouts, scancodes, Keyboard};
-use crate::pic::ChainedPics;
 use crate::port::Port;
 use crate::shell::SHELL;
 use core::arch::asm;
@@ -20,21 +23,11 @@ enum InterruptIndex {
     Keyboard,
 }
 
-impl InterruptIndex {
-    fn as_u8(self) -> u8 {
-        self as u8
-    }
-
-    fn as_usize(self) -> usize {
-        usize::from(self.as_u8())
-    }
-}
-
 lazy_static! {
     static ref IDT: InterruptDescriptorTable = {
         let mut idt = InterruptDescriptorTable::new();
-        idt[InterruptIndex::Timer.as_usize()].set_handler_fn(timer_interrupt_handler);
-        idt[InterruptIndex::Keyboard.as_usize()].set_handler_fn(keyboard_interrupt_handler);
+        idt[InterruptIndex::Timer as usize].set_handler_fn(timer_interrupt_handler);
+        idt[InterruptIndex::Keyboard as usize].set_handler_fn(keyboard_interrupt_handler);
         idt
     };
 }
@@ -94,7 +87,7 @@ where
 extern "x86-interrupt" fn timer_interrupt_handler() {
     unsafe {
         PICS.lock()
-            .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
+            .notify_end_of_interrupt(InterruptIndex::Timer as u8);
     }
 }
 
@@ -116,6 +109,6 @@ extern "x86-interrupt" fn keyboard_interrupt_handler() {
 
     unsafe {
         PICS.lock()
-            .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
+            .notify_end_of_interrupt(InterruptIndex::Keyboard as u8);
     }
 }

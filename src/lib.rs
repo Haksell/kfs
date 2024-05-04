@@ -1,11 +1,8 @@
 #![no_std]
-#![feature(abi_x86_interrupt)]
-#![feature(exclusive_range_pattern)]
+#![feature(abi_x86_interrupt, exclusive_range_pattern)]
 
-mod idt;
 mod interrupts;
 mod keyboard;
-mod pic;
 mod port;
 mod shell;
 mod vga_buffer;
