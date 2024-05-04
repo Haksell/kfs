@@ -48,18 +48,20 @@ impl Index<usize> for InterruptDescriptorTable {
     type Output = Entry<HandlerFunc>;
 
     fn index(&self, i: usize) -> &Self::Output {
-        match i {
-            i @ 0..NB_BUILTINS => &self.builtins[i],
-            _ => &self.interrupts[i - NB_BUILTINS],
+        if i < NB_BUILTINS {
+            &self.builtins[i]
+        } else {
+            &self.interrupts[i - NB_BUILTINS]
         }
     }
 }
 
 impl IndexMut<usize> for InterruptDescriptorTable {
     fn index_mut(&mut self, i: usize) -> &mut Self::Output {
-        match i {
-            i @ 0..NB_BUILTINS => &mut self.builtins[i],
-            _ => &mut self.interrupts[i - NB_BUILTINS],
+        if i < NB_BUILTINS {
+            &mut self.builtins[i]
+        } else {
+            &mut self.interrupts[i - NB_BUILTINS]
         }
     }
 }
