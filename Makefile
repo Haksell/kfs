@@ -28,7 +28,6 @@ TARGET := arch/$(ARCH)/kfs
 RUST_OS := target/$(TARGET)/$(BUILD_MODE)/libkfs.a
 LINKER_SCRIPT := arch/linker.ld
 GRUB_CFG := arch/grub.cfg
-QEMU := qemu-system-$(ARCH)
 
 ASM_SRCS := $(wildcard arch/*.asm arch/$(ARCH)/*.asm)
 ASM_OBJS := $(patsubst %.asm, $(BUILD)/asm/%.o, $(notdir $(ASM_SRCS)))
@@ -42,7 +41,7 @@ all: $(ISO)
 re: clean all
 
 run: all
-	@$(QEMU) -cdrom $(ISO) -device isa-debug-exit,iobase=0xf4,iosize=0x04; \
+	@qemu-system-$(ARCH) -cdrom $(ISO) -device isa-debug-exit,iobase=0xf4,iosize=0x04; \
     ret=$$?; \
     if [ $$ret -ne 0 ] && [ $$ret -ne 33 ]; then \
         echo "Failed with status $$ret."; \
