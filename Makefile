@@ -30,10 +30,8 @@ LINKER_SCRIPT := arch/linker.ld
 GRUB_CFG := arch/grub.cfg
 QEMU := qemu-system-$(ARCH)
 
-ASM_SHARED_SRCS := $(wildcard arch/*.asm)
-ASM_SHARED_OBJS := $(patsubst arch/%.asm, $(BUILD)/asm/%.o, $(ASM_SHARED_SRCS))
-ASM_ARCH_SRCS := $(wildcard arch/$(ARCH)/*.asm)
-ASM_ARCH_OBJS := $(patsubst arch/$(ARCH)/%.asm, $(BUILD)/asm/%.o, $(ASM_ARCH_SRCS))
+ASM_SRCS := $(wildcard arch/*.asm arch/$(ARCH)/*.asm)
+ASM_OBJS := $(patsubst arch/%.asm, $(BUILD)/asm/%.o, $(ASM_SRCS))
 
 RESET := \033[0m
 GREEN := \033[1m\033[32m
@@ -69,20 +67,15 @@ $(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json vm
 	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(GRUB_FLAGS) $(ISOFILES)"
 	@rm -rf $(ISOFILES)
 
-$(KERNEL): $(RUST_OS) $(ASM_ARCH_OBJS) $(ASM_SHARED_OBJS) $(LINKER_SCRIPT)
-	@mkdir -p $(shell dirname $@)
-	@ld $(LD_FLAGS) -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_ARCH_OBJS) $(ASM_SHARED_OBJS) $(RUST_OS)
+$(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
+	@mkdir -p $(dir $@)
+	@ld $(LD_FLAGS) -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(RUST_OS)
 
 $(RUST_OS):
 	@export RUST_TARGET_PATH=$(shell pwd) ; cargo build --target $(TARGET) $(CARGO_FLAGS)
 
-$(ASM_SHARED_OBJS): $(BUILD)/asm/%.o: arch/%.asm
-	@mkdir -p $(shell dirname $@)
-	@nasm -f $(ELF_FORMAT) $< -o $@
-	@echo "$(GREEN)+++ $@$(RESET)"
-
-$(ASM_ARCH_OBJS): $(BUILD)/asm/%.o: arch/$(ARCH)/%.asm
-	@mkdir -p $(shell dirname $@)
+$(ASM_OBJS): $(BUILD)/asm/%.o: arch/%.asm
+	@mkdir -p $(dir $@)
 	@nasm -f $(ELF_FORMAT) $< -o $@
 	@echo "$(GREEN)+++ $@$(RESET)"
 
