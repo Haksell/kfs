@@ -1,8 +1,7 @@
-use crate::entry::{Entry, HandlerFunc};
-use core::{
-    arch::asm,
-    ops::{Index, IndexMut},
-};
+mod entry;
+
+use self::entry::{Entry, HandlerFunc};
+use core::ops::{Index, IndexMut};
 
 const IDT_SIZE: usize = 256;
 const NB_BUILTINS: usize = 32;
@@ -32,7 +31,7 @@ impl InterruptDescriptorTable {
 
     pub fn load(&'static self) {
         unsafe {
-            asm!("lidt [{}]", in(reg) &self.pointer(), options(readonly, nostack, preserves_flags));
+            core::arch::asm!("lidt [{}]", in(reg) &self.pointer(), options(readonly, nostack, preserves_flags));
         }
     }
 

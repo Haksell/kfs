@@ -2,9 +2,6 @@
 #![feature(abi_x86_interrupt)]
 #![feature(exclusive_range_pattern)]
 
-use core::{arch::asm, panic::PanicInfo};
-
-mod entry;
 mod idt;
 mod interrupts;
 mod keyboard;
@@ -12,6 +9,8 @@ mod pic;
 mod port;
 mod shell;
 mod vga_buffer;
+
+use core::panic::PanicInfo;
 
 #[no_mangle]
 pub extern "C" fn kernel_main() {
@@ -31,13 +30,8 @@ fn panic(info: &PanicInfo) -> ! {
 
 fn hlt_loop() -> ! {
     loop {
-        hlt();
-    }
-}
-
-#[inline]
-fn hlt() {
-    unsafe {
-        asm!("hlt", options(nomem, nostack, preserves_flags));
+        unsafe {
+            core::arch::asm!("hlt", options(nomem, nostack, preserves_flags));
+        }
     }
 }
