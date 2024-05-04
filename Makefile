@@ -22,8 +22,8 @@ endif
 
 BUILD := build/$(ARCH)/$(BUILD_MODE)
 ISOFILES := $(BUILD)/isofiles
-KERNEL := $(BUILD)/kernel-$(ARCH).bin
-ISO := $(BUILD)/os-$(ARCH).iso
+KERNEL := $(BUILD)/kfs.bin
+ISO := $(BUILD)/kfs.iso
 TARGET := arch/$(ARCH)/kfs
 RUST_OS := target/$(TARGET)/$(BUILD_MODE)/libkfs.a
 LINKER_SCRIPT := arch/linker.ld
@@ -63,7 +63,7 @@ vm:
 
 $(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json vm
 	@mkdir -p $(ISOFILES)/boot/grub
-	@cp $(KERNEL) $(ISOFILES)/boot/kernel.bin
+	@cp $(KERNEL) $(ISOFILES)/boot
 	@cp $(GRUB_CFG) $(ISOFILES)/boot/grub
 	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(GRUB_FLAGS) $(ISOFILES)"
 	@rm -rf $(ISOFILES)
