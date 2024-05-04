@@ -8,7 +8,6 @@ start:
     mov esp, stack_top
     call check_multiboot
     call kernel_main
-    hlt
 
 check_multiboot:
     cmp eax, 0x36d76289
