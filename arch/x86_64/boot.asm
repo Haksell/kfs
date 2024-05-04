@@ -1,5 +1,5 @@
 global start
-extern long_mode_start
+extern check_multiboot, error, long_mode_start
 
 section .text
 bits 32
@@ -13,14 +13,6 @@ start:
     call enable_paging
     lgdt [gdt64.pointer]
     jmp gdt64.code:long_mode_start
-
-check_multiboot:
-    cmp eax, 0x36d76289
-    jne .no_multiboot
-    ret
-    .no_multiboot:
-        mov al, "0"
-        jmp error
 
 ; Check if CPUID is supported by attempting to flip the ID bit (bit 21)
 ; in the FLAGS register. If we can flip it, CPUID is available.
@@ -39,7 +31,7 @@ check_cpuid:
     je .no_cpuid
     ret
     .no_cpuid:
-        mov al, "1"
+        mov al, '1'
         jmp error
 
 check_long_mode:
@@ -53,7 +45,7 @@ check_long_mode:
     jz .no_long_mode
     ret
     .no_long_mode:
-        mov al, "2"
+        mov al, '2'
         jmp error
 
 set_up_page_tables:
@@ -95,13 +87,6 @@ enable_paging:
     or eax, 1 << 31
     mov cr0, eax
     ret
-
-error:
-    mov dword [0xb8000], 0x4f524f45
-    mov dword [0xb8004], 0x4f3a4f52
-    mov dword [0xb8008], 0x4f204f20
-    mov byte [0xb800a], al
-    hlt
 
 section .bss
 align 4096
