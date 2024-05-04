@@ -1,4 +1,4 @@
-global start
+global start, gdt64.data
 extern check_multiboot, error, long_mode_start
 
 section .text
@@ -105,7 +105,9 @@ section .rodata
 gdt64:
     dq 0 ; zero entry
 .code: equ $ - gdt64
-    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code segment
+    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code segment, (1<<41)?
+.data: equ $ - gdt64
+    dq (1<<41) | (1<<44) | (1<<47) ; data segment, (1<<53)?
 .pointer:
     dw $ - gdt64 - 1
     dq gdt64
