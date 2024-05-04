@@ -33,7 +33,7 @@ impl<F> Entry<F> {
         self.pointer_low = addr as u16;
         self.pointer_middle = (addr >> 16) as u16;
         self.pointer_high = (addr >> 32) as u32;
-        self.gdt_selector = CS::get_reg().0;
+        self.gdt_selector = CS::get_reg();
         self.options.set_present();
         &mut self.options
     }
@@ -67,7 +67,7 @@ impl<F> Entry<F> {
     pub unsafe fn set_handler_addr(&mut self, addr: usize) -> &mut EntryOptions {
         self.pointer_low = addr as u16;
         self.pointer_middle = (addr >> 16) as u16;
-        self.gdt_selector = CS::get_reg().0;
+        self.gdt_selector = CS::get_reg();
         self.options.set_present();
         &mut self.options
     }
@@ -99,7 +99,7 @@ pub struct EntryOptions(u16);
 impl EntryOptions {
     #[inline]
     const fn minimal() -> Self {
-        EntryOptions(0b1110_0000_0000)
+        Self(0b1110_0000_0000)
     }
 
     #[inline]
@@ -108,23 +108,15 @@ impl EntryOptions {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[repr(transparent)]
-struct SegmentSelector(pub u16);
-
-trait Segment {
-    fn get_reg() -> SegmentSelector;
-}
-
 struct CS;
 
-impl Segment for CS {
+impl CS {
     #[inline]
-    fn get_reg() -> SegmentSelector {
+    fn get_reg() -> u16 {
         let segment: u16;
         unsafe {
             asm!(concat!("mov {0:x}, cs"), out(reg) segment, options(nomem, nostack, preserves_flags));
         }
-        SegmentSelector(segment)
+        segment
     }
 }
