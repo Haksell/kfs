@@ -47,10 +47,7 @@
 
 ### kfs2
 
--   [ ] `shell` directory (at least `mod.rs` and `commands.rs`)
 -   [ ] `pks` command
--   [ ] `halt` command
--   [ ] `reboot` command
 -   [ ] warning screen (F11)
 -   [ ] debug screen (F12)
 
@@ -73,6 +70,7 @@
 -   [ ] find a way for rust-analyzer to analyze with both targets
 -   [ ] `print_screen` creates a file using serial port
 -   [ ] `insert`
+-   [ ] use https://doc.rust-lang.org/nightly/core/cell/ instead of `lazy_static` crate
 -   [ ] [Interrupt handlers should only perform the minimal amount of work necessary](https://os.phil-opp.com/async-await/#scancode-queue)
 
 ## check before each push
