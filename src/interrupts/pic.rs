@@ -76,12 +76,11 @@ impl ChainedPics {
 
     pub unsafe fn init(&mut self) {
         let mut wait_port: Port<u8> = Port::new(0x80);
-        let mut wait = || wait_port.write(0);
         let saved_masks = self.read_masks();
         for icw in &[Pic::icw1, Pic::icw2, Pic::icw3, Pic::icw4] {
             for pic in &mut self.pics {
                 icw(pic);
-                wait();
+                wait_port.write(0);
             }
         }
         self.write_masks(&saved_masks)

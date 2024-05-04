@@ -10,9 +10,9 @@ const NB_INTERRUPTS: usize = IDT_SIZE - NB_BUILTINS;
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C, packed(2))]
-pub struct DescriptorTablePointer {
-    pub limit: u16,
-    pub base: usize,
+struct DescriptorTablePointer {
+    limit: u16,
+    base: usize,
 }
 
 #[repr(C)]
