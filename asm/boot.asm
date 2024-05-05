@@ -1,7 +1,14 @@
-global check_multiboot, error
+global start
+extern kernel_main
 
 section .text
 bits 32
+
+start:
+    mov esp, stack_top
+    call check_multiboot
+    call kernel_main
+
 
 check_multiboot:
     cmp eax, 0x36d76289
@@ -27,3 +34,9 @@ error:
     WRITE_CHAR 0xb800c, ' '
     WRITE_CHAR 0xb800e, al
     hlt
+
+section .bss
+align 4096
+stack_bottom:
+    resb 4096 * 128
+stack_top:

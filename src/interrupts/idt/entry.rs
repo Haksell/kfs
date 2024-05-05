@@ -1,45 +1,5 @@
 use core::{arch::asm, marker::PhantomData};
 
-#[cfg(target_arch = "x86_64")]
-#[derive(Clone, Copy)]
-#[repr(C)]
-pub struct Entry<F> {
-    pointer_low: u16,
-    gdt_selector: u16,
-    options: EntryOptions,
-    pointer_middle: u16,
-    pointer_high: u32,
-    reserved: u32,
-    phantom: PhantomData<F>,
-}
-
-#[cfg(target_arch = "x86_64")]
-impl<F> Entry<F> {
-    #[inline]
-    pub const fn missing() -> Self {
-        Self {
-            pointer_low: 0,
-            gdt_selector: 0,
-            options: EntryOptions::minimal(),
-            pointer_middle: 0,
-            pointer_high: 0,
-            reserved: 0,
-            phantom: PhantomData,
-        }
-    }
-
-    #[inline]
-    pub unsafe fn set_handler_addr(&mut self, addr: usize) -> &mut EntryOptions {
-        self.pointer_low = addr as u16;
-        self.pointer_middle = (addr >> 16) as u16;
-        self.pointer_high = (addr >> 32) as u32;
-        self.gdt_selector = CS::get_reg();
-        self.options.set_present();
-        &mut self.options
-    }
-}
-
-#[cfg(target_arch = "x86")]
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct Entry<F> {
@@ -50,7 +10,6 @@ pub struct Entry<F> {
     phantom: PhantomData<F>,
 }
 
-#[cfg(target_arch = "x86")]
 impl<F> Entry<F> {
     #[inline]
     pub const fn missing() -> Self {
