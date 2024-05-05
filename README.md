@@ -86,6 +86,7 @@
 -   https://github.com/rust-osdev
 -   https://pages.cs.wisc.edu/~remzi/OSTEP
 -   http://www.brokenthorn.com/Resources/OSDevIndex.html
+-   http://www.osdever.net/bkerndev/Docs/intro.htm
 -   https://samypesse.gitbook.io/how-to-create-an-operating-system
 -   https://www.gnu.org/software/grub/manual/multiboot2/multiboot.pdf
 -   https://nfil.dev/categories/#kernel
