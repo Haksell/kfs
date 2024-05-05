@@ -5,6 +5,7 @@ section .text
 bits 32
 
 start:
+    cli
     mov esp, stack_top
     call check_multiboot
     call check_cpuid
