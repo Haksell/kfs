@@ -7,6 +7,7 @@ bits 32
 start:
     mov esp, stack_top
     call check_multiboot
+    call check_cpuid
     call kernel_main
 
 check_multiboot:
@@ -15,6 +16,24 @@ check_multiboot:
     ret
     .no_multiboot:
         mov al, '0'
+        jmp error
+
+check_cpuid:
+    pushfd
+    pop eax
+    mov ecx, eax
+    xor eax, 1 << 21
+    push eax
+    popfd
+    pushfd
+    pop eax
+    push ecx
+    popfd
+    cmp eax, ecx
+    je .no_cpuid
+    ret
+    .no_cpuid:
+        mov al, '1'
         jmp error
 
 %macro WRITE_CHAR 2
