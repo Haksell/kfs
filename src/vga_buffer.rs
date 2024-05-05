@@ -78,7 +78,7 @@ fn hide_cursor() {
 
 pub const VGA_WIDTH: usize = 80;
 pub const VGA_HEIGHT: usize = 25;
-pub const VGA_HISTORY: usize = 50; // TODO: assert!(VGA_HISTORY >= VGA_HEIGHT)
+pub const VGA_HISTORY: usize = 500; // TODO: assert!(VGA_HISTORY >= VGA_HEIGHT)
 pub const VGA_HIDDEN_LINES: usize = VGA_HISTORY - VGA_HEIGHT;
 pub const VGA_SCREENS: usize = 4;
 

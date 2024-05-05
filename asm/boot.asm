@@ -1,4 +1,4 @@
-global start
+global stack_bottom, stack_top, start
 extern check_cpuid, check_multiboot, kernel_main
 
 section .text
@@ -21,7 +21,7 @@ start:
 section .bss
 align 4096
 stack_bottom:
-    resb 4096 * 128
+    resb 4096 * 1024
 stack_top:
 
 section .rodata

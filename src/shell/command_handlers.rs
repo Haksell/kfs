@@ -6,6 +6,13 @@ use crate::{
 };
 use core::arch::asm;
 
+const HEXDUMP_LINE_SIZE: usize = 16;
+
+extern "C" {
+    static stack_top: usize;
+    static stack_bottom: usize;
+}
+
 #[allow(dead_code)] // TODO: remove because it doesn't make sense to never use success or failed
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
@@ -69,7 +76,50 @@ pub const COMMAND_HANDLERS: [CommandHandler; 7] = [
     CommandHandler {
         name: b"pks",
         description: b"Print the kernel stack.",
-        handler: |_: &Shell| println!("<<< TODO >>>"),
+        handler: |_: &Shell| {
+            let top: usize;
+            let bottom: usize;
+            unsafe {
+                top = &stack_top as *const usize as usize;
+                bottom = &stack_bottom as *const usize as usize;
+            }
+
+            let mut _saxophones: [u8; 2000] = [0xfb; 2000];
+
+            let mut last_line: [u8; HEXDUMP_LINE_SIZE] = [0; HEXDUMP_LINE_SIZE];
+            let mut line: [u8; HEXDUMP_LINE_SIZE] = [0; HEXDUMP_LINE_SIZE];
+            let mut last_was_same: bool = false;
+
+            for (i, current) in (bottom..top).step_by(HEXDUMP_LINE_SIZE).enumerate() {
+                for j in 0..HEXDUMP_LINE_SIZE {
+                    line[j] = unsafe { *((current + j) as *const u8) };
+                }
+                if i == 0 || line != last_line {
+                    print!("{:08x}  ", current);
+                    for (i, byte) in line.iter().enumerate() {
+                        print!("{:02x} ", byte);
+                        if i & 7 == 7 {
+                            print!(" ");
+                        }
+                    }
+                    print!("|");
+                    for byte in line {
+                        WRITER
+                            .lock()
+                            .write_byte(if byte == 0x0a { 0x20 } else { byte });
+                    }
+                    println!("|");
+                    last_line = line;
+                    last_was_same = false;
+                } else if !last_was_same {
+                    println!("*");
+                    last_was_same = true;
+                }
+            }
+
+            println!("Stack range: {:#X} to {:#X}", bottom, top);
+            println!("Saxophones address: {:p}", &_saxophones);
+        },
     },
     CommandHandler {
         name: b"reboot",

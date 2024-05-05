@@ -49,6 +49,10 @@
 
 -   [ ] `pks` command
 
+### kfs4
+
+-   [ ] mouse (scroll)
+
 ### later
 
 -   [ ] find project name and rebrand
