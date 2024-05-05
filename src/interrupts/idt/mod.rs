@@ -12,7 +12,7 @@ const NB_INTERRUPTS: usize = IDT_SIZE - NB_BUILTINS;
 #[repr(C, packed(2))]
 struct DescriptorTablePointer {
     limit: u16,
-    base: usize,
+    base: u32,
 }
 
 #[repr(C)]
@@ -38,7 +38,7 @@ impl InterruptDescriptorTable {
 
     fn pointer(&self) -> DescriptorTablePointer {
         DescriptorTablePointer {
-            base: self as *const _ as usize,
+            base: self as *const _ as u32,
             limit: (core::mem::size_of::<Self>() - 1) as u16,
         }
     }

@@ -5,12 +5,22 @@ use crate::{
     vga_buffer::{VGA_WIDTH, WRITER},
 };
 use core::arch::asm;
+use lazy_static::lazy_static;
 
 const HEXDUMP_LINE_SIZE: usize = 16;
 
 extern "C" {
+    static gdt_start: usize;
+    static gdt_pointer: usize;
     static stack_top: usize;
     static stack_bottom: usize;
+}
+
+lazy_static! {
+    static ref GDT_START: usize = unsafe { &gdt_start as *const usize as usize };
+    static ref GDT_POINTER: usize = unsafe { &gdt_pointer as *const usize as usize };
+    static ref STACK_TOP: usize = unsafe { &stack_top as *const usize as usize };
+    static ref STACK_BOTTOM: usize = unsafe { &stack_bottom as *const usize as usize };
 }
 
 #[allow(dead_code)] // TODO: remove because it doesn't make sense to never use success or failed
@@ -32,7 +42,7 @@ fn hexdump(start: usize, end: usize) {
     let mut last_was_same: bool = false;
     for (i, current) in (start..end).step_by(HEXDUMP_LINE_SIZE).enumerate() {
         for j in 0..HEXDUMP_LINE_SIZE {
-            line[j] = unsafe { *((current + j) as *const u8) };
+            line[j] = unsafe { *((current + j) as *const u8) }; // TODO: one-liner
         }
         if i == 0 || line != last_line {
             print!("{:08x}  ", current);
@@ -107,17 +117,25 @@ pub const COMMAND_HANDLERS: &[CommandHandler] = &[
         },
     },
     CommandHandler {
+        name: b"pgdt",
+        description: b"Print the GDT.",
+        handler: |_: &Shell| {
+            for address in (*GDT_START..*GDT_POINTER).step_by(8) {
+                print!("{:#x}:", address);
+                for i in 0..8 {
+                    let value = unsafe { *((address + i) as *const u8) };
+                    print!(" {value:08b}");
+                }
+                println!();
+            }
+        },
+    },
+    CommandHandler {
         name: b"pks",
         description: b"Print the kernel stack.",
         handler: |_: &Shell| {
-            let top: usize;
-            let bottom: usize;
-            unsafe {
-                top = &stack_top as *const usize as usize;
-                bottom = &stack_bottom as *const usize as usize;
-            }
             let mut _saxophones: [u8; 2000] = [0xfb; 2000];
-            hexdump(bottom, top);
+            hexdump(*STACK_BOTTOM, *STACK_TOP);
             println!("Saxophones address: {:p}", &_saxophones);
         },
     },
