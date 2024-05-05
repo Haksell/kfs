@@ -35,6 +35,7 @@ lazy_static! {
 pub fn init() {
     IDT.load();
     unsafe { PICS.lock().init() };
+    enable();
 }
 
 const INTERRUPT_FLAG: usize = 1 << 9;
@@ -55,7 +56,7 @@ fn are_enabled() -> bool {
 }
 
 #[inline]
-pub fn enable() {
+fn enable() {
     unsafe {
         asm!("sti", options(preserves_flags, nostack));
     }
