@@ -9,7 +9,6 @@ start:
     call check_multiboot
     call kernel_main
 
-
 check_multiboot:
     cmp eax, 0x36d76289
     jne .no_multiboot
