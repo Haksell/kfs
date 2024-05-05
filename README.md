@@ -52,6 +52,8 @@
 -   [ ] debug screen (F12)
 -   [ ] optimize `x86_64` target
 -   [ ] finish 1st edition
+-   [ ] remove stack segments
+-   [ ] separate user and kernel stacks
 
 ## check before each push
 
