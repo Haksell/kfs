@@ -26,6 +26,39 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     unsafe { Port::new(0xf4).write(exit_code as u32) }
 }
 
+fn hexdump(start: usize, end: usize) {
+    let mut last_line: [u8; HEXDUMP_LINE_SIZE] = [0; HEXDUMP_LINE_SIZE];
+    let mut line: [u8; HEXDUMP_LINE_SIZE] = [0; HEXDUMP_LINE_SIZE];
+    let mut last_was_same: bool = false;
+    for (i, current) in (start..end).step_by(HEXDUMP_LINE_SIZE).enumerate() {
+        for j in 0..HEXDUMP_LINE_SIZE {
+            line[j] = unsafe { *((current + j) as *const u8) };
+        }
+        if i == 0 || line != last_line {
+            print!("{:08x}  ", current);
+            for (i, byte) in line.iter().enumerate() {
+                print!("{:02x} ", byte);
+                if i & 7 == 7 {
+                    print!(" ");
+                }
+            }
+            print!("|");
+            for byte in line {
+                WRITER
+                    .lock()
+                    .write_byte(if byte == 0x0a { 0x20 } else { byte });
+            }
+            println!("|");
+            last_line = line;
+            last_was_same = false;
+        } else if !last_was_same {
+            println!("*");
+            last_was_same = true;
+        }
+    }
+    println!("Hexdump from {:#X} to {:#X}", start, end);
+}
+
 #[derive(Clone, Copy)]
 pub struct CommandHandler {
     pub name: &'static [u8],
@@ -33,7 +66,7 @@ pub struct CommandHandler {
     pub handler: fn(&Shell), // Does it really make sense to take a shell as argument?
 }
 
-pub const COMMAND_HANDLERS: [CommandHandler; 7] = [
+pub const COMMAND_HANDLERS: &[CommandHandler] = &[
     CommandHandler {
         name: b"clear",
         description: b"Clear the screen.",
@@ -83,41 +116,8 @@ pub const COMMAND_HANDLERS: [CommandHandler; 7] = [
                 top = &stack_top as *const usize as usize;
                 bottom = &stack_bottom as *const usize as usize;
             }
-
             let mut _saxophones: [u8; 2000] = [0xfb; 2000];
-
-            let mut last_line: [u8; HEXDUMP_LINE_SIZE] = [0; HEXDUMP_LINE_SIZE];
-            let mut line: [u8; HEXDUMP_LINE_SIZE] = [0; HEXDUMP_LINE_SIZE];
-            let mut last_was_same: bool = false;
-
-            for (i, current) in (bottom..top).step_by(HEXDUMP_LINE_SIZE).enumerate() {
-                for j in 0..HEXDUMP_LINE_SIZE {
-                    line[j] = unsafe { *((current + j) as *const u8) };
-                }
-                if i == 0 || line != last_line {
-                    print!("{:08x}  ", current);
-                    for (i, byte) in line.iter().enumerate() {
-                        print!("{:02x} ", byte);
-                        if i & 7 == 7 {
-                            print!(" ");
-                        }
-                    }
-                    print!("|");
-                    for byte in line {
-                        WRITER
-                            .lock()
-                            .write_byte(if byte == 0x0a { 0x20 } else { byte });
-                    }
-                    println!("|");
-                    last_line = line;
-                    last_was_same = false;
-                } else if !last_was_same {
-                    println!("*");
-                    last_was_same = true;
-                }
-            }
-
-            println!("Stack range: {:#X} to {:#X}", bottom, top);
+            hexdump(bottom, top);
             println!("Saxophones address: {:p}", &_saxophones);
         },
     },

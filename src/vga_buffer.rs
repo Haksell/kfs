@@ -76,9 +76,10 @@ fn hide_cursor() {
     update_cursor(VGA_HEIGHT + 1, 0);
 }
 
+const VGA_ADDRESS: usize = 0xb8000;
 pub const VGA_WIDTH: usize = 80;
 pub const VGA_HEIGHT: usize = 25;
-pub const VGA_HISTORY: usize = 500; // TODO: assert!(VGA_HISTORY >= VGA_HEIGHT)
+pub const VGA_HISTORY: usize = 200; // TODO: assert!(VGA_HISTORY >= VGA_HEIGHT)
 pub const VGA_HIDDEN_LINES: usize = VGA_HISTORY - VGA_HEIGHT;
 pub const VGA_SCREENS: usize = 4;
 
@@ -261,7 +262,7 @@ lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
         color_code: ColorCode::new(Color::White, Color::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+        buffer: unsafe { &mut *(VGA_ADDRESS as *mut Buffer) },
         screen_idx: 0,
         screens: core::array::from_fn(|_| Screen {
             bytes: [[ScreenChar::black_space(); VGA_WIDTH]; VGA_HISTORY],
