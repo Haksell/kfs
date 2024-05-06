@@ -1,15 +1,11 @@
 ENTRY(start)
 
 SECTIONS {
-    . = 0x00000800;
-
-    .rodata : {
+    .rodata 0x00000800 : {
         *(.rodata)
     }
 
-    . = 1m;
-
-    .boot : {
+    .boot 1M : {
         KEEP(*(.multiboot_header))
     }
 
