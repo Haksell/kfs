@@ -45,14 +45,14 @@ fn hexdump(start: usize, end: usize) {
             line[j] = unsafe { *((current + j) as *const u8) }; // TODO: one-liner
         }
         if i == 0 || line != last_line {
-            print!("{:08x}  ", current);
+            print!("{:08x}   ", current);
             for (i, byte) in line.iter().enumerate() {
                 print!("{:02x} ", byte);
                 if i & 7 == 7 {
                     print!(" ");
                 }
             }
-            print!("|");
+            print!(" |");
             for byte in line {
                 WRITER
                     .lock()
@@ -66,7 +66,6 @@ fn hexdump(start: usize, end: usize) {
             last_was_same = true;
         }
     }
-    println!("Hexdump from {:#X} to {:#X}", start, end);
 }
 
 #[derive(Clone, Copy)]
@@ -121,7 +120,7 @@ pub const COMMAND_HANDLERS: &[CommandHandler] = &[
         description: b"Print the GDT.",
         handler: |_: &Shell| {
             for address in (*GDT_START..*GDT_POINTER).step_by(8) {
-                print!("{:#x}:", address);
+                print!("{:#07x}:", address);
                 for i in 0..8 {
                     let value = unsafe { *((address + i) as *const u8) };
                     print!(" {value:08b}");
@@ -133,11 +132,7 @@ pub const COMMAND_HANDLERS: &[CommandHandler] = &[
     CommandHandler {
         name: b"pks",
         description: b"Print the kernel stack.",
-        handler: |_: &Shell| {
-            let mut _saxophones: [u8; 2000] = [0xfb; 2000];
-            hexdump(*STACK_BOTTOM, *STACK_TOP);
-            println!("Saxophones address: {:p}", &_saxophones);
-        },
+        handler: |_: &Shell| hexdump(*STACK_BOTTOM, *STACK_TOP),
     },
     CommandHandler {
         name: b"reboot",
