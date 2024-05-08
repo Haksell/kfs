@@ -42,7 +42,6 @@
 -   [ ] specify exact nightly version
 -   [ ] bring back testing and more useful stuff from https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2
 -   [ ] colorful tests (with color module based on `colored`)
--   [ ] install `grub-mkrescue` and all its dependencies locally
 -   [ ] full exploration of possible deadlocks
 -   [ ] `print_screen` creates a file using serial port
 -   [ ] `insert`
