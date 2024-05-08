@@ -41,18 +41,12 @@ rerun: clean run
 clean:
 	rm -rf build || true
 	cargo clean || true
-	vagrant destroy -f || true
-	rm -rf .vagrant || true
-	rm -rf *VBox*.log || true
 
-vm:
-	@vagrant up
-
-$(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json vm
+$(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json
 	@mkdir -p $(ISOFILES)/boot/grub
 	@cp $(KERNEL) $(ISOFILES)/boot
 	@cp $(GRUB_CFG) $(ISOFILES)/boot/grub
-	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(GRUB_FLAGS) $(ISOFILES)"
+	@grub-mkrescue -o $(ISO) $(GRUB_FLAGS) $(ISOFILES)
 	@rm -rf $(ISOFILES)
 
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
@@ -70,4 +64,25 @@ $(ASM_OBJS): $(BUILD)/asm/%.o: asm/%.asm
 loc:
 	@find src -name '*.rs' | sort | xargs wc -l
 
-.PHONY: all re run rerun clean $(RUST_OS) vm loc
+define compile_from_source
+    @rm -rf source_dir source.tar.gz
+	@wget -O source.tar.gz $(1)
+    @mkdir source_dir && tar xvf source.tar.gz -C source_dir --strip-components=1
+    @cd source_dir && ./configure --prefix=$$HOME/.local && make -j && make install
+    @rm -rf source_dir source.tar.gz
+endef
+
+install_requirements: uninstall_requirements
+	$(call compile_from_source,ftp://ftp.gnu.org/gnu/grub/grub-2.06.tar.xz)
+	$(call compile_from_source,https://www.gnu.org/software/xorriso/xorriso-1.5.4.tar.gz)
+
+uninstall_requirements:
+	@rm -rf source_dir source.tar.gz
+	@rm -rf $$HOME/.local/bin/grub-*
+	@rm -rf $$HOME/.local/bin/xorriso*
+	@rm -rf $$HOME/.local/bin/osirrox
+	@rm -rf $$HOME/.local/bin/xorrecord
+	@rm -rf $$HOME/.local/etc/grub.d
+	@rm -rf $$HOME/.local/share/grub
+
+.PHONY: all re run rerun clean $(RUST_OS) loc install_requirements uninstall_requirements

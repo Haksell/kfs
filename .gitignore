@@ -1,5 +1,4 @@
 build
 target
-.vagrant
-output.log
-*VBox*.log
+source_dir
+source.tar.gz
