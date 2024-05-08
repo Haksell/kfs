@@ -50,7 +50,6 @@ $(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json
 	@rm -rf $(ISOFILES)
 
 # xorriso 1.5.4 : RockRidge filesystem manipulator, libburnia project.
-
 # Drive current: -outdev 'stdio:build/release/kfs.iso'
 # Media current: stdio file, overwriteable
 # Media status : is blank
@@ -61,6 +60,20 @@ $(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json
 # xorriso : UPDATE :     298 files added in 1 seconds
 # ISO image produced: 2864 sectors
 # Written to medium : 2864 sectors at LBA 0
+# Writing to 'stdio:build/release/kfs.iso' completed successfully.
+
+# xorriso 1.5.2 : RockRidge filesystem manipulator, libburnia project.
+# Drive current: -outdev 'stdio:build/release/kfs.iso'
+# Media current: stdio file, overwriteable
+# Media status : is blank
+# Media summary: 0 sessions, 0 data blocks, 0 data, 4096g free
+# Added to ISO image: directory '/'='/tmp/grub.yH8ewI'
+# xorriso : UPDATE :     335 files added in 1 seconds
+# Added to ISO image: directory '/'='/vagrant/build/release/isofiles'
+# xorriso : UPDATE :     339 files added in 1 seconds
+# xorriso : NOTE : Copying to System Area: 512 bytes from file '/usr/lib/grub/i386-pc/boot_hybrid.img'
+# ISO image produced: 1832 sectors
+# Written to medium : 1832 sectors at LBA 0
 # Writing to 'stdio:build/release/kfs.iso' completed successfully.
 
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
