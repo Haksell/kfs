@@ -9,10 +9,14 @@ start:
     call check_multiboot
     call check_cpuid
     lgdt [gdt_pointer]
-    mov eax, cr0
-    or eax, 1 ; protected mode (TODO: enable paging)
-    mov cr0, eax
+    call set_protected_mode
     jmp kernel_code:flush_cpu
+
+set_protected_mode:
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
+    ret
 
 flush_cpu:
     mov ax, kernel_data
