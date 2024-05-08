@@ -41,19 +41,27 @@ rerun: clean run
 clean:
 	rm -rf build || true
 	cargo clean || true
-	vagrant destroy -f || true
-	rm -rf .vagrant || true
-	rm -rf *VBox*.log || true
 
-vm:
-	@vagrant up
-
-$(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json vm
+$(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json
 	@mkdir -p $(ISOFILES)/boot/grub
 	@cp $(KERNEL) $(ISOFILES)/boot
 	@cp $(GRUB_CFG) $(ISOFILES)/boot/grub
-	@vagrant ssh -c "cd /vagrant && grub-mkrescue -o $(ISO) $(GRUB_FLAGS) $(ISOFILES)"
+	@grub-mkrescue -o $(ISO) $(GRUB_FLAGS) $(ISOFILES)
 	@rm -rf $(ISOFILES)
+
+# xorriso 1.5.4 : RockRidge filesystem manipulator, libburnia project.
+
+# Drive current: -outdev 'stdio:build/release/kfs.iso'
+# Media current: stdio file, overwriteable
+# Media status : is blank
+# Media summary: 0 sessions, 0 data blocks, 0 data, 4096g free
+# Added to ISO image: directory '/'='/tmp/grub.UMv145'
+# xorriso : UPDATE :     294 files added in 1 seconds
+# Added to ISO image: directory '/'='/mnt/nfs/homes/axbrisse/Desktop/cursus/kfs/build/release/isofiles'
+# xorriso : UPDATE :     298 files added in 1 seconds
+# ISO image produced: 2864 sectors
+# Written to medium : 2864 sectors at LBA 0
+# Writing to 'stdio:build/release/kfs.iso' completed successfully.
 
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 	@mkdir -p $(dir $@)
@@ -70,4 +78,4 @@ $(ASM_OBJS): $(BUILD)/asm/%.o: asm/%.asm
 loc:
 	@find src -name '*.rs' | sort | xargs wc -l
 
-.PHONY: all re run rerun clean $(RUST_OS) vm loc
+.PHONY: all re run rerun clean $(RUST_OS) loc
