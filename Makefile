@@ -73,6 +73,8 @@ define compile_from_source
 endef
 
 install_requirements: uninstall_requirements
+	$(call compile_from_source,https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.xz)
+	$(call compile_from_source,https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz)
 	$(call compile_from_source,https://ftp.gnu.org/gnu/bison/bison-3.8.2.tar.xz)
 	$(call compile_from_source,ftp://ftp.gnu.org/gnu/grub/grub-2.06.tar.xz)
 	$(call compile_from_source,https://www.gnu.org/software/xorriso/xorriso-1.5.4.tar.gz)
