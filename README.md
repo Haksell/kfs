@@ -29,17 +29,14 @@
 
 ## todo
 
-### kfs
+### current
 
 -   [ ] bring back `enable_paging` from old x86_64 code
 -   [ ] bring back `setup_page_tables` from old x86_64 code and adapt it to 32-bit
 
-### kfs4
-
--   [ ] mouse (scroll)
-
 ### later
 
+-   [ ] mouse (scroll)
 -   [ ] find project name and rebrand
 -   [ ] optimize vga history with a ring buffer
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
