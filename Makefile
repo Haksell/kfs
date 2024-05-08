@@ -91,4 +91,19 @@ $(ASM_OBJS): $(BUILD)/asm/%.o: asm/%.asm
 loc:
 	@find src -name '*.rs' | sort | xargs wc -l
 
-.PHONY: all re run rerun clean $(RUST_OS) loc
+define compile_from_source
+    @wget -O source.tar.gz $(1)
+    @mkdir source_dir && tar xvf source.tar.gz -C source_dir --strip-components=1
+    @cd source_dir && ./configure --prefix=$$HOME/.local && make -j && make install
+    @rm -rf source_dir source.tar.gz
+endef
+
+install_requirements:
+	$(call compile_from_source,ftp://ftp.gnu.org/gnu/grub/grub-2.06.tar.xz)
+	$(call compile_from_source,https://www.gnu.org/software/xorriso/xorriso-1.5.4.tar.gz)
+
+uninstall_requirements:
+	@rm -rf source_dir source.tar.gz
+	# TODO: @rm -rf $$HOME/.local/???
+
+.PHONY: all re run rerun clean $(RUST_OS) loc install_requirements uninstall_requirements
