@@ -9,13 +9,19 @@ start:
     call check_multiboot
     call check_cpuid
     lgdt [gdt_pointer]
+    mov eax, cr0
+    or eax, 1 ; protected mode (TODO: enable paging)
+    mov cr0, eax
+    jmp kernel_code:flush_cpu
+
+flush_cpu:
     mov ax, kernel_data
     mov ss, ax
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
-    jmp kernel_code:kernel_main
+    jmp kernel_main
 
 section .bss
 align 4096
