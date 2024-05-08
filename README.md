@@ -37,10 +37,9 @@
 
 -   [ ] find project name and rebrand
 -   [ ] optimize vga history with a ring buffer
--   [ ] `qemu` in terminal like lsimanic (`-display curses` with a black screen)
 -   [ ] nice help menu with `Code page 437` border characters (kfs-2)
 -   [ ] specify exact nightly version
--   [ ] bring back testing and more useful stuff from https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2
+-   [ ] bring back testing and more useful stuff from [v2](https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2)
 -   [ ] colorful tests (with color module based on `colored`)
 -   [ ] full exploration of possible deadlocks
 -   [ ] `print_screen` creates a file using serial port
