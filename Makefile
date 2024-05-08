@@ -49,33 +49,6 @@ $(ISO): $(KERNEL) $(GRUB_CFG) $(TARGET).json
 	@grub-mkrescue -o $(ISO) $(GRUB_FLAGS) $(ISOFILES)
 	@rm -rf $(ISOFILES)
 
-# xorriso 1.5.4 : RockRidge filesystem manipulator, libburnia project.
-# Drive current: -outdev 'stdio:build/release/kfs.iso'
-# Media current: stdio file, overwriteable
-# Media status : is blank
-# Media summary: 0 sessions, 0 data blocks, 0 data, 4096g free
-# Added to ISO image: directory '/'='/tmp/grub.UMv145'
-# xorriso : UPDATE :     294 files added in 1 seconds
-# Added to ISO image: directory '/'='/mnt/nfs/homes/axbrisse/Desktop/cursus/kfs/build/release/isofiles'
-# xorriso : UPDATE :     298 files added in 1 seconds
-# ISO image produced: 2864 sectors
-# Written to medium : 2864 sectors at LBA 0
-# Writing to 'stdio:build/release/kfs.iso' completed successfully.
-
-# xorriso 1.5.2 : RockRidge filesystem manipulator, libburnia project.
-# Drive current: -outdev 'stdio:build/release/kfs.iso'
-# Media current: stdio file, overwriteable
-# Media status : is blank
-# Media summary: 0 sessions, 0 data blocks, 0 data, 4096g free
-# Added to ISO image: directory '/'='/tmp/grub.yH8ewI'
-# xorriso : UPDATE :     335 files added in 1 seconds
-# Added to ISO image: directory '/'='/vagrant/build/release/isofiles'
-# xorriso : UPDATE :     339 files added in 1 seconds
-# xorriso : NOTE : Copying to System Area: 512 bytes from file '/usr/lib/grub/i386-pc/boot_hybrid.img'
-# ISO image produced: 1832 sectors
-# Written to medium : 1832 sectors at LBA 0
-# Writing to 'stdio:build/release/kfs.iso' completed successfully.
-
 $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 	@mkdir -p $(dir $@)
 	@ld -m elf_i386 -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(RUST_OS)
@@ -92,18 +65,24 @@ loc:
 	@find src -name '*.rs' | sort | xargs wc -l
 
 define compile_from_source
-    @wget -O source.tar.gz $(1)
+    @rm -rf source_dir source.tar.gz
+	@wget -O source.tar.gz $(1)
     @mkdir source_dir && tar xvf source.tar.gz -C source_dir --strip-components=1
     @cd source_dir && ./configure --prefix=$$HOME/.local && make -j && make install
     @rm -rf source_dir source.tar.gz
 endef
 
-install_requirements:
+install_requirements: uninstall_requirements
 	$(call compile_from_source,ftp://ftp.gnu.org/gnu/grub/grub-2.06.tar.xz)
 	$(call compile_from_source,https://www.gnu.org/software/xorriso/xorriso-1.5.4.tar.gz)
 
 uninstall_requirements:
 	@rm -rf source_dir source.tar.gz
-	# TODO: @rm -rf $$HOME/.local/???
+	@rm -rf $$HOME/.local/bin/grub-*
+	@rm -rf $$HOME/.local/bin/xorriso*
+	@rm -rf $$HOME/.local/bin/osirrox
+	@rm -rf $$HOME/.local/bin/xorrecord
+	@rm -rf $$HOME/.local/etc/grub.d
+	@rm -rf $$HOME/.local/share/grub
 
 .PHONY: all re run rerun clean $(RUST_OS) loc install_requirements uninstall_requirements
