@@ -1,4 +1,8 @@
-use core::{arch::asm, marker::PhantomData};
+use core::marker::PhantomData;
+
+extern "C" {
+    static kernel_code: usize;
+}
 
 #[derive(Clone, Copy)]
 #[repr(C)]
@@ -26,7 +30,7 @@ impl<F> Entry<F> {
     pub unsafe fn set_handler_addr(&mut self, addr: usize) -> &mut EntryOptions {
         self.pointer_low = addr as u16;
         self.pointer_middle = (addr >> 16) as u16;
-        self.gdt_selector = CS::get_reg();
+        self.gdt_selector = unsafe { &kernel_code as *const usize as usize as u16 };
         self.options.set_present();
         &mut self.options
     }
@@ -64,18 +68,5 @@ impl EntryOptions {
     #[inline]
     pub fn set_present(&mut self) {
         self.0 |= 1 << 15;
-    }
-}
-
-struct CS;
-
-impl CS {
-    #[inline]
-    fn get_reg() -> u16 {
-        let segment: u16;
-        unsafe {
-            asm!(concat!("mov {0:x}, cs"), out(reg) segment, options(nomem, nostack, preserves_flags));
-        }
-        segment
     }
 }

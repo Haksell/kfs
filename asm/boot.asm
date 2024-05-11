@@ -1,4 +1,4 @@
-global gdt_start, gdt_pointer, stack_bottom, stack_top, start
+global kernel_code, gdt_start, gdt_pointer, stack_bottom, stack_top, start
 extern check_cpuid, check_multiboot, kernel_main
 
 section .text
