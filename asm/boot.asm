@@ -1,5 +1,5 @@
 global gdt_start, gdt_pointer, stack_bottom, stack_top, start
-extern check_cpuid, check_multiboot, kernel_main
+extern check_cpuid, check_multiboot, kernel_main, error
 
 section .text
 bits 32
@@ -10,6 +10,7 @@ start:
     call check_cpuid
     lgdt [gdt_pointer]
     call set_protected_mode
+
     jmp kernel_code:flush_cpu
 
 set_protected_mode:
@@ -25,6 +26,11 @@ flush_cpu:
     mov es, ax
     mov fs, ax
     mov gs, ax
+
+    push ebx
+    ; we have to push something on top, but why?
+    push 0x69420
+
     jmp kernel_main
 
 section .bss
