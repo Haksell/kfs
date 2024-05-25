@@ -95,7 +95,6 @@ pub extern "C" fn kernel_main(multiboot_header_address: usize) {
             Some(frame) => println!("{:?}", frame),
         }
     }
-
     interrupts::init();
     hlt_loop()
 }
