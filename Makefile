@@ -1,6 +1,7 @@
 DEBUG ?= false
 ifeq ($(DEBUG), true)
 BUILD_MODE := debug
+QEMU_FLAGS := -s -S
 else ifeq ($(DEBUG),false)
 BUILD_MODE := release
 CARGO_FLAGS := --release
@@ -29,12 +30,15 @@ all: $(ISO)
 re: clean all
 
 run: all
-	@qemu-system-i386 -cdrom $(ISO) -device isa-debug-exit,iobase=0xf4,iosize=0x04; \
+	@qemu-system-i386 -cdrom $(ISO) $(QEMU_FLAGS) -device isa-debug-exit,iobase=0xf4,iosize=0x04; \
     ret=$$?; \
     if [ $$ret -ne 0 ] && [ $$ret -ne 33 ]; then \
         echo "Failed with status $$ret."; \
         exit $$ret; \
     fi
+
+gdb:
+	@rust-gdb "build/debug/kfs.bin" -ex "target remote :1234"
 
 rerun: clean run
 
