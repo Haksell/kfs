@@ -1,4 +1,5 @@
 mod entry;
+mod table;
 
 use super::PAGE_SIZE;
 

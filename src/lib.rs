@@ -8,6 +8,8 @@ mod port;
 mod shell;
 mod vga_buffer;
 
+#[macro_use]
+extern crate bitflags;
 extern crate multiboot2;
 
 use crate::memory::frame::FrameAllocator;
