@@ -74,6 +74,7 @@
 -   https://samypesse.gitbook.io/how-to-create-an-operating-system
 -   https://www.gnu.org/software/grub/manual/multiboot2/multiboot.pdf
 -   https://nfil.dev/categories/#kernel
+-   https://conradludgate.com/posts/async
 -   `#os-dev`: https://discord.com/channels/273534239310479360/375706574133526529
 
 ## artistic direction
