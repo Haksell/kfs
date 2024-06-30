@@ -2,7 +2,7 @@ ENTRY(start)
 
 SECTIONS {
     .rodata 0x00000800 : {
-        *(.rodata)
+        *(.rodata .rodata.*)
     }
 
     .boot 1M : {
@@ -10,6 +10,10 @@ SECTIONS {
     }
 
     .text : {
-        *(.text)
+        *(.text .text.*)
+    }
+
+    .data.rel.ro : {
+        *(.data.rel.ro.local*) *(.data.rel.ro .data.rel.ro.*)
     }
 }
