@@ -1,5 +1,8 @@
-build
-target
+build/
+target/
 source_dir
 source.tar.gz
-/rust_analyzer
+rust_analyzer/
+.vagrant/
+output.log
+*VBox*.log
