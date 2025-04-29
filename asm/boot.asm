@@ -9,9 +9,8 @@ start:
     call check_multiboot
     call check_cpuid
     lgdt [gdt_pointer]
-    mov ax, kernel_stack
-    mov ss, ax
     mov ax, kernel_data
+    mov ss, ax
     mov ds, ax
     mov es, ax
     mov fs, ax
@@ -38,17 +37,9 @@ section .rodata
 gdt_start:
     dq 0
 kernel_code: equ $ - gdt_start
-    DEFINE_GDT_SEGMENT 0b10011011
+    DEFINE_GDT_SEGMENT 0b10011011 ; present ring0 code/data     executable expand_down writable readable
 kernel_data: equ $ - gdt_start
-    DEFINE_GDT_SEGMENT 0b10010011
-kernel_stack: equ $ - gdt_start
-    DEFINE_GDT_SEGMENT 0b10010111
-user_code: equ $ - gdt_start
-    DEFINE_GDT_SEGMENT 0b11111011
-user_data: equ $ - gdt_start
-    DEFINE_GDT_SEGMENT 0b11110011
-user_stack: equ $ - gdt_start
-    DEFINE_GDT_SEGMENT 0b11110111
+    DEFINE_GDT_SEGMENT 0b10010011 ; present ring0 code/data not_executable expand_down writable readable
 gdt_pointer:
     dw $ - gdt_start - 1
     dd gdt_start
