@@ -9,6 +9,7 @@ start:
     call check_multiboot
     call check_cpuid
     lgdt [gdt_pointer]
+    ; all segments point to the same address space because we don't use segmentation
     mov ax, kernel_data
     mov ss, ax
     mov ds, ax
