@@ -1,5 +1,5 @@
 #![no_std]
-#![feature(abi_x86_interrupt, exclusive_range_pattern)]
+#![feature(abi_x86_interrupt)]
 
 mod interrupts;
 mod keyboard;

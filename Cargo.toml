@@ -8,10 +8,7 @@ crate-type = ["staticlib"]
 
 [dependencies]
 bitflags = "2.5.0"
-multiboot2 = { version = "0.20.0", default-features = false }
+lazy_static = { version = "1.0", features = ["spin_no_std"] }
+multiboot2 = { version = "0.22.2", default-features = false }
 spin = "0.5.2"
 volatile = "0.2.6"
-
-[dependencies.lazy_static]
-version = "1.0"
-features = ["spin_no_std"]

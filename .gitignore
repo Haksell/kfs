@@ -1,5 +1,7 @@
-build
-target
+build/
+target/
+rust_analyzer/
+.vagrant/
 source_dir
 source.tar.gz
-/rust_analyzer
+*.log
