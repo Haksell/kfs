@@ -1,6 +1,6 @@
 use core::marker::PhantomData;
 
-extern "C" {
+unsafe extern "C" {
     static kernel_code: usize;
 }
 

@@ -18,7 +18,7 @@ use core::panic::PanicInfo;
 
 use multiboot2::{BootInformationHeader, ElfSectionFlags};
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn kernel_main(multiboot_header_address: usize) {
     let boot_info = unsafe {
         multiboot2::BootInformation::load(multiboot_header_address as *const BootInformationHeader)

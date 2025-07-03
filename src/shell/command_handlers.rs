@@ -9,7 +9,7 @@ use lazy_static::lazy_static;
 
 const HEXDUMP_LINE_SIZE: usize = 16;
 
-extern "C" {
+unsafe extern "C" {
     static gdt_start: usize;
     static gdt_pointer: usize;
     static stack_top: usize;
