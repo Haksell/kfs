@@ -1,8 +1,7 @@
 pub mod layouts;
 pub mod scancodes;
 
-use layouts::KeyboardLayout;
-use scancodes::ScancodeSet;
+use {layouts::KeyboardLayout, scancodes::ScancodeSet};
 
 #[derive(Debug)]
 pub struct Keyboard<L, S>
