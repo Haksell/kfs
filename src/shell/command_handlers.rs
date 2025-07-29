@@ -1,11 +1,13 @@
-use super::Shell;
-use crate::{
-    port::Port,
-    print, println,
-    vga_buffer::{VGA_WIDTH, WRITER},
+use {
+    super::Shell,
+    crate::{
+        port::Port,
+        print, println,
+        vga_buffer::{VGA_WIDTH, WRITER},
+    },
+    core::arch::asm,
+    lazy_static::lazy_static,
 };
-use core::arch::asm;
-use lazy_static::lazy_static;
 
 const HEXDUMP_LINE_SIZE: usize = 16;
 

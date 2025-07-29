@@ -1,7 +1,7 @@
 use super::{
+    PAGE_SIZE,
     multiboot::memory_map::{MemoryArea, MemoryAreaIter},
     paging::PhysicalAddress,
-    PAGE_SIZE,
 };
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]

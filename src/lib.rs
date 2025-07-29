@@ -12,9 +12,10 @@ mod vga_buffer;
 extern crate bitflags;
 extern crate multiboot2;
 
-use crate::memory::frame::FrameAllocator;
-use core::arch::asm;
-use core::panic::PanicInfo;
+use {
+    crate::memory::frame::FrameAllocator,
+    core::{arch::asm, panic::PanicInfo},
+};
 
 use multiboot2::{BootInformationHeader, ElfSectionFlags};
 

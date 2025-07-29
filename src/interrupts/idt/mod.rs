@@ -1,8 +1,12 @@
 mod entry;
 
-use self::entry::{Entry, HandlerFunc};
-use core::arch::asm;
-use core::ops::{Index, IndexMut};
+use {
+    self::entry::{Entry, HandlerFunc},
+    core::{
+        arch::asm,
+        ops::{Index, IndexMut},
+    },
+};
 
 const IDT_SIZE: usize = 256;
 const NB_BUILTINS: usize = 32;

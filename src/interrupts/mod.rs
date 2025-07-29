@@ -1,14 +1,17 @@
 mod idt;
 mod pic;
 
-use self::idt::InterruptDescriptorTable;
-use self::pic::ChainedPics;
-use crate::keyboard::{layouts, scancodes, Keyboard};
-use crate::port::Port;
-use crate::shell::SHELL;
-use core::arch::asm;
-use lazy_static::lazy_static;
-use spin::Mutex;
+use {
+    self::{idt::InterruptDescriptorTable, pic::ChainedPics},
+    crate::{
+        keyboard::{Keyboard, layouts, scancodes},
+        port::Port,
+        shell::SHELL,
+    },
+    core::arch::asm,
+    lazy_static::lazy_static,
+    spin::Mutex,
+};
 
 const PIC_1_OFFSET: u8 = 32;
 const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;

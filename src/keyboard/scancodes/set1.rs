@@ -1,5 +1,7 @@
-use super::super::{Error, KeyCode, KeyEvent, KeyState};
-use super::ScancodeSet;
+use super::{
+    super::{Error, KeyCode, KeyEvent, KeyState},
+    ScancodeSet,
+};
 
 const EXTENDED_KEY_CODE: u8 = 0xE0;
 const EXTENDED2_KEY_CODE: u8 = 0xE1;

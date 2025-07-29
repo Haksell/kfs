@@ -1,11 +1,15 @@
 mod command_handlers;
 
-use crate::keyboard::{DecodedKey, KeyCode};
-use crate::println;
-use crate::vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER};
-use command_handlers::{exit_qemu, QemuExitCode, COMMAND_HANDLERS};
-use lazy_static::lazy_static;
-use spin::Mutex;
+use {
+    crate::{
+        keyboard::{DecodedKey, KeyCode},
+        println,
+        vga_buffer::{Color, VGA_SCREENS, VGA_WIDTH, WRITER},
+    },
+    command_handlers::{COMMAND_HANDLERS, QemuExitCode, exit_qemu},
+    lazy_static::lazy_static,
+    spin::Mutex,
+};
 
 // TODO: test profusely, especially special characters
 // There are too many locks, I'm scared of deadlocks in case of interrupts
