@@ -1,7 +1,7 @@
 ENTRY(start)
 
 SECTIONS {
-    .rodata 0x00000800 : {
+    .rodata 0x800 : {
         *(.rodata .rodata.*)
     }
 

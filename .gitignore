@@ -1,7 +1,6 @@
 build/
 target/
-rust_analyzer/
 .vagrant/
-source_dir
+source_dir/
 source.tar.gz
 *.log
