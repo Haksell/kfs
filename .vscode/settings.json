@@ -1,5 +1,5 @@
 {
     "rust-analyzer.cargo.target": "kfs.json",
-    "rust-analyzer.cargo.allTargets": false,
+    "rust-analyzer.check.allTargets": false,
     "rust-analyzer.showUnlinkedFileNotification": false
 }

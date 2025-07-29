@@ -15,9 +15,8 @@ extern crate multiboot2;
 use {
     crate::memory::frame::FrameAllocator,
     core::{arch::asm, panic::PanicInfo},
+    multiboot2::{BootInformationHeader, ElfSectionFlags},
 };
-
-use multiboot2::{BootInformationHeader, ElfSectionFlags};
 
 #[unsafe(no_mangle)]
 pub extern "C" fn kernel_main(multiboot_header_address: usize) {
