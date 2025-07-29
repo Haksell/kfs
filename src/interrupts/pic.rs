@@ -20,33 +20,33 @@ impl Pic {
     }
 
     unsafe fn end_of_interrupt(&mut self) {
-        self.command.write(CMD_END_OF_INTERRUPT);
+        unsafe { self.command.write(CMD_END_OF_INTERRUPT) };
     }
 
     unsafe fn read_mask(&mut self) -> u8 {
-        self.data.read()
+        unsafe { self.data.read() }
     }
 
     unsafe fn write_mask(&mut self, mask: u8) {
-        self.data.write(mask)
+        unsafe { self.data.write(mask) }
     }
 
     // Initialization Command Words
 
     unsafe fn icw1(&mut self) {
-        self.command.write(CMD_INIT);
+        unsafe { self.command.write(CMD_INIT) };
     }
 
     unsafe fn icw2(&mut self) {
-        self.data.write(self.offset);
+        unsafe { self.data.write(self.offset) };
     }
 
     unsafe fn icw3(&mut self) {
-        self.data.write(self.cascade);
+        unsafe { self.data.write(self.cascade) };
     }
 
     unsafe fn icw4(&mut self) {
-        self.data.write(MODE_8086);
+        unsafe { self.data.write(MODE_8086) };
     }
 }
 
