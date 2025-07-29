@@ -241,7 +241,7 @@ impl Shell {
             .iter()
             .find(|handler| handler.name == command_buffer)
         {
-            Some(handler) => (handler.handler)(&self),
+            Some(handler) => (handler.handler)(self),
             None => println!(
                 "kfs: command not found: \"{}\"",
                 core::str::from_utf8(command_buffer).unwrap_or("invalid utf-8")

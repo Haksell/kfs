@@ -75,7 +75,9 @@ impl BootInformation {
 }
 
 pub unsafe fn load(address: usize) -> &'static BootInformation {
-    let multiboot = &*(address as *const BootInformation);
-    assert!(multiboot.has_valid_end_tag());
-    multiboot
+    unsafe {
+        let multiboot = &*(address as *const BootInformation);
+        assert!(multiboot.has_valid_end_tag());
+        multiboot
+    }
 }
