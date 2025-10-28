@@ -1,5 +1,7 @@
 use core::marker::PhantomData;
 
+use crate::interrupts::InterruptStackFrame;
+
 unsafe extern "C" {
     static kernel_code: usize;
 }
@@ -36,7 +38,7 @@ impl<F> Entry<F> {
     }
 }
 
-pub type HandlerFunc = extern "x86-interrupt" fn();
+pub type HandlerFunc = extern "x86-interrupt" fn(InterruptStackFrame);
 
 pub trait HandlerFuncType {
     fn to_virt_addr(self) -> usize;

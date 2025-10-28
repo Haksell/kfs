@@ -4,3 +4,4 @@ target/
 source_dir/
 source.tar.gz
 *.log
+rustc-ice*.txt

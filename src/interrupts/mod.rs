@@ -35,6 +35,12 @@ lazy_static! {
     };
 }
 
+#[derive(Clone, Copy, Debug)]
+#[repr(C)]
+pub struct InterruptStackFrame {
+    _red_zone: [u8; 128], // TODO: fill
+}
+
 pub fn init() {
     IDT.load();
     unsafe { PICS.lock().init() };
@@ -84,14 +90,14 @@ where
     ret
 }
 
-extern "x86-interrupt" fn timer_interrupt_handler() {
+extern "x86-interrupt" fn timer_interrupt_handler(_: InterruptStackFrame) {
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Timer as u8);
     }
 }
 
-extern "x86-interrupt" fn keyboard_interrupt_handler() {
+extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame) {
     lazy_static! {
         static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, scancodes::ScancodeSet1>> =
             Mutex::new(Keyboard::new(

@@ -43,6 +43,7 @@ gdb:
 rerun: clean run
 
 clean:
+	rm -rf rustc-ice* || true
 	rm -rf build || true
 	cargo clean || true
 
