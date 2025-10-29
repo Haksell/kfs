@@ -42,27 +42,22 @@
 - [ ] `EntryFlags` -> `TableEntryFlags`
 - [ ] command history with vector to test memory
 - [ ] cpuinfo command
-- [ ] use size_of instead of 64 where applicable
+- [ ] use `size_of` instead of 64 where applicable
 - [ ] fix absolute path in `.vscode/settings.json`
 - [ ] snake
-- [ ] find project name and rebrand
 - [ ] optimize vga history with a ring buffer
-- [ ] nice help menu with `Code page 437` border characters (kfs-2)
-- [ ] specify exact nightly version
+- [ ] nice help menu with `Code page 437` border characters
 - [ ] bring back testing and more useful stuff from [v2](https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2)
 - [ ] colorful tests (with color module based on `colored`)
 - [ ] full exploration of possible deadlocks
 - [ ] `print_screen` creates a file using serial port
-- [ ] `insert`
 - [ ] use https://doc.rust-lang.org/nightly/core/cell/ instead of `lazy_static` crate
 - [ ] [Interrupt handlers should only perform the minimal amount of work necessary](https://os.phil-opp.com/async-await/#scancode-queue)
 - [ ] warning screen (F11)
 - [ ] debug screen (F12)
-- [ ] optimize `x86_64` target
-- [ ] finish 1st edition
-- [ ] remove stack segments
 - [ ] separate user and kernel stacks
 - [ ] mouse (scroll history)
+- [ ] find project name and rebrand
 
 ## check before each push
 
