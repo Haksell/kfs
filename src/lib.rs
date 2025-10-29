@@ -7,9 +7,6 @@ mod port;
 mod shell;
 mod vga_buffer;
 
-extern crate bitflags;
-extern crate multiboot2;
-
 use {
     crate::{shell::SHELL, vga_buffer::WRITER},
     core::{arch::asm, panic::PanicInfo},
