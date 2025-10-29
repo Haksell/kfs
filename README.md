@@ -31,12 +31,25 @@
 
 ### present
 
+- [ ] fix warnings
 - [ ] bring back `enable_paging` from old x86_64 code
 - [ ] bring back `setup_page_tables` from old x86_64 code and adapt it to 32-bit
 - [ ] fix absolute path in `.vscode/settings.json`
+- [ ] bring back blinking cursor
+- [ ] second keyboard then repush kfs-4
+- [ ] proper comments for gdt
+- [ ] count timer interrupts
+- [ ] show timer command (.......)
+- [ ] debug screen and error screen where we can’t print
+- [ ] `511` -> `ENTRY_SIZE - 1`
+- [ ] `EntryFlags` -> `TableEntryFlags`
+- [ ] command history with vector to test memory
+- [ ] cpuinfo command
+- [ ] use size_of instead of 64 where applicable
 
 ### future
 
+- [ ] snake
 - [ ] find project name and rebrand
 - [ ] optimize vga history with a ring buffer
 - [ ] nice help menu with `Code page 437` border characters (kfs-2)

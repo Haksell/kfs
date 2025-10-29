@@ -1,7 +1,6 @@
 global kernel_code, gdt_start, gdt_pointer, stack_bottom, stack_top, start
 extern check_cpuid, check_multiboot, kernel_main, error
 
-
 section .text
 bits 32
 
@@ -12,7 +11,7 @@ start:
     call set_up_page_tables
     call enable_paging
     lgdt [gdt_pointer]
-    call set_protected_mode ; obligatory ?
+    call set_protected_mode ; required ?
 
     jmp kernel_code:flush_cpu
 
@@ -66,7 +65,6 @@ enable_paging:
     or eax, 1 << 31
     mov cr0, eax
     ret
-
 
 section .bss
 align 4096
