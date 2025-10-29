@@ -8,8 +8,6 @@ start:
     mov esp, stack_top
     call check_multiboot
     call check_cpuid
-    call set_up_page_tables
-    call enable_paging
     lgdt [gdt_pointer]
     call set_protected_mode ; required ?
 
@@ -34,37 +32,6 @@ flush_cpu:
     push 0x69420
 
     jmp kernel_main
-
-set_up_page_tables:
-    ; map page_directory table recursively
-    mov eax, page_directory
-    or eax, 0b11 ; present + writable
-    mov [page_directory + 1023 * 4], eax
-
-    mov ecx, 0
-    .map_page_directory:
-        mov eax, 0x400000
-        mul ecx
-        or eax, 0b10000011 ; present + writable + huge
-        mov [page_directory + ecx * 4], eax
-        inc ecx
-        cmp ecx, 1024
-        jne .map_page_directory
-    ret
-
-enable_paging:
-    ; load page_directory to cr3 register
-    mov eax, page_directory
-    mov cr3, eax
-    ; enable PSE-flag in cr4 (Page Size Extension)
-    mov eax, cr4
-    or eax, 1 << 4
-    mov cr4, eax
-    ; enable paging in the cr0 register
-    mov eax, cr0
-    or eax, 1 << 31
-    mov cr0, eax
-    ret
 
 section .bss
 align 4096
