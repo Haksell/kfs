@@ -1,6 +1,4 @@
-mod set1;
-
-pub use self::set1::ScancodeSet1;
+pub mod set1;
 
 use super::{Error, KeyEvent};
 

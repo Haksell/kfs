@@ -1,6 +1,4 @@
-mod us104;
-
-pub use self::us104::Us104Key;
+pub mod us104;
 
 use super::{DecodedKey, KeyCode, Modifiers};
 

@@ -1,8 +1,7 @@
 pub mod elf_sections;
 pub mod memory_map;
 
-use self::elf_sections::ElfSectionsTag;
-pub use self::memory_map::MemoryMapTag;
+use self::{elf_sections::ElfSectionsTag, memory_map::MemoryMapTag};
 
 #[derive(Debug)]
 #[repr(C)]

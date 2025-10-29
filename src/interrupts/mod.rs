@@ -4,7 +4,7 @@ mod pic;
 use {
     self::{idt::InterruptDescriptorTable, pic::ChainedPics},
     crate::{
-        keyboard::{Keyboard, layouts, scancodes},
+        keyboard::{Keyboard, layouts::us104::Us104Key, scancodes::set1::ScancodeSet1},
         port::Port,
         shell::SHELL,
     },
@@ -99,11 +99,8 @@ extern "x86-interrupt" fn timer_interrupt_handler(_: InterruptStackFrame) {
 
 extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame) {
     lazy_static! {
-        static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, scancodes::ScancodeSet1>> =
-            Mutex::new(Keyboard::new(
-                layouts::Us104Key,
-                scancodes::ScancodeSet1::new(),
-            ));
+        static ref KEYBOARD: Mutex<Keyboard<Us104Key, ScancodeSet1>> =
+            Mutex::new(Keyboard::new(Us104Key, ScancodeSet1::new(),));
     }
 
     let mut keyboard = KEYBOARD.lock();
