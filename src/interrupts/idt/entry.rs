@@ -1,6 +1,4 @@
-use core::marker::PhantomData;
-
-use crate::interrupts::InterruptStackFrame;
+use {crate::interrupts::InterruptStackFrame, core::marker::PhantomData};
 
 unsafe extern "C" {
     static kernel_code: usize;

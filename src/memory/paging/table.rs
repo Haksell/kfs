@@ -1,8 +1,9 @@
-use core::ops::{Index, IndexMut};
-
-use super::{
-    ENTRY_COUNT,
-    entry::{Entry, EntryFlags},
+use {
+    super::{
+        ENTRY_COUNT,
+        entry::{Entry, EntryFlags},
+    },
+    core::ops::{Index, IndexMut},
 };
 
 pub struct Table {
