@@ -3,12 +3,10 @@
 
 mod interrupts;
 mod keyboard;
-mod memory;
 mod port;
 mod shell;
 mod vga_buffer;
 
-#[macro_use]
 extern crate bitflags;
 extern crate multiboot2;
 
