@@ -1,4 +1,7 @@
-use {crate::interrupts::InterruptStackFrame, core::marker::PhantomData};
+use {
+    crate::interrupts::InterruptStackFrame,
+    core::{marker::PhantomData, ptr::addr_of},
+};
 
 unsafe extern "C" {
     static kernel_code: usize;
@@ -30,7 +33,7 @@ impl<F> Entry<F> {
     pub unsafe fn set_handler_addr(&mut self, addr: usize) -> &mut EntryOptions {
         self.pointer_low = addr as u16;
         self.pointer_middle = (addr >> 16) as u16;
-        self.gdt_selector = unsafe { &raw const kernel_code as usize as u16 };
+        self.gdt_selector = addr_of!(kernel_code) as u16;
         self.options.set_present();
         &mut self.options
     }

@@ -5,7 +5,7 @@ use {
         print, println,
         vga_buffer::{VGA_WIDTH, WRITER},
     },
-    core::arch::asm,
+    core::{arch::asm, ptr::addr_of},
     lazy_static::lazy_static,
 };
 
@@ -19,10 +19,10 @@ unsafe extern "C" {
 }
 
 lazy_static! {
-    static ref GDT_START: usize = unsafe { &raw const gdt_start as usize };
-    static ref GDT_POINTER: usize = unsafe { &raw const gdt_pointer as usize };
-    static ref STACK_TOP: usize = unsafe { &raw const stack_top as usize };
-    static ref STACK_BOTTOM: usize = unsafe { &raw const stack_bottom as usize };
+    static ref GDT_START: usize = addr_of!(gdt_start) as usize;
+    static ref GDT_POINTER: usize = addr_of!(gdt_pointer) as usize;
+    static ref STACK_TOP: usize = addr_of!(stack_top) as usize;
+    static ref STACK_BOTTOM: usize = addr_of!(stack_bottom) as usize;
 }
 
 #[allow(dead_code)] // TODO: remove because it doesn't make sense to never use success or failed

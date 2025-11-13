@@ -1,10 +1,4 @@
-use {
-    crate::{interrupts, port::Port},
-    core::fmt,
-    lazy_static::lazy_static,
-    spin::Mutex,
-    volatile::Volatile,
-};
+use {crate::port::Port, core::fmt, lazy_static::lazy_static, spin::Mutex, volatile::Volatile};
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -275,19 +269,19 @@ lazy_static! {
 
 #[macro_export]
 macro_rules! print {
-    ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
+    ($($arg:tt)*) => {{
+        use core::fmt::Write as _;
+        $crate::interrupts::without_interrupts(|| {
+            $crate::vga_buffer::WRITER
+                .lock()
+                .write_fmt(format_args!($($arg)*))
+                .unwrap();
+        });
+    }};
 }
 
 #[macro_export]
 macro_rules! println {
     () => ($crate::print!("\n"));
     ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
-}
-
-#[doc(hidden)]
-pub fn _print(args: fmt::Arguments) {
-    use core::fmt::Write;
-    interrupts::without_interrupts(|| {
-        WRITER.lock().write_fmt(args).unwrap();
-    });
 }
