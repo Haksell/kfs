@@ -84,7 +84,7 @@ impl ChainedPics {
                     wait_port.write(0);
                 }
             }
-            self.write_masks(&saved_masks);
+            self.write_masks(saved_masks);
         }
     }
 
@@ -92,7 +92,7 @@ impl ChainedPics {
         unsafe { [self.pics[0].read_mask(), self.pics[1].read_mask()] }
     }
 
-    unsafe fn write_masks(&mut self, masks: &[u8; NB_PICS]) {
+    unsafe fn write_masks(&mut self, masks: [u8; NB_PICS]) {
         unsafe {
             for (i, &mask) in masks.iter().enumerate() {
                 self.pics[i].write_mask(mask);

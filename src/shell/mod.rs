@@ -237,15 +237,17 @@ impl Shell {
         if command_buffer.is_empty() {
             return;
         }
-        match COMMAND_HANDLERS
+
+        if let Some(handler) = COMMAND_HANDLERS
             .iter()
             .find(|handler| handler.name == command_buffer)
         {
-            Some(handler) => (handler.handler)(self),
-            None => println!(
+            (handler.handler)(self);
+        } else {
+            println!(
                 "kfs: command not found: \"{}\"",
                 core::str::from_utf8(command_buffer).unwrap_or("invalid utf-8")
-            ),
+            );
         }
     }
 }

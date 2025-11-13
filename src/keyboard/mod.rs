@@ -137,6 +137,7 @@ impl KeyEvent {
     }
 }
 
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
 pub struct Modifiers {
     lshift: bool,
@@ -182,12 +183,12 @@ where
 
     pub fn add_byte(&mut self, byte: u8) -> Option<DecodedKey> {
         match self.scancode_set.add_byte(byte) {
-            Ok(Some(key_event)) => self.process_keyevent(key_event),
+            Ok(Some(key_event)) => self.process_keyevent(&key_event),
             _ => None,
         }
     }
 
-    fn process_keyevent(&mut self, ev: KeyEvent) -> Option<DecodedKey> {
+    fn process_keyevent(&mut self, ev: &KeyEvent) -> Option<DecodedKey> {
         match ev.code {
             KeyCode::LeftShift => self.modifiers.lshift = ev.state == KeyState::Down,
             KeyCode::RightShift => self.modifiers.rshift = ev.state == KeyState::Down,

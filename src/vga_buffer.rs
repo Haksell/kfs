@@ -59,6 +59,8 @@ fn update_cursor(row: usize, col: usize) {
     let mut index_register: Port<u8> = Port::new(0x3D4);
     let mut data_register: Port<u8> = Port::new(0x3D5);
     let pos = row * VGA_WIDTH + col;
+
+    #[expect(clippy::cast_possible_truncation)]
     unsafe {
         index_register.write(0x0E);
         data_register.write((pos >> 8) as u8);

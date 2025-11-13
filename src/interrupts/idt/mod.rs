@@ -43,6 +43,7 @@ impl InterruptDescriptorTable {
     fn pointer(&self) -> DescriptorTablePointer {
         DescriptorTablePointer {
             base: core::ptr::from_ref(self) as u32,
+            #[expect(clippy::cast_possible_truncation)]
             limit: (core::mem::size_of::<Self>() - 1) as u16,
         }
     }
