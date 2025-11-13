@@ -13,3 +13,14 @@ bench = false
 lazy_static = { version = "1.0", features = ["spin_no_std"] }
 spin = "0.5.2"
 volatile = "0.2.6"
+
+[lints.clippy]
+# cargo = { level = "deny", priority = -1 }
+complexity = { level = "warn", priority = -1 }
+correctness = { level = "deny", priority = -1 }
+# nursery = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+perf = { level = "deny", priority = -1 }
+# restriction = { level = "warn", priority = -1 }
+style = { level = "warn", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
