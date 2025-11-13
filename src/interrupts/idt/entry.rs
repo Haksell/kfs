@@ -30,7 +30,7 @@ impl<F> Entry<F> {
     pub unsafe fn set_handler_addr(&mut self, addr: usize) -> &mut EntryOptions {
         self.pointer_low = addr as u16;
         self.pointer_middle = (addr >> 16) as u16;
-        self.gdt_selector = unsafe { &kernel_code as *const usize as usize as u16 };
+        self.gdt_selector = unsafe { &raw const kernel_code as usize as u16 };
         self.options.set_present();
         &mut self.options
     }

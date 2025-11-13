@@ -193,12 +193,12 @@ where
             KeyCode::RightShift => self.modifiers.rshift = ev.state == KeyState::Down,
             KeyCode::CapsLock => {
                 if ev.state == KeyState::Down {
-                    self.modifiers.capslock = !self.modifiers.capslock
+                    self.modifiers.capslock = !self.modifiers.capslock;
                 }
             }
             KeyCode::NumpadLock => {
                 if ev.state == KeyState::Down {
-                    self.modifiers.numlock = !self.modifiers.numlock
+                    self.modifiers.numlock = !self.modifiers.numlock;
                 }
             }
             _ => {

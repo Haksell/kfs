@@ -145,7 +145,7 @@ impl Shell {
                 KeyCode::PageUp => WRITER.lock().move_all_the_way_up(),
                 KeyCode::PageDown => WRITER.lock().move_all_the_way_down(),
                 k if (KeyCode::F1..=KeyCode::F4).contains(&k) => {
-                    self.switch_screen((k as u8 - KeyCode::F1 as u8) as usize)
+                    self.switch_screen((k as u8 - KeyCode::F1 as u8) as usize);
                 }
                 _ => {}
             },

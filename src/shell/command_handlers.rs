@@ -19,10 +19,10 @@ unsafe extern "C" {
 }
 
 lazy_static! {
-    static ref GDT_START: usize = unsafe { &gdt_start as *const usize as usize };
-    static ref GDT_POINTER: usize = unsafe { &gdt_pointer as *const usize as usize };
-    static ref STACK_TOP: usize = unsafe { &stack_top as *const usize as usize };
-    static ref STACK_BOTTOM: usize = unsafe { &stack_bottom as *const usize as usize };
+    static ref GDT_START: usize = unsafe { &raw const gdt_start as usize };
+    static ref GDT_POINTER: usize = unsafe { &raw const gdt_pointer as usize };
+    static ref STACK_TOP: usize = unsafe { &raw const stack_top as usize };
+    static ref STACK_BOTTOM: usize = unsafe { &raw const stack_bottom as usize };
 }
 
 #[allow(dead_code)] // TODO: remove because it doesn't make sense to never use success or failed
@@ -108,7 +108,7 @@ pub const COMMAND_HANDLERS: &[CommandHandler] = &[
                 .map(|handler| handler.name.len())
                 .max()
                 .unwrap();
-            for handler in COMMAND_HANDLERS.iter() {
+            for handler in COMMAND_HANDLERS {
                 println!(
                     "- {:max_length$}   {}",
                     core::str::from_utf8(handler.name).unwrap_or("invalid utf-8"),

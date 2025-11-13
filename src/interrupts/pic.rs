@@ -84,7 +84,7 @@ impl ChainedPics {
                     wait_port.write(0);
                 }
             }
-            self.write_masks(&saved_masks)
+            self.write_masks(&saved_masks);
         }
     }
 
