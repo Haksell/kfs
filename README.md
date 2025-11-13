@@ -29,35 +29,35 @@
 
 ## todo
 
-- [ ] fix `ld` warnings
-- [ ] bring back `enable_paging` from old x86_64 code
-- [ ] bring back `setup_page_tables` from old x86_64 code and adapt it to 32-bit
-- [ ] bring back blinking cursor
-- [ ] second keyboard then repush kfs-4
-- [ ] proper comments for gdt
-- [ ] count timer interrupts
-- [ ] show timer command (.......)
-- [ ] debug screen and error screen where we can’t print
-- [ ] `511` -> `ENTRY_SIZE - 1`
-- [ ] `EntryFlags` -> `TableEntryFlags`
-- [ ] command history with vector to test memory
-- [ ] cpuinfo command
-- [ ] use `size_of` instead of 64 where applicable
-- [ ] fix absolute path in `.vscode/settings.json`
-- [ ] snake
-- [ ] optimize vga history with a ring buffer
-- [ ] nice help menu with `Code page 437` border characters
-- [ ] bring back testing and more useful stuff from [v2](https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2)
-- [ ] colorful tests (with color module based on `colored`)
-- [ ] full exploration of possible deadlocks
-- [ ] `print_screen` creates a file using serial port
-- [ ] use https://doc.rust-lang.org/nightly/core/cell/ instead of `lazy_static` crate
-- [ ] [Interrupt handlers should only perform the minimal amount of work necessary](https://os.phil-opp.com/async-await/#scancode-queue)
-- [ ] warning screen (F11)
-- [ ] debug screen (F12)
-- [ ] separate user and kernel stacks
-- [ ] mouse (scroll history)
-- [ ] find project name and rebrand
+- fix absolute path in `.vscode/settings.json`
+- fix `ld` warnings
+- bring back `enable_paging` from old x86_64 code
+- bring back `setup_page_tables` from old x86_64 code and adapt it to 32-bit
+- bring back blinking cursor
+- second keyboard then repush kfs-4
+- proper comments for gdt
+- count timer interrupts
+- show timer command (.......)
+- debug screen and error screen where we can’t print
+- `511` -> `ENTRY_SIZE - 1`
+- `EntryFlags` -> `TableEntryFlags`
+- command history with vector to test memory
+- cpuinfo command
+- use `size_of` instead of 64 where applicable
+- snake
+- optimize vga history with a ring buffer
+- nice help menu with `Code page 437` border characters
+- bring back testing and more useful stuff from [v2](https://github.com/Haksell/writing_an_os_in_rust/tree/master/v2)
+- colorful tests (with color module based on `colored`)
+- full exploration of possible deadlocks
+- `print_screen` creates a file using serial port
+- use https://doc.rust-lang.org/nightly/core/cell/ instead of `lazy_static` crate
+- [Interrupt handlers should only perform the minimal amount of work necessary](https://os.phil-opp.com/async-await/#scancode-queue)
+- warning screen (F11)
+- debug screen (F12)
+- separate user and kernel stacks
+- mouse (scroll history)
+- find project name and rebrand
 
 ## check before each push
 

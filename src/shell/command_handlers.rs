@@ -43,8 +43,8 @@ fn hexdump(start: usize, end: usize) {
     let mut line: [u8; HEXDUMP_LINE_SIZE] = [0; HEXDUMP_LINE_SIZE];
     let mut last_was_same: bool = false;
     for (i, current) in (start..end).step_by(HEXDUMP_LINE_SIZE).enumerate() {
-        for j in 0..HEXDUMP_LINE_SIZE {
-            line[j] = unsafe { *((current + j) as *const u8) }; // TODO: one-liner
+        for (j, cell) in line.iter_mut().enumerate() {
+            *cell = unsafe { *((current + j) as *const u8) }; // TODO: one-liner
         }
         if i == 0 || line != last_line {
             print!("{:08x}   ", current);

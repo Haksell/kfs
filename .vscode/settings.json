@@ -1,5 +1,5 @@
 {
-  "rust-analyzer.cargo.target": "/home/norxondor/42/kfs/kfs.json",
+  "rust-analyzer.cargo.target": "/home/axbrisse/cursus/kfs/kfs.json",
   "rust-analyzer.check.allTargets": false,
   "rust-analyzer.showUnlinkedFileNotification": false
 }
