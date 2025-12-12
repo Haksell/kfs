@@ -25,7 +25,7 @@ lazy_static! {
     static ref STACK_BOTTOM: usize = addr_of!(stack_bottom) as usize;
 }
 
-#[allow(dead_code)] // TODO: remove because it doesn't make sense to never use success or failed
+#[expect(dead_code)] // TODO: remove because it doesn't make sense to never use success or failed
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
 pub enum QemuExitCode {
@@ -39,18 +39,18 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
 }
 
 fn hexdump(start: usize, end: usize) {
-    let mut last_line: [u8; HEXDUMP_LINE_SIZE] = [0; HEXDUMP_LINE_SIZE];
-    let mut line: [u8; HEXDUMP_LINE_SIZE] = [0; HEXDUMP_LINE_SIZE];
-    let mut last_was_same: bool = false;
+    let mut last_line = [0; HEXDUMP_LINE_SIZE];
+    let mut line = [0; HEXDUMP_LINE_SIZE];
+    let mut last_was_same = false;
     for (i, current) in (start..end).step_by(HEXDUMP_LINE_SIZE).enumerate() {
         for (j, cell) in line.iter_mut().enumerate() {
-            *cell = unsafe { *((current + j) as *const u8) }; // TODO: one-liner
+            *cell = unsafe { *((current + j) as *const u8) };
         }
         if i == 0 || line != last_line {
             print!("{:08x}   ", current);
-            for (i, byte) in line.iter().enumerate() {
+            for (j, byte) in line.iter().enumerate() {
                 print!("{:02x} ", byte);
-                if i & 7 == 7 {
+                if j & 7 == 7 {
                     print!(" ");
                 }
             }
@@ -73,7 +73,7 @@ fn hexdump(start: usize, end: usize) {
 #[derive(Clone, Copy)]
 pub struct CommandHandler {
     pub name: &'static [u8],
-    description: &'static [u8],
+    pub description: &'static [u8],
     pub handler: fn(&Shell), // Does it really make sense to take a shell as argument?
 }
 
@@ -91,11 +91,11 @@ pub const COMMAND_HANDLERS: &[CommandHandler] = &[
     CommandHandler {
         name: b"halt",
         description: b"Halt the system.",
-        handler: |_: &Shell| unsafe {
-            asm!("cli");
+        handler: |_: &Shell| {
+            unsafe { asm!("cli") }
             print!("System halted.");
             WRITER.lock().set_cursor(VGA_WIDTH);
-            asm!("hlt");
+            unsafe { asm!("hlt") }
         },
     },
     CommandHandler {
@@ -139,7 +139,7 @@ pub const COMMAND_HANDLERS: &[CommandHandler] = &[
     CommandHandler {
         name: b"reboot",
         description: b"Reboot the system.",
-        handler: |_: &Shell| unsafe { Port::new(0x64).write(0xFEu8) },
+        handler: |_: &Shell| unsafe { Port::new(0x64).write(0xfe_u8) },
     },
     CommandHandler {
         name: b"tty",

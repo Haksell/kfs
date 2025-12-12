@@ -29,7 +29,6 @@ impl<F> Entry<F> {
         }
     }
 
-    #[expect(clippy::cast_possible_truncation)]
     #[inline]
     pub unsafe fn set_handler_addr(&mut self, addr: usize) -> &mut EntryOptions {
         self.pointer_low = addr as u16;
@@ -47,6 +46,7 @@ pub trait HandlerFuncType {
 }
 
 impl HandlerFuncType for HandlerFunc {
+    #[expect(clippy::fn_to_numeric_cast_any)]
     fn to_virt_addr(self) -> usize {
         self as usize
     }

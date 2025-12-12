@@ -43,7 +43,6 @@ impl InterruptDescriptorTable {
     fn pointer(&self) -> DescriptorTablePointer {
         DescriptorTablePointer {
             base: core::ptr::from_ref(self) as u32,
-            #[expect(clippy::cast_possible_truncation)]
             limit: (core::mem::size_of::<Self>() - 1) as u16,
         }
     }
@@ -52,21 +51,21 @@ impl InterruptDescriptorTable {
 impl Index<usize> for InterruptDescriptorTable {
     type Output = Entry<HandlerFunc>;
 
-    fn index(&self, i: usize) -> &Self::Output {
-        if i < NB_BUILTINS {
-            &self.builtins[i]
+    fn index(&self, index: usize) -> &Self::Output {
+        if index < NB_BUILTINS {
+            &self.builtins[index]
         } else {
-            &self.interrupts[i - NB_BUILTINS]
+            &self.interrupts[index - NB_BUILTINS]
         }
     }
 }
 
 impl IndexMut<usize> for InterruptDescriptorTable {
-    fn index_mut(&mut self, i: usize) -> &mut Self::Output {
-        if i < NB_BUILTINS {
-            &mut self.builtins[i]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        if index < NB_BUILTINS {
+            &mut self.builtins[index]
         } else {
-            &mut self.interrupts[i - NB_BUILTINS]
+            &mut self.interrupts[index - NB_BUILTINS]
         }
     }
 }

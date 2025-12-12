@@ -43,7 +43,7 @@ pub struct InterruptStackFrame {
 
 pub fn init() {
     IDT.load();
-    unsafe { PICS.lock().init() };
+    unsafe { PICS.lock().init() }
     enable();
 }
 

@@ -137,7 +137,7 @@ impl KeyEvent {
     }
 }
 
-#[allow(clippy::struct_excessive_bools)]
+#[expect(clippy::struct_excessive_bools)]
 #[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
 pub struct Modifiers {
     lshift: bool,

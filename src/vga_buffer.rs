@@ -1,6 +1,6 @@
 use {crate::port::Port, core::fmt, lazy_static::lazy_static, spin::Mutex, volatile::Volatile};
 
-#[allow(dead_code)]
+#[expect(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Color {
@@ -60,13 +60,10 @@ fn update_cursor(row: usize, col: usize) {
     let mut data_register: Port<u8> = Port::new(0x3D5);
     let pos = row * VGA_WIDTH + col;
 
-    #[expect(clippy::cast_possible_truncation)]
-    unsafe {
-        index_register.write(0x0E);
-        data_register.write((pos >> 8) as u8);
-        index_register.write(0x0F);
-        data_register.write((pos & 0xFF) as u8);
-    }
+    unsafe { index_register.write(0x0E) }
+    unsafe { data_register.write((pos >> 8) as u8) }
+    unsafe { index_register.write(0x0F) }
+    unsafe { data_register.write((pos & 0xFF) as u8) }
 }
 
 fn hide_cursor() {

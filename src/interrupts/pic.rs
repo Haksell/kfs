@@ -20,7 +20,7 @@ impl Pic {
     }
 
     unsafe fn end_of_interrupt(&mut self) {
-        unsafe { self.command.write(CMD_END_OF_INTERRUPT) };
+        unsafe { self.command.write(CMD_END_OF_INTERRUPT) }
     }
 
     unsafe fn read_mask(&mut self) -> u8 {
@@ -34,19 +34,19 @@ impl Pic {
     // Initialization Command Words
 
     unsafe fn icw1(&mut self) {
-        unsafe { self.command.write(CMD_INIT) };
+        unsafe { self.command.write(CMD_INIT) }
     }
 
     unsafe fn icw2(&mut self) {
-        unsafe { self.data.write(self.offset) };
+        unsafe { self.data.write(self.offset) }
     }
 
     unsafe fn icw3(&mut self) {
-        unsafe { self.data.write(self.cascade) };
+        unsafe { self.data.write(self.cascade) }
     }
 
     unsafe fn icw4(&mut self) {
-        unsafe { self.data.write(MODE_8086) };
+        unsafe { self.data.write(MODE_8086) }
     }
 }
 
@@ -75,21 +75,21 @@ impl ChainedPics {
     }
 
     pub unsafe fn init(&mut self) {
-        unsafe {
-            let mut wait_port: Port<u8> = Port::new(0x80);
-            let saved_masks = self.read_masks();
-            for icw in &[Pic::icw1, Pic::icw2, Pic::icw3, Pic::icw4] {
-                for pic in &mut self.pics {
-                    icw(pic);
-                    wait_port.write(0);
-                }
+        let mut wait_port: Port<u8> = Port::new(0x80);
+        let saved_masks = unsafe { self.read_masks() };
+        for icw in &[Pic::icw1, Pic::icw2, Pic::icw3, Pic::icw4] {
+            for pic in &mut self.pics {
+                unsafe { icw(pic) }
+                unsafe { wait_port.write(0) }
             }
-            self.write_masks(saved_masks);
         }
+        unsafe { self.write_masks(saved_masks) }
     }
 
     unsafe fn read_masks(&mut self) -> [u8; NB_PICS] {
-        unsafe { [self.pics[0].read_mask(), self.pics[1].read_mask()] }
+        [unsafe { self.pics[0].read_mask() }, unsafe {
+            self.pics[1].read_mask()
+        }]
     }
 
     unsafe fn write_masks(&mut self, masks: [u8; NB_PICS]) {
@@ -101,13 +101,11 @@ impl ChainedPics {
     }
 
     pub unsafe fn notify_end_of_interrupt(&mut self, interrupt_id: u8) {
-        unsafe {
-            if self.pics[1].handles_interrupt(interrupt_id) {
-                self.pics[1].end_of_interrupt();
-                self.pics[0].end_of_interrupt();
-            } else if self.pics[0].handles_interrupt(interrupt_id) {
-                self.pics[0].end_of_interrupt();
-            }
+        if self.pics[1].handles_interrupt(interrupt_id) {
+            unsafe { self.pics[1].end_of_interrupt() }
+            unsafe { self.pics[0].end_of_interrupt() }
+        } else if self.pics[0].handles_interrupt(interrupt_id) {
+            unsafe { self.pics[0].end_of_interrupt() }
         }
     }
 }

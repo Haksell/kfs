@@ -57,6 +57,7 @@
 - separate user and kernel stacks
 - mouse (scroll history)
 - find project name and rebrand
+- add rust lints
 
 ## check before each push
 

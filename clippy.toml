@@ -1,1 +1,2 @@
+absolute-paths-max-segments = 3
 array-size-threshold = 1048576
