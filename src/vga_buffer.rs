@@ -27,7 +27,7 @@ pub enum Color {
 struct ColorCode(u8);
 
 impl ColorCode {
-    fn new(foreground: Color, background: Color) -> Self {
+    const fn new(foreground: Color, background: Color) -> Self {
         Self((background as u8) << 4 | (foreground as u8))
     }
 }
@@ -40,14 +40,14 @@ struct ScreenChar {
 }
 
 impl ScreenChar {
-    fn black_space() -> Self {
+    const fn black_space() -> Self {
         Self {
             ascii_character: b' ',
             color_code: ColorCode::new(Color::Black, Color::Black),
         }
     }
 
-    fn white_space() -> Self {
+    const fn white_space() -> Self {
         Self {
             ascii_character: b' ',
             color_code: ColorCode::new(Color::White, Color::Black),
@@ -129,12 +129,12 @@ impl Writer {
         }
     }
 
-    pub fn set_foreground_color(&mut self, foreground_code: Color) {
+    pub const fn set_foreground_color(&mut self, foreground_code: Color) {
         // TODO: keep old background color
         self.color_code = ColorCode::new(foreground_code, Color::Black);
     }
 
-    pub fn reset_foreground_color(&mut self) {
+    pub const fn reset_foreground_color(&mut self) {
         self.set_foreground_color(Color::White);
     }
 
@@ -205,7 +205,7 @@ impl Writer {
         }
     }
 
-    pub fn reset_history(&mut self) {
+    pub const fn reset_history(&mut self) {
         self.screens[self.screen_idx].history = 0;
     }
 

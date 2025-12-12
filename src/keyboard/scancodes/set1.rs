@@ -24,7 +24,7 @@ impl ScancodeSet1 {
         }
     }
 
-    fn map_scancode(code: u8) -> Result<KeyCode, Error> {
+    const fn map_scancode(code: u8) -> Result<KeyCode, Error> {
         match code {
             0x01 => Ok(KeyCode::Escape),
             0x02 => Ok(KeyCode::Key1),
@@ -104,7 +104,7 @@ impl ScancodeSet1 {
         }
     }
 
-    fn map_extended_scancode(code: u8) -> Result<KeyCode, Error> {
+    const fn map_extended_scancode(code: u8) -> Result<KeyCode, Error> {
         match code {
             0x1C => Ok(KeyCode::NumpadEnter),
             0x35 => Ok(KeyCode::NumpadDivide),

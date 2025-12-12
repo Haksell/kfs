@@ -15,7 +15,7 @@ struct Pic {
 }
 
 impl Pic {
-    fn handles_interrupt(&self, interrupt_id: u8) -> bool {
+    const fn handles_interrupt(&self, interrupt_id: u8) -> bool {
         self.offset <= interrupt_id && interrupt_id < self.offset + 8
     }
 

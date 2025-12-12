@@ -10,8 +10,8 @@ pub trait PortWrite {
 
 impl PortRead for u8 {
     #[inline]
-    unsafe fn read_from_port(port: u16) -> u8 {
-        let value: u8;
+    unsafe fn read_from_port(port: u16) -> Self {
+        let value: Self;
         unsafe {
             asm!("in al, dx", out("al") value, in("dx") port, options(nomem, nostack, preserves_flags));
         }
@@ -21,8 +21,8 @@ impl PortRead for u8 {
 
 impl PortRead for u16 {
     #[inline]
-    unsafe fn read_from_port(port: u16) -> u16 {
-        let value: u16;
+    unsafe fn read_from_port(port: u16) -> Self {
+        let value: Self;
         unsafe {
             asm!("in ax, dx", out("ax") value, in("dx") port, options(nomem, nostack, preserves_flags));
         }
@@ -32,8 +32,8 @@ impl PortRead for u16 {
 
 impl PortRead for u32 {
     #[inline]
-    unsafe fn read_from_port(port: u16) -> u32 {
-        let value: u32;
+    unsafe fn read_from_port(port: u16) -> Self {
+        let value: Self;
         unsafe {
             asm!("in eax, dx", out("eax") value, in("dx") port, options(nomem, nostack, preserves_flags));
         }
@@ -43,7 +43,7 @@ impl PortRead for u32 {
 
 impl PortWrite for u8 {
     #[inline]
-    unsafe fn write_to_port(port: u16, value: u8) {
+    unsafe fn write_to_port(port: u16, value: Self) {
         unsafe {
             asm!("out dx, al", in("dx") port, in("al") value, options(nomem, nostack, preserves_flags));
         }
@@ -52,7 +52,7 @@ impl PortWrite for u8 {
 
 impl PortWrite for u16 {
     #[inline]
-    unsafe fn write_to_port(port: u16, value: u16) {
+    unsafe fn write_to_port(port: u16, value: Self) {
         unsafe {
             asm!("out dx, ax", in("dx") port, in("ax") value, options(nomem, nostack, preserves_flags));
         }
@@ -61,7 +61,7 @@ impl PortWrite for u16 {
 
 impl PortWrite for u32 {
     #[inline]
-    unsafe fn write_to_port(port: u16, value: u32) {
+    unsafe fn write_to_port(port: u16, value: Self) {
         unsafe {
             asm!("out dx, eax", in("dx") port, in("eax") value, options(nomem, nostack, preserves_flags));
         }

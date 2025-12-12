@@ -35,7 +35,7 @@ struct CommandBuffer {
 }
 
 impl CommandBuffer {
-    pub fn new(color: Color) -> Self {
+    pub const fn new(color: Color) -> Self {
         Self {
             buffer: [0; MAX_COMMAND_LEN],
             len: 0,

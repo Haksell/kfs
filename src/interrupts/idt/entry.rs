@@ -60,7 +60,7 @@ impl<F: HandlerFuncType> Entry<F> {
 }
 
 #[repr(transparent)]
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct EntryOptions(u16);
 
 impl EntryOptions {
@@ -70,7 +70,7 @@ impl EntryOptions {
     }
 
     #[inline]
-    pub fn set_present(&mut self) {
+    pub const fn set_present(&mut self) {
         self.0 |= 1 << 15;
     }
 }
