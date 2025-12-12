@@ -29,7 +29,6 @@
 
 ## todo
 
-- fix absolute path in `.vscode/settings.json`
 - fix `ld` warnings
 - bring back `enable_paging` from old x86_64 code
 - bring back `setup_page_tables` from old x86_64 code and adapt it to 32-bit
