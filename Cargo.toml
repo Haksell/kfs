@@ -37,7 +37,7 @@ cast_possible_truncation = "allow"
 
 # restriction
 allow_attributes_without_reason = "allow"
-arbitrary_source_item_ordering = "allow" # TODO: remove once everything else is fixed
+arbitrary_source_item_ordering = "allow"
 arithmetic_side_effects = "allow"
 as_conversions = "allow"
 default_numeric_fallback = "allow"
