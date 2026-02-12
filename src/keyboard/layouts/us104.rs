@@ -31,13 +31,13 @@ impl KeyboardLayout for Us104Key {
                 DecodedKey::Unicode(if modifiers.is_shifted() {
                     KEY_SHIFTS[num as usize]
                 } else {
-                    (num | 48).into()
+                    (num | b'0').into()
                 })
             }
             k if (KeyCode::Numpad0..=KeyCode::Numpad9).contains(&k) => {
                 let num = k as u8 - KeyCode::Numpad0 as u8;
                 if modifiers.numlock {
-                    DecodedKey::Unicode((num | 48).into())
+                    DecodedKey::Unicode((num | b'0').into())
                 } else {
                     DecodedKey::RawKey(NUMPAD_SHIFTS[num as usize])
                 }
