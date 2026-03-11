@@ -69,3 +69,5 @@
 ## artistic direction
 
 ![artistic direction](https://upload.wikimedia.org/wikipedia/commons/a/a0/VirtualBox_TempleOS_x64_27_02_2021_20_43_48.png)
+
+mix of browser and kernel
