@@ -56,14 +56,14 @@ impl ScreenChar {
 }
 
 fn update_cursor(row: usize, col: usize) {
-    let mut index_register: Port<u8> = Port::new(0x3D4);
-    let mut data_register: Port<u8> = Port::new(0x3D5);
+    let mut index_register: Port<u8> = Port::new(0x3d4);
+    let mut data_register: Port<u8> = Port::new(0x3d5);
     let pos = row * VGA_WIDTH + col;
 
-    unsafe { index_register.write(0x0E) }
+    unsafe { index_register.write(0x0e) }
     unsafe { data_register.write((pos >> 8) as u8) }
-    unsafe { index_register.write(0x0F) }
-    unsafe { data_register.write((pos & 0xFF) as u8) }
+    unsafe { index_register.write(0x0f) }
+    unsafe { data_register.write((pos & 0xff) as u8) }
 }
 
 fn hide_cursor() {

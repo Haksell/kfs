@@ -66,8 +66,8 @@ impl ChainedPics {
                 },
                 Pic {
                     offset: offset2,
-                    command: Port::new(0xA0),
-                    data: Port::new(0xA1),
+                    command: Port::new(0xa0),
+                    data: Port::new(0xa1),
                     cascade: 2,
                 },
             ],
