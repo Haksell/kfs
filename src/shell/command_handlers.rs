@@ -56,9 +56,7 @@ fn hexdump(start: usize, end: usize) {
             }
             print!("|");
             for byte in line {
-                WRITER
-                    .lock()
-                    .write_byte(if byte == 0x0a { 0x20 } else { byte });
+                WRITER.lock().write_byte(if byte == 0x0a { 0x20 } else { byte });
             }
             println!("|");
             last_line = line;
@@ -104,11 +102,8 @@ pub const COMMAND_HANDLERS: &[CommandHandler] = &[
         description: b"Show this help message.",
         handler: |_: &Shell| {
             println!("Available commands:");
-            let max_length = COMMAND_HANDLERS
-                .iter()
-                .map(|handler| handler.name.len())
-                .max()
-                .unwrap();
+            let max_length =
+                COMMAND_HANDLERS.iter().map(|handler| handler.name.len()).max().unwrap();
             for handler in COMMAND_HANDLERS.iter() {
                 println!(
                     "- {:max_length$}   {}",
@@ -144,7 +139,7 @@ pub const COMMAND_HANDLERS: &[CommandHandler] = &[
     CommandHandler {
         name: b"reboot",
         description: b"Reboot the system.",
-        handler: |_: &Shell| unsafe { Port::new(0x64).write(0xFEu8) },
+        handler: |_: &Shell| unsafe { Port::new(0x64).write(0xfeu8) },
     },
     CommandHandler {
         name: b"tty",

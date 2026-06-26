@@ -92,18 +92,14 @@ where
 
 extern "x86-interrupt" fn timer_interrupt_handler(_: InterruptStackFrame) {
     unsafe {
-        PICS.lock()
-            .notify_end_of_interrupt(InterruptIndex::Timer as u8);
+        PICS.lock().notify_end_of_interrupt(InterruptIndex::Timer as u8);
     }
 }
 
 extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame) {
     lazy_static! {
         static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, scancodes::ScancodeSet1>> =
-            Mutex::new(Keyboard::new(
-                layouts::Us104Key,
-                scancodes::ScancodeSet1::new(),
-            ));
+            Mutex::new(Keyboard::new(layouts::Us104Key, scancodes::ScancodeSet1::new(),));
     }
 
     let mut keyboard = KEYBOARD.lock();
@@ -114,7 +110,6 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame) {
     }
 
     unsafe {
-        PICS.lock()
-            .notify_end_of_interrupt(InterruptIndex::Keyboard as u8);
+        PICS.lock().notify_end_of_interrupt(InterruptIndex::Keyboard as u8);
     }
 }

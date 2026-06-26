@@ -76,10 +76,7 @@ pub struct Port<T> {
 impl<T> Port<T> {
     #[inline]
     pub const fn new(port: u16) -> Self {
-        Self {
-            port,
-            phantom: PhantomData,
-        }
+        Self { port, phantom: PhantomData }
     }
 }
 

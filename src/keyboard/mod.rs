@@ -171,12 +171,7 @@ where
             layout,
             scancode_set,
             // TODO: get numlock and capslock value from PS/2 (0xED)
-            modifiers: Modifiers {
-                lshift: false,
-                rshift: false,
-                numlock: true,
-                capslock: false,
-            },
+            modifiers: Modifiers { lshift: false, rshift: false, numlock: true, capslock: false },
         }
     }
 

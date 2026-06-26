@@ -36,12 +36,7 @@ struct CommandBuffer {
 
 impl CommandBuffer {
     pub fn new(color: Color) -> Self {
-        Self {
-            buffer: [0; MAX_COMMAND_LEN],
-            len: 0,
-            pos: 0,
-            color,
-        }
+        Self { buffer: [0; MAX_COMMAND_LEN], len: 0, pos: 0, color }
     }
 
     fn set_pos(&mut self, pos: usize) {
@@ -155,16 +150,12 @@ impl Shell {
     fn switch_screen(&mut self, screen_idx: usize) {
         if screen_idx != self.screen_idx && screen_idx < VGA_SCREENS {
             self.screen_idx = screen_idx;
-            WRITER
-                .lock()
-                .switch_screen(screen_idx, self.commands[screen_idx].pos + PROMPT.len());
+            WRITER.lock().switch_screen(screen_idx, self.commands[screen_idx].pos + PROMPT.len());
         }
     }
 
     fn print_prompt(&self) {
-        WRITER
-            .lock()
-            .set_foreground_color(self.commands[self.screen_idx].color);
+        WRITER.lock().set_foreground_color(self.commands[self.screen_idx].color);
         for &byte in PROMPT {
             WRITER.lock().write_byte(byte);
         }
@@ -175,9 +166,7 @@ impl Shell {
         WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
         WRITER.lock().write_byte(left);
         WRITER.lock().write_bytes(left2, CORNER_REPEAT);
-        WRITER
-            .lock()
-            .write_bytes(middle, VGA_WIDTH - 2 * (WELCOME_MARGIN + CORNER_REPEAT + 1));
+        WRITER.lock().write_bytes(middle, VGA_WIDTH - 2 * (WELCOME_MARGIN + CORNER_REPEAT + 1));
         WRITER.lock().write_bytes(right2, CORNER_REPEAT);
         WRITER.lock().write_byte(right);
         WRITER.lock().write_bytes(b' ', WELCOME_MARGIN);
@@ -197,9 +186,7 @@ impl Shell {
     }
 
     fn print_welcome(&self) {
-        WRITER
-            .lock()
-            .set_foreground_color(self.commands[self.screen_idx].color);
+        WRITER.lock().set_foreground_color(self.commands[self.screen_idx].color);
         Self::print_welcome_line(b' ', b'\xc9', b'\xcd', b'\xbb', b' ');
         Self::print_welcome_line(b'\xc9', b'\xbc', b' ', b'\xc8', b'\xbb');
         Self::print_welcome_title(b"\x20\x20\x20\x20\x20\x20\x3a\x3a\x3a\x20\x20\x20\x20\x3a\x3a\x3a\x20\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x20\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x3a\x3a\x3a\x20\x20\x20\x20\x20\x3a\x3a\x3a\x3a\x3a\x3a\x3a\x3a");
@@ -237,10 +224,7 @@ impl Shell {
         if command_buffer.is_empty() {
             return;
         }
-        match COMMAND_HANDLERS
-            .iter()
-            .find(|handler| handler.name == command_buffer)
-        {
+        match COMMAND_HANDLERS.iter().find(|handler| handler.name == command_buffer) {
             Some(handler) => (handler.handler)(&self),
             None => println!(
                 "kfs: command not found: \"{}\"",

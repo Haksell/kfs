@@ -47,29 +47,23 @@ struct ScreenChar {
 
 impl ScreenChar {
     fn black_space() -> Self {
-        Self {
-            ascii_character: b' ',
-            color_code: ColorCode::new(Color::Black, Color::Black),
-        }
+        Self { ascii_character: b' ', color_code: ColorCode::new(Color::Black, Color::Black) }
     }
 
     fn white_space() -> Self {
-        Self {
-            ascii_character: b' ',
-            color_code: ColorCode::new(Color::White, Color::Black),
-        }
+        Self { ascii_character: b' ', color_code: ColorCode::new(Color::White, Color::Black) }
     }
 }
 
 fn update_cursor(row: usize, col: usize) {
-    let mut index_register: Port<u8> = Port::new(0x3D4);
-    let mut data_register: Port<u8> = Port::new(0x3D5);
+    let mut index_register: Port<u8> = Port::new(0x3d4);
+    let mut data_register: Port<u8> = Port::new(0x3d5);
     let pos = row * VGA_WIDTH + col;
     unsafe {
-        index_register.write(0x0E);
+        index_register.write(0x0e);
         data_register.write((pos >> 8) as u8);
-        index_register.write(0x0F);
-        data_register.write((pos & 0xFF) as u8);
+        index_register.write(0x0f);
+        data_register.write((pos & 0xff) as u8);
     }
 }
 
@@ -111,10 +105,7 @@ impl Writer {
                 if self.column_position >= VGA_WIDTH {
                     self.new_line();
                 }
-                let sc = ScreenChar {
-                    ascii_character: byte,
-                    color_code: self.color_code,
-                };
+                let sc = ScreenChar { ascii_character: byte, color_code: self.color_code };
                 if self.screens[self.screen_idx].scroll_up == 0 {
                     self.buffer.chars[VGA_HEIGHT - 1][self.column_position].write(sc);
                 }
@@ -232,10 +223,7 @@ impl Writer {
                 screen.bytes[y][x] = screen.bytes[y + 1][x];
             }
         }
-        let blank = ScreenChar {
-            ascii_character: b' ',
-            color_code: self.color_code,
-        };
+        let blank = ScreenChar { ascii_character: b' ', color_code: self.color_code };
         for x in 0..VGA_WIDTH {
             screen.bytes[VGA_HISTORY - 1][x] = blank;
         }
