@@ -1,4 +1,7 @@
-use core::{arch::asm, marker::PhantomData};
+use {
+    crate::interrupts::InterruptStackFrame,
+    core::{arch::asm, marker::PhantomData},
+};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
@@ -32,7 +35,7 @@ impl<F> Entry<F> {
     }
 }
 
-pub type HandlerFunc = extern "x86-interrupt" fn();
+pub type HandlerFunc = extern "x86-interrupt" fn(InterruptStackFrame);
 
 pub trait HandlerFuncType {
     fn to_virt_addr(self) -> usize;

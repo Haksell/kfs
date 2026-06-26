@@ -60,7 +60,9 @@ $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 	@ld -m elf_i386 -n --gc-sections -T $(LINKER_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(RUST_OS)
 
 $(RUST_OS):
-	@export RUST_TARGET_PATH=$(shell pwd) ; cargo build --target $(TARGET) $(CARGO_FLAGS)
+	@export RUST_TARGET_PATH=$(shell pwd); \
+	export RUSTFLAGS="-Zunstable-options"; \
+	cargo +nightly build -Z build-std=core,compiler_builtins --target $(TARGET) $(CARGO_FLAGS)
 
 $(ASM_OBJS): $(BUILD)/asm/%.o: asm/%.asm
 	@mkdir -p $(dir $@)
