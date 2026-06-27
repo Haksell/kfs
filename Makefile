@@ -62,7 +62,7 @@ $(KERNEL): $(RUST_OS) $(ASM_OBJS) $(LINKER_SCRIPT)
 $(RUST_OS):
 	@export RUST_TARGET_PATH=$(shell pwd); \
 	export RUSTFLAGS="-Zunstable-options"; \
-	cargo +nightly build -Z build-std=core,compiler_builtins --target $(TARGET) $(CARGO_FLAGS)
+	cargo build $(CARGO_FLAGS)
 
 $(ASM_OBJS): $(BUILD)/asm/%.o: asm/%.asm
 	@mkdir -p $(dir $@)

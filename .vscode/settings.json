@@ -1,5 +1,11 @@
 {
     "rust-analyzer.cargo.target": "kfs.json",
+    "rust-analyzer.cargo.extraArgs": [
+        "-Zjson-target-spec"
+    ],
+    "rust-analyzer.cargo.metadataExtraArgs": [
+        "-Zjson-target-spec"
+    ],
     "rust-analyzer.cargo.allTargets": false,
     "rust-analyzer.showUnlinkedFileNotification": false
 }
